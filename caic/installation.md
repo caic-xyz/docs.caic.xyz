@@ -2,9 +2,8 @@
 
 ## Prerequisites
 
-- Go 1.21+
+- Go 1.25+
 - Docker installed and running
-- [md](../md/installation) installed (caic uses it to manage containers)
 
 ## Install the binary
 

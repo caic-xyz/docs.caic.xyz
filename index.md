@@ -17,6 +17,6 @@ features:
     details: Server that manages multiple AI coding agents running in parallel in isolated Docker containers. Access from phone, web UI, or Android app.
     link: /caic/
   - title: md
-    details: CLI that creates branch-locked containers for AI agents. Safe parallel work across multiple branches without conflicts.
+    details: CLI that creates branch-locked containers for AI agents. Safe parallel work across multiple branches without conflicts. Powers caic.
     link: /md/
 ---

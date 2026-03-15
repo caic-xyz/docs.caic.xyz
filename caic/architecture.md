@@ -1,6 +1,6 @@
 # Architecture
 
-caic is a Go backend with a SolidJS frontend embedded in the binary. It requires Docker and [md](../md/) to run agent containers.
+caic is a Go backend with a SolidJS frontend embedded in the binary. It requires Docker.
 
 ## Components
 

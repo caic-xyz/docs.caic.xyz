@@ -2,8 +2,6 @@
 
 **Coding Agents in Containers.** Manage multiple AI coding agents running in parallel in isolated Docker containers. Access them from your phone with Tailscale. All private.
 
-[![codecov](https://codecov.io/gh/caic-xyz/caic/graph/badge.svg?token=VB9D2PKPCC)](https://codecov.io/gh/caic-xyz/caic)
-
 ## What is caic?
 
 caic lets you run AI coding agents (Claude Code, Codex, Gemini CLI, Kilo) in isolated [md](https://github.com/caic-xyz/md) containers, orchestrated through a unified web UI and Android app. Each task runs in its own container so agents never interfere with each other or your local checkout.
