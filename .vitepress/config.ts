@@ -6,6 +6,7 @@ export default defineConfig({
   cleanUrls: true,
 
   head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['script', {}, `fetch('https://discord.com/api/guilds/1475502872564338822/widget.json')
       .then(r=>r.json()).then(d=>{if(d.instant_invite){
         document.querySelectorAll('a[href*="discord.com/widget"]').forEach(a=>a.href=d.instant_invite)
