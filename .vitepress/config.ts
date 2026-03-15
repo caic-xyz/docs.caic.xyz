@@ -18,11 +18,11 @@ export default defineConfig({
           items: [
             { text: 'Overview', link: '/caic/' },
             { text: 'Installation', link: '/caic/installation' },
-            { text: 'Architecture', link: '/caic/architecture' },
             { text: 'Configuration', link: '/caic/configuration' },
             { text: 'GitHub Integration', link: '/caic/github' },
             { text: 'GitLab Integration', link: '/caic/gitlab' },
             { text: 'Android App', link: '/caic/android' },
+            { text: 'Architecture', link: '/caic/architecture' },
           ],
         },
       ],
