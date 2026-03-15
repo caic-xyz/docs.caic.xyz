@@ -18,6 +18,24 @@ caic is supported on **Linux** and **Windows via WSL2**. Interested in improving
 - **Web UI** — SolidJS frontend embedded in the binary
 - **Android app** — voice-first companion app to manage agents from your phone
 
+## Screenshots
+
+### Interacting with an agent
+
+![Interacting with an agent](/screenshots/task-detail.png)
+
+### Plan mode
+
+![Plan mode](/screenshots/task-plan.png)
+
+### Ask mode — agent asks for user input
+
+![Ask mode](/screenshots/task-ask.png)
+
+### Android app
+
+<img src="/screenshots/android-task-list.png" alt="Android task list" style="max-width: 300px">
+
 ## Quick start
 
 ```bash

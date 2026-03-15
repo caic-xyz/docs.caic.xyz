@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: caic-xyz
+  name: caic.xyz
   tagline: AI coding agents in isolated containers
   actions:
     - theme: brand
