@@ -13,7 +13,8 @@ docs/
 │   ├── installation.md
 │   ├── architecture.md
 │   ├── configuration.md
-│   ├── forge.md           # GitHub & GitLab integration
+│   ├── github.md          # GitHub integration
+│   ├── gitlab.md          # GitLab integration
 │   └── android.md
 ├── md/
 │   ├── index.md           # md overview
@@ -34,7 +35,7 @@ Always read the upstream source files before writing or updating documentation:
 
 | Doc section | Upstream source files |
 |---|---|
-| `caic/*` | `/home/user/src/caic/README.md`, `SELF_HOSTING.md`, `AGENTS.md` |
+| `caic/*` | `/home/user/src/caic/README.md`, `AGENTS.md` |
 | `md/*` | `/home/user/src/md/README.md`, `HARNESSES.md`, `TAILSCALE.md`, `AGENTS.md` |
 
 These paths assume the projects are checked out under `~/src/` (i.e. `/home/user/src/caic`, `/home/user/src/md`).

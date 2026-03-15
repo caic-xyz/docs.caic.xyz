@@ -2,10 +2,24 @@
 
 ## Prerequisites
 
-- Go 1.25+
 - Docker or Podman
 
 ## Install
+
+```bash
+curl caic.xyz/install.sh | bash
+```
+
+This installs both `caic` and `md` binaries.
+
+## Install from source
+
+### Dependencies
+
+- Go 1.25+
+- Docker or Podman
+
+### Build and install
 
 ```bash
 go install github.com/caic-xyz/md/cmd/md@latest

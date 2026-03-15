@@ -4,20 +4,24 @@
 
 ## What is caic?
 
-caic lets you run AI coding agents (Claude Code, Codex, Gemini CLI, Kilo) in isolated [md](https://github.com/caic-xyz/md) containers, orchestrated through a unified web UI and Android app. Each task runs in its own container so agents never interfere with each other or your local checkout.
+caic lets you run AI coding agents (Claude Code, Codex, Gemini CLI, Kilo) in isolated [md](../md/) containers, orchestrated through a unified web UI and Android app. Each task runs in its own container so agents never interfere with each other or your local checkout.
+
+## Platform support
+
+caic is supported on **Linux** and **Windows via WSL2**. Interested in improving macOS support? [Join the Discord](https://discord.com/widget?id=1475502872564338822).
 
 ## Key features
 
 - **Parallel agents** — run many agents simultaneously on different branches
 - **Resilient sessions** — server restarts don't kill running agents; a relay process inside each container keeps agents alive across SSH disconnects
-- **Forge integration** — automatic PR/MR creation and CI monitoring for GitHub and GitLab
+- **Forge integration** — automatic PR/MR creation and CI monitoring for [GitHub](./github) and [GitLab](./gitlab)
 - **Web UI** — SolidJS frontend embedded in the binary
 - **Android app** — voice-first companion app to manage agents from your phone
 
 ## Quick start
 
 ```bash
-go install github.com/caic-xyz/caic/backend/cmd/caic@latest
+curl caic.xyz/install.sh | bash
 ```
 
 See [Installation](./installation) for full setup, and [Configuration](./configuration) for environment variables and systemd service setup.

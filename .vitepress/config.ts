@@ -20,7 +20,8 @@ export default defineConfig({
             { text: 'Installation', link: '/caic/installation' },
             { text: 'Architecture', link: '/caic/architecture' },
             { text: 'Configuration', link: '/caic/configuration' },
-            { text: 'Forge Integration', link: '/caic/forge' },
+            { text: 'GitHub Integration', link: '/caic/github' },
+            { text: 'GitLab Integration', link: '/caic/gitlab' },
             { text: 'Android App', link: '/caic/android' },
           ],
         },
@@ -41,6 +42,7 @@ export default defineConfig({
     },
 
     socialLinks: [
+      { icon: 'discord', link: 'https://discord.com/widget?id=1475502872564338822' },
       { icon: 'github', link: 'https://github.com/caic-xyz' },
     ],
 

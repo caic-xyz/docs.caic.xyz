@@ -2,8 +2,6 @@
 
 **Branch-locked development containers for AI coding agents.** Each container is locked to a repository-branch pair. Safe parallel work, no conflicts.
 
-[![codecov](https://codecov.io/gh/caic-xyz/md/graph/badge.svg?token=Q2ZK312LNF)](https://codecov.io/gh/caic-xyz/md)
-
 ## The problem
 
 AI coding agents work best in YOLO mode (full command execution). But running them locally creates:
@@ -12,6 +10,10 @@ AI coding agents work best in YOLO mode (full command execution). But running th
 - **Test conflicts** — simultaneous test runs cause failures and race conditions
 - **Environment pollution** — accumulated dependencies cause hidden bugs
 - **Context switching** — switching branches while an agent works loses progress
+
+## Platform support
+
+md is supported on **Linux** and **Windows via WSL2**. Interested in improving macOS support? [Join the Discord](https://discord.com/widget?id=1475502872564338822).
 
 ## The solution
 
@@ -42,7 +44,7 @@ md pull
 ## Install
 
 ```bash
-go install github.com/caic-xyz/md/cmd/md@latest
+curl caic.xyz/install.sh | bash
 ```
 
-See [Commands](./commands) for the full command reference, [Configuration](./configuration) for caches and environment variables, and [Harnesses](./harnesses) for agent-specific setup.
+See [Installation](./installation) for all options, [Commands](./commands) for the full command reference, [Configuration](./configuration) for caches and environment variables, and [Harnesses](./harnesses) for agent-specific setup.
