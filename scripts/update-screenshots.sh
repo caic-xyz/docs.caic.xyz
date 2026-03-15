@@ -1,11 +1,17 @@
 #!/bin/bash
-# Copy generated screenshots from caic into the docs public directory.
+# Update documentation screenshots from caic.
 #
-# Usage: ./scripts/update-screenshots.sh
+# Usage: ./scripts/update-screenshots.sh [--android]
 #
-# Prerequisites: run the screenshot generators first:
-#   cd ../caic && npx playwright test --config e2e/playwright.config.ts gen-screenshots
-#   Android screenshots: see scripts/gen-android-screenshots.sh
+# Options:
+#   --android   Also generate Android screenshots (requires emulator + APK, see
+#               caic/scripts/gen-android-screenshots.sh for prerequisites)
+#
+# This script:
+#   1. Clones caic into a sibling directory (../caic) if not already present
+#   2. Runs Playwright screenshot generation in caic
+#   3. Optionally runs Android screenshot generation in caic
+#   4. Copies all AVIF screenshots into docs/public/screenshots/
 
 set -eu
 
@@ -15,12 +21,41 @@ CAIC_DIR="$(dirname "$DOCS_DIR")/caic"
 SRC="$CAIC_DIR/e2e/screenshots"
 DST="$DOCS_DIR/public/screenshots"
 
-if [ ! -d "$SRC" ] || [ -z "$(ls -A "$SRC" 2>/dev/null)" ]; then
-	echo "No screenshots found in $SRC" >&2
-	echo "Run: cd $CAIC_DIR && npx playwright test --config e2e/playwright.config.ts gen-screenshots" >&2
+ANDROID=false
+for arg in "$@"; do
+	case "$arg" in
+	--android) ANDROID=true ;;
+	esac
+done
+
+# Clone caic if not present.
+if [ ! -d "$CAIC_DIR" ]; then
+	echo "Cloning caic into $CAIC_DIR..."
+	git clone https://github.com/fghbuild/caic.git "$CAIC_DIR"
+fi
+
+# Install dependencies.
+echo "Installing caic dependencies..."
+cd "$CAIC_DIR"
+pnpm install --frozen-lockfile
+pnpm exec playwright install chromium
+
+# Generate web UI screenshots.
+echo "Generating web UI screenshots..."
+pnpm exec playwright test --config e2e/playwright.config.ts gen-screenshots
+
+# Generate Android screenshots.
+if [ "$ANDROID" = true ]; then
+	echo "Generating Android screenshots..."
+	"$CAIC_DIR/scripts/gen-android-screenshots.sh"
+fi
+
+# Copy AVIF screenshots to docs.
+if [ ! -d "$SRC" ] || [ -z "$(ls -A "$SRC"/*.avif 2>/dev/null)" ]; then
+	echo "No AVIF screenshots found in $SRC" >&2
 	exit 1
 fi
 
 mkdir -p "$DST"
-cp "$SRC"/*.png "$DST"/
-echo "Copied $(ls "$SRC"/*.png | wc -l) screenshots to $DST"
+cp "$SRC"/*.avif "$DST"/
+echo "Copied $(ls "$SRC"/*.avif | wc -l) screenshots to $DST"

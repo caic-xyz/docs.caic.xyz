@@ -22,19 +22,23 @@ caic is supported on **Linux** and **Windows via WSL2**. Interested in improving
 
 ### Interacting with an agent
 
-![Interacting with an agent](/screenshots/task-detail.png)
+![Interacting with an agent](/screenshots/task-detail.avif)
 
 ### Plan mode
 
-![Plan mode](/screenshots/task-plan.png)
+![Plan mode](/screenshots/task-plan.avif)
 
 ### Ask mode — agent asks for user input
 
-![Ask mode](/screenshots/task-ask.png)
+![Ask mode](/screenshots/task-ask.avif)
+
+### Widget — generative UI
+
+![Widget](/screenshots/task-widget.avif)
 
 ### Android app
 
-<img src="/screenshots/android-task-list.png" alt="Android task list" style="max-width: 300px">
+<img src="/screenshots/android-task-list.avif" alt="Android task list" style="max-width: 300px">
 
 ## Quick start
 

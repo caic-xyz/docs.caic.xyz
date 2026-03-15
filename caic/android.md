@@ -6,13 +6,13 @@ Voice-first companion app to manage coding agents from your phone.
 
 All running agents at a glance — see prompt, branch, status, cost, and CI results for each task.
 
-<img src="/screenshots/android-task-list.png" alt="Android task list" style="max-width: 300px">
+<img src="/screenshots/android-task-list.avif" alt="Android task list" style="max-width: 300px">
 
 ### Task detail
 
 Follow an agent's work in real time — streamed text, tool uses, and results. Send follow-up messages, push branches, or stop the agent.
 
-<img src="/screenshots/android-task-detail.png" alt="Android task detail" style="max-width: 300px">
+<img src="/screenshots/android-task-detail.avif" alt="Android task detail" style="max-width: 300px">
 
 ## Prerequisites
 
