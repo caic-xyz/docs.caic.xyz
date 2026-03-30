@@ -72,3 +72,13 @@ Automatic task creation triggers:
 | Issue opened | Issue has `caic` label | Agent fixes the issue |
 | PR opened/reopened | Targets the default branch | Agent reviews/fixes the PR |
 | Comment created | Body contains `@caic` | Agent acts on the comment |
+
+
+## Allowing OAuth app access
+
+To grant access to an organization:
+1. Visit https://github.com/settings/applications
+2. Select your application.
+3. Under "Organization access", click Grant.
+
+Confirm it is connect by visiting `https://github.com/organizations/<org>/settings/oauth_application_policy` and checking that the application is listed as Approved.
