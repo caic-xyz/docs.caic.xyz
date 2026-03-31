@@ -35,6 +35,9 @@ GITHUB_TOKEN=<your-token>
 
 If unset, caic auto-detects the token from `gh auth token`.
 
+See your current tokens at https://github.com/settings/personal-access-tokens
+
+
 ## GitHub OAuth
 
 1. Create a [GitHub OAuth app](https://github.com/settings/applications/new)
@@ -46,6 +49,12 @@ If unset, caic auto-detects the token from `gh auth token`.
    GITHUB_OAUTH_CLIENT_SECRET=<client-secret>
    GITHUB_OAUTH_ALLOWED_USERS=alice,bob
    ```
+
+See the GitHub OAuth Apps you created at https://github.com/settings/developers
+
+See the GitHub OAuth Apps you installed at https://github.com/settings/applications. In particular, you need to
+**Grant** access to your organizations you want to be able to access.
+
 
 ## GitHub App
 
@@ -72,6 +81,10 @@ Automatic task creation triggers:
 | Issue opened | Issue has `caic` label | Agent fixes the issue |
 | PR opened/reopened | Targets the default branch | Agent reviews/fixes the PR |
 | Comment created | Body contains `@caic` | Agent acts on the comment |
+
+See the GitHub Apps you created at https://github.com/settings/apps
+
+See how the GitHub Apps are installed at https://github.com/settings/installations
 
 
 ## Allowing OAuth app access
