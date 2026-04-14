@@ -15,46 +15,64 @@ After MR creation, caic polls CI status every 15 seconds (GitLab pipeline status
 
 ## Integration modes
 
+All settings go in the `[gitlab]` section of `~/.config/caic/config.toml`.
+
 | | **GitLab PAT** | **GitLab OAuth** |
 |---|---|---|
 | **Use case** | Single-user | Multi-user with login |
-| **User auth** | ❌ | ✅ |
-| **Env vars** | `GITLAB_TOKEN` | `CAIC_EXTERNAL_URL` + `GITLAB_OAUTH_CLIENT_ID` + `GITLAB_OAUTH_CLIENT_SECRET` + `GITLAB_OAUTH_ALLOWED_USERS` |
+| **User auth** | No | Yes |
+| **Config keys** | `[gitlab] token` | `[gitlab] oauth_client_id` + `oauth_client_secret` + `oauth_allowed_users` |
 
-For self-hosted GitLab, also set `GITLAB_URL=https://<your-gitlab-instance>`.
+For self-hosted GitLab, also set `url`:
+
+```toml
+[gitlab]
+url = "https://<your-gitlab-instance>"
+```
 
 ## GitLab PAT
 
 [Create a personal access token](https://gitlab.com/-/user_settings/personal_access_tokens) with `api` scope.
 
-```bash
-GITLAB_TOKEN=<your-token>
+```toml
+[gitlab]
+token = "<your-token>"
 ```
 
 ## GitLab OAuth
 
+Also requires `[server] external_url` to be set (see [Configuration](./configuration)).
+
 1. Create a [GitLab OAuth app](https://gitlab.com/-/user_settings/applications)
    - Redirect URI: `https://<your-domain>/api/v1/auth/gitlab/callback`
    - Scopes: `api`, `read_user`
-2. Set environment variables:
-   ```
-   CAIC_EXTERNAL_URL=https://<your-domain>
-   GITLAB_OAUTH_CLIENT_ID=<application-id>
-   GITLAB_OAUTH_CLIENT_SECRET=<secret>
-   GITLAB_OAUTH_ALLOWED_USERS=alice,bob
+2. Add to `config.toml`:
+   ```toml
+   [server]
+   external_url = "https://<your-domain>"
+
+   [gitlab]
+   oauth_client_id = "<application-id>"
+   oauth_client_secret = "<secret>"
+   oauth_allowed_users = ["alice", "bob"]
    ```
 
 For self-hosted GitLab, also set:
-```
-GITLAB_URL=https://<your-gitlab-instance>
+```toml
+[gitlab]
+url = "https://<your-gitlab-instance>"
 ```
 
 ## Webhooks (optional)
 
 Webhooks deliver CI status in real time instead of waiting up to 30s for the next poll cycle.
 
-1. In project **Settings → Webhooks**:
+1. In project **Settings > Webhooks**:
    - URL: `https://<your-domain>/webhooks/gitlab`
    - Secret token: `openssl rand -hex 32`
    - Enable: Pipeline events
-2. Set: `GITLAB_WEBHOOK_SECRET=<the secret>`
+2. Add to `config.toml`:
+   ```toml
+   [gitlab]
+   webhook_secret = "<the secret>"
+   ```

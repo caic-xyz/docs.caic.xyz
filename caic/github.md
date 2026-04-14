@@ -20,34 +20,42 @@ caic supports three GitHub integration modes. They are not mutually exclusive �
 | | **GitHub PAT** | **GitHub OAuth** | **GitHub App** |
 |---|---|---|---|
 | **Use case** | Single-user | Multi-user with login | Org-wide automation |
-| **User auth** | ❌ | ✅ Login via GitHub | ❌ |
-| **Webhooks** | ❌ polling only | ❌ polling only | ✅ |
-| **Auto task creation** | ❌ | ❌ | ✅ |
-| **Env vars** | `GITHUB_TOKEN` | `CAIC_EXTERNAL_URL` + `GITHUB_OAUTH_CLIENT_ID` + `GITHUB_OAUTH_CLIENT_SECRET` + `GITHUB_OAUTH_ALLOWED_USERS` | `CAIC_EXTERNAL_URL` + `GITHUB_APP_ID` + `GITHUB_APP_PRIVATE_KEY_PEM` + `GITHUB_WEBHOOK_SECRET` |
+| **User auth** | No | Yes (login via GitHub) | No |
+| **Webhooks** | No (polling only) | No (polling only) | Yes |
+| **Auto task creation** | No | No | Yes |
+| **Config keys** | `[github] token` | `[github] oauth_client_id` + `oauth_client_secret` + `oauth_allowed_users` | `[github] app_id` + `app_private_key_pem` + `webhook_secret` |
+
+All settings go in the `[github]` section of `~/.config/caic/config.toml`.
 
 ## GitHub PAT
 
 [Create a fine-grained token](https://github.com/settings/personal-access-tokens/new) with `pull_requests: write` and `checks: read` permissions.
 
-```bash
-GITHUB_TOKEN=<your-token>
+```toml
+[github]
+token = "<your-token>"
 ```
 
-If unset, caic auto-detects the token from `gh auth token`.
+If unset and OAuth is not configured, caic auto-detects the token from `gh auth token`.
 
 See your current tokens at https://github.com/settings/personal-access-tokens
 
 
 ## GitHub OAuth
 
+OAuth also requires `[server] external_url` to be set (see [Configuration](./configuration)).
+
 1. Create a [GitHub OAuth app](https://github.com/settings/applications/new)
    - Callback URL: `https://<your-domain>/api/v1/auth/github/callback`
-2. Set environment variables:
-   ```
-   CAIC_EXTERNAL_URL=https://<your-domain>
-   GITHUB_OAUTH_CLIENT_ID=<client-id>
-   GITHUB_OAUTH_CLIENT_SECRET=<client-secret>
-   GITHUB_OAUTH_ALLOWED_USERS=alice,bob
+2. Add to `config.toml`:
+   ```toml
+   [server]
+   external_url = "https://<your-domain>"
+
+   [github]
+   oauth_client_id = "<client-id>"
+   oauth_client_secret = "<client-secret>"
+   oauth_allowed_users = ["alice", "bob"]
    ```
 
 See the GitHub OAuth Apps you created at https://github.com/settings/developers
@@ -60,18 +68,21 @@ See the GitHub OAuth Apps you installed at https://github.com/settings/applicati
 
 Enables real-time webhooks and automatic task creation for issues, PRs, and `@caic` mentions.
 
+Also requires `[server] external_url` to be set (see [Configuration](./configuration)).
+
 1. [Create a GitHub App](https://github.com/settings/apps/new)
    - Webhook URL: `https://<your-domain>/webhooks/github`
    - Permissions: Issues (read/write), Pull requests (read/write), Checks (read)
    - Events: Issues, Pull requests, Issue comments, Check suites
 2. Generate a private key from the app settings
 3. Install the app on your org or repositories (app must be public for org installs)
-4. Set environment variables:
-   ```
-   GITHUB_WEBHOOK_SECRET=<webhook-secret>
-   GITHUB_APP_ID=<app-id>
-   GITHUB_APP_PRIVATE_KEY_PEM=private-key.pem  # relative to ~/.config/caic/
-   GITHUB_APP_ALLOWED_OWNERS=my-org  # optional
+4. Add to `config.toml`:
+   ```toml
+   [github]
+   webhook_secret = "<webhook-secret>"
+   app_id = 12345
+   app_private_key_pem = "private-key.pem"  # relative to ~/.config/caic/
+   app_allowed_owners = ["my-org"]           # optional
    ```
 
 Automatic task creation triggers:
@@ -94,4 +105,4 @@ To grant access to an organization:
 2. Select your application.
 3. Under "Organization access", click Grant.
 
-Confirm it is connect by visiting `https://github.com/organizations/<org>/settings/oauth_application_policy` and checking that the application is listed as Approved.
+Confirm it is connected by visiting `https://github.com/organizations/<org>/settings/oauth_application_policy` and checking that the application is listed as Approved.

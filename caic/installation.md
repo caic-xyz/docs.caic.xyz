@@ -7,10 +7,28 @@
 ## Install
 
 ```bash
-curl caic.xyz/install.sh | bash
+curl -fsSL caic.xyz/install.sh | bash
 ```
 
-This installs both `caic` and `md` binaries.
+The install script:
+
+1. Downloads the latest `caic` and `md` binaries to `~/.local/bin/`
+2. Copies a default `config.toml` to `~/.config/caic/` (if not already present)
+3. Installs and starts a system service (systemd on Linux, launchd on macOS)
+
+After installation, caic is running on `http://localhost:2242` using the current directory as root.
+
+Set `NO_SERVICE=1` to skip service installation:
+
+```bash
+NO_SERVICE=1 curl -fsSL caic.xyz/install.sh | bash
+```
+
+If the GitHub release API is rate-limited, set `GITHUB_TOKEN` for authentication:
+
+```bash
+GITHUB_TOKEN=ghp_... curl -fsSL caic.xyz/install.sh | bash
+```
 
 ## Install from source
 
@@ -25,9 +43,11 @@ This installs both `caic` and `md` binaries.
 go install github.com/caic-xyz/caic/backend/cmd/caic@latest
 ```
 
+When installing from source, copy [`contrib/config.toml`](https://github.com/caic-xyz/caic/blob/main/contrib/config.toml) and the service file manually. See [Configuration](./configuration) for details.
+
 ## Next steps
 
-- [Configure caic](./configuration) — environment variables, auth modes, systemd service
+- [Configure caic](./configuration) — config file, auth modes, service management
 - [GitHub integration](./github) — connect GitHub for automatic PR creation
 - [GitLab integration](./gitlab) — connect GitLab for automatic MR creation
 - [Android app](./android) — build and install the companion app

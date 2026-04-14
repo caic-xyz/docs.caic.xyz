@@ -11,7 +11,7 @@
 #   1. Clones caic into a sibling directory (../caic) if not already present
 #   2. Runs Playwright screenshot generation in caic
 #   3. Optionally runs Android screenshot generation in caic
-#   4. Copies all AVIF screenshots into docs/public/screenshots/
+#   4. Copies all screenshots (WebP + AVIF) into docs/public/screenshots/
 
 set -eu
 
@@ -50,12 +50,27 @@ if [ "$ANDROID" = true ]; then
 	"$CAIC_DIR/scripts/gen-android-screenshots.sh"
 fi
 
-# Copy AVIF screenshots to docs.
-if [ ! -d "$SRC" ] || [ -z "$(ls -A "$SRC"/*.avif 2>/dev/null)" ]; then
-	echo "No AVIF screenshots found in $SRC" >&2
+# Copy frontend screenshots (WebP + AVIF).
+FRONTEND_SRC="$SRC/frontend"
+if [ ! -d "$FRONTEND_SRC" ] || [ -z "$(ls -A "$FRONTEND_SRC"/*.webp "$FRONTEND_SRC"/*.avif 2>/dev/null)" ]; then
+	echo "No screenshots found in $FRONTEND_SRC" >&2
 	exit 1
 fi
 
 mkdir -p "$DST"
-cp "$SRC"/*.avif "$DST"/
-echo "Copied $(ls "$SRC"/*.avif | wc -l) screenshots to $DST"
+count=0
+for ext in webp avif; do
+	for f in "$FRONTEND_SRC"/*."$ext" 2>/dev/null; do
+		[ -f "$f" ] && cp "$f" "$DST"/ && count=$((count + 1))
+	done
+done
+
+# Copy Android screenshots if present.
+ANDROID_SRC="$SRC/android"
+if [ -d "$ANDROID_SRC" ]; then
+	for f in "$ANDROID_SRC"/*.avif 2>/dev/null; do
+		[ -f "$f" ] && cp "$f" "$DST"/ && count=$((count + 1))
+	done
+fi
+
+echo "Copied $count screenshots to $DST"

@@ -4,7 +4,7 @@
 
 ## What is caic?
 
-caic lets you run AI coding agents (Claude Code, Codex, Gemini CLI, Kilo) in isolated [md](../md/) containers, orchestrated through a unified web UI and Android app. Each task runs in its own container so agents never interfere with each other or your local checkout.
+caic lets you run AI coding agents (Claude Code, Codex, Gemini CLI, Kilo, OpenCode) in isolated [md](../md/) containers, orchestrated through a unified web UI and Android app. Each task runs in its own container so agents never interfere with each other or your local checkout.
 
 ## Platform support
 
@@ -22,15 +22,15 @@ caic is supported on **Linux** and **Windows via WSL2**. Interested in improving
 
 ### Interacting with an agent
 
-![Interacting with an agent](/screenshots/task-detail.avif)
+![Interacting with an agent](/screenshots/task-detail.webp)
 
 ### Plan mode
 
-![Plan mode](/screenshots/task-plan.avif)
+![Plan mode](/screenshots/task-plan.webp)
 
 ### Ask mode — agent asks for user input
 
-![Ask mode](/screenshots/task-ask.avif)
+![Ask mode](/screenshots/task-ask.webp)
 
 ### Widget — generative UI
 
@@ -46,4 +46,4 @@ caic is supported on **Linux** and **Windows via WSL2**. Interested in improving
 curl caic.xyz/install.sh | bash
 ```
 
-See [Installation](./installation) for full setup, and [Configuration](./configuration) for environment variables and systemd service setup.
+See [Installation](./installation) for full setup, and [Configuration](./configuration) for config file reference and service setup.

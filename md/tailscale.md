@@ -65,7 +65,7 @@ vncviewer <host>.<tailnet>.ts.net:5901
 Inside the container:
 
 ```bash
-tailscale serve --bg 8080
+tailscale serve --bg 2242
 ```
 
 Then open `https://<host>.<tailnet>.ts.net` from any tailnet device.
