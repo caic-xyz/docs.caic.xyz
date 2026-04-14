@@ -43,7 +43,7 @@ caic is supported on **Linux** and **Windows via WSL2**. Interested in improving
 ## Quick start
 
 ```bash
-curl caic.xyz/install.sh | bash
+curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
 See [Installation](./installation) for full setup, and [Configuration](./configuration) for config file reference and service setup.

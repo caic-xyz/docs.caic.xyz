@@ -7,7 +7,7 @@
 ## Install
 
 ```bash
-curl -fsSL caic.xyz/install.sh | bash
+curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
 The install script:
@@ -21,13 +21,13 @@ After installation, caic is running on `http://localhost:2242` using the current
 Set `NO_SERVICE=1` to skip service installation:
 
 ```bash
-NO_SERVICE=1 curl -fsSL caic.xyz/install.sh | bash
+NO_SERVICE=1 curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
 If the GitHub release API is rate-limited, set `GITHUB_TOKEN` for authentication:
 
 ```bash
-GITHUB_TOKEN=ghp_... curl -fsSL caic.xyz/install.sh | bash
+GITHUB_TOKEN=ghp_... curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
 ## Install from source

@@ -14,7 +14,7 @@ hero:
 
 features:
   - title: Install
-    details: "curl caic.xyz/install.sh | bash"
+    details: "curl -fsSL https://caic.xyz/install.sh | bash"
   - title: caic
     details: Server that manages multiple AI coding agents running in parallel in isolated Docker containers. Access from phone, web UI, or Android app.
     link: /caic/

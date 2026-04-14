@@ -44,7 +44,7 @@ md pull
 ## Install
 
 ```bash
-curl caic.xyz/install.sh | bash
+curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
 See [Installation](./installation) for all options, [Commands](./commands) for the full command reference, [Configuration](./configuration) for caches and environment variables, and [Harnesses](./harnesses) for agent-specific setup.

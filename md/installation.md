@@ -7,7 +7,7 @@
 ## Install
 
 ```bash
-curl caic.xyz/install.sh | bash
+curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
 This installs both `caic` and `md` binaries.
