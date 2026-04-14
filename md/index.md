@@ -27,6 +27,8 @@ md is supported on **Linux** and **Windows via WSL2**. Interested in improving m
 
 ## Quick start
 
+![md quick start demo](/md-quickstart.avif)
+
 ```bash
 # Start container for your current branch (auto-SSH in)
 git checkout -b wip origin/main
