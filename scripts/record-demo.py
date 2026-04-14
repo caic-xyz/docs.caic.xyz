@@ -62,7 +62,7 @@ def simulate_typing(child: pexpect.spawn, text: str, marker: str, comment: str =
         sys.stdout.write(f"  {DIM}# {comment}{RESET}")
         sys.stdout.flush()
     time.sleep(0.4)
-    child.sendline("")
+    child.send("\r")
     child.expect(marker)
     time.sleep(PAUSE_AFTER)
 
@@ -79,7 +79,7 @@ def demo(repo_dir: str, cols: int, rows: int) -> None:
     child = pexpect.spawn(
         "bash",
         encoding="utf-8",
-        timeout=120,
+        timeout=300,
         cwd=repo_dir,
         dimensions=(rows, cols),
         env={**os.environ, "LANG": "C"},
@@ -119,10 +119,11 @@ def demo(repo_dir: str, cols: int, rows: int) -> None:
     )
     simulate_typing(
         child,
-        "echo '# demo change' >> README.md",
-        CONTAINER_MARKER,
-        "Make a small change",
+        "claude 'Add a one liner joke to README.md'",
+        "Done.",
+        "Start Claude with a prompt",
     )
+    simulate_typing(child, "/exit", CONTAINER_MARKER)
     simulate_typing(child, "git --no-pager diff", CONTAINER_MARKER, "Show the diff")
     simulate_typing(child, "exit", HOST_MARKER, "Exit the ssh session to the container")
 
@@ -194,8 +195,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Record md quick-start demo")
     parser.add_argument("repo", help="Path to git repository to use for the demo")
     parser.add_argument("--no-rec", action="store_true", help="Run without asciinema recording")
-    parser.add_argument("--cols", type=int, default=120, help="Terminal width (default: 120)")
-    parser.add_argument("--rows", type=int, default=46, help="Terminal height (default: 46)")
+    parser.add_argument("--cols", type=int, default=100, help="Terminal width (default: 100)")
+    parser.add_argument("--rows", type=int, default=35, help="Terminal height (default: 35)")
     args = parser.parse_args()
 
     repo_dir = os.path.abspath(args.repo)

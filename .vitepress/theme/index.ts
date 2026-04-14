@@ -3,10 +3,16 @@ import mediumZoom from "medium-zoom";
 import { onMounted, watch, nextTick } from "vue";
 import { useRoute } from "vitepress";
 
+import "asciinema-player/dist/bundle/asciinema-player.css";
 import "./style.css";
+
+import AsciinemaPlayer from "./AsciinemaPlayer.vue";
 
 export default {
   extends: DefaultTheme,
+  enhanceApp({ app }) {
+    app.component("AsciinemaPlayer", AsciinemaPlayer);
+  },
   setup() {
     const route = useRoute();
     const initZoom = () =>
