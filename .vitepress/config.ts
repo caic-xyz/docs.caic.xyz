@@ -9,15 +9,15 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     // Open Graph
     ['meta', { property: 'og:type', content: 'website' }],
-    ['meta', { property: 'og:title', content: 'caic.xyz' }],
-    ['meta', { property: 'og:description', content: 'AI coding agents in isolated containers' }],
-    ['meta', { property: 'og:url', content: 'https://caic.xyz' }],
-    ['meta', { property: 'og:image', content: 'https://caic.xyz/md-quickstart.gif' }],
+    ['meta', { property: 'og:title', content: 'docs.caic.xyz' }],
+    ['meta', { property: 'og:description', content: 'Coding Agents in Containers' }],
+    ['meta', { property: 'og:url', content: 'https://docs.caic.xyz' }],
+    ['meta', { property: 'og:image', content: 'https://docs.caic.xyz/md-quickstart.gif' }],
     // Twitter / X
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'caic.xyz' }],
-    ['meta', { name: 'twitter:description', content: 'AI coding agents in isolated containers' }],
-    ['meta', { name: 'twitter:image', content: 'https://caic.xyz/md-quickstart.gif' }],
+    ['meta', { name: 'twitter:title', content: 'docs.caic.xyz' }],
+    ['meta', { name: 'twitter:description', content: 'Coding Agents in Containers' }],
+    ['meta', { name: 'twitter:image', content: 'https://docs.caic.xyz/md-quickstart.gif' }],
     ['script', {}, `fetch('https://discord.com/api/guilds/1475502872564338822/widget.json')
       .then(r=>r.json()).then(d=>{if(d.instant_invite){
         document.querySelectorAll('a[href*="discord.com/widget"]').forEach(a=>a.href=d.instant_invite)
