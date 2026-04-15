@@ -30,6 +30,49 @@ If the GitHub release API is rate-limited, set `GITHUB_TOKEN` for authentication
 GITHUB_TOKEN=ghp_... curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
+## systemd user service (Linux)
+
+The install script sets up the systemd service automatically. To install manually:
+
+```bash
+mkdir -p ~/.config/systemd/user ~/.config/caic
+cp contrib/caic.service ~/.config/systemd/user/
+cp contrib/config.toml ~/.config/caic/config.toml
+# Edit ~/.config/caic/config.toml
+
+systemctl --user daemon-reload
+systemctl --user enable --now caic
+```
+
+View logs:
+
+```bash
+journalctl --user -o cat -f -u caic
+```
+
+When caic is reinstalled (binary replaced), the service detects the change and restarts automatically.
+
+## launchd user agent (macOS)
+
+The install script sets up the launchd agent automatically. To install manually:
+
+```bash
+mkdir -p ~/.config/caic
+cp contrib/config.toml ~/.config/caic/config.toml
+# Edit ~/.config/caic/config.toml
+
+cp contrib/com.caic.caic.plist ~/Library/LaunchAgents/
+# Edit ~/Library/LaunchAgents/com.caic.caic.plist to set the binary path.
+
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.caic.caic.plist
+```
+
+View logs:
+
+```bash
+tail -f /tmp/caic.log
+```
+
 ## Install from source
 
 ### Dependencies

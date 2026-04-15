@@ -157,49 +157,6 @@ Summary of config keys:
 | `XDG_CONFIG_HOME` | Override the config base directory (default: `~/.config`). |
 | `XDG_CACHE_HOME` | Override the cache base directory (default: `~/.cache`). |
 
-## systemd user service (Linux)
-
-The [install script](./installation) sets up the systemd service automatically. To install manually:
-
-```bash
-mkdir -p ~/.config/systemd/user ~/.config/caic
-cp contrib/caic.service ~/.config/systemd/user/
-cp contrib/config.toml ~/.config/caic/config.toml
-# Edit ~/.config/caic/config.toml
-
-systemctl --user daemon-reload
-systemctl --user enable --now caic
-```
-
-View logs:
-
-```bash
-journalctl --user -o cat -f -u caic
-```
-
-When caic is reinstalled (binary replaced), the service detects the change and restarts automatically.
-
-## launchd user agent (macOS)
-
-The [install script](./installation) sets up the launchd agent automatically. To install manually:
-
-```bash
-mkdir -p ~/.config/caic
-cp contrib/config.toml ~/.config/caic/config.toml
-# Edit ~/.config/caic/config.toml
-
-cp contrib/com.caic.caic.plist ~/Library/LaunchAgents/
-# Edit ~/Library/LaunchAgents/com.caic.caic.plist to set the binary path.
-
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.caic.caic.plist
-```
-
-View logs:
-
-```bash
-tail -f /tmp/caic.log
-```
-
 ## HTTPS exposure
 
 Setting `external_url` explicitly is recommended for OAuth login and webhooks so redirect URIs and callback URLs are stable. Webhooks additionally require the forge (GitHub/GitLab) to reach caic from the internet.
