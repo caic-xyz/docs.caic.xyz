@@ -11,6 +11,8 @@ The [install script](./installation) creates a default `config.toml` automatical
 $EDITOR ~/.config/caic/config.toml
 ```
 
+caic watches `config.toml` for changes and restarts automatically when the file is saved.
+
 Without a config file, caic starts with sensible defaults: listens on `:2242`, uses the current directory as root, and auto-detects the GitHub token from `gh auth token`.
 
 ## CLI flags
@@ -43,7 +45,7 @@ Relative paths in the config file (e.g. `geo_db`, `app_private_key_pem`) are res
 
 #### Auto-update
 
-When enabled, caic checks [GitHub Releases](https://github.com/caic-xyz/caic/releases) on the given cron schedule (local time) and replaces the binary in place when a new version is found. Combined with the systemd `Restart=always` directive, the service restarts automatically after the binary is replaced.
+When enabled, caic checks [GitHub Releases](https://github.com/caic-xyz/caic/releases) on the given cron schedule (local time) and replaces the binary in place when a new version is found. caic watches its own executable for changes and exits; the systemd `Restart=always` directive then restarts the service with the new binary.
 
 ```toml
 [core]

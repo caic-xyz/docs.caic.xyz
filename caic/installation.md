@@ -50,7 +50,7 @@ View logs:
 journalctl --user -o cat -f -u caic
 ```
 
-When caic is reinstalled (binary replaced), the service detects the change and restarts automatically.
+caic watches its own executable and `config.toml` for changes and restarts automatically when either is modified.
 
 ## launchd user agent (macOS)
 
