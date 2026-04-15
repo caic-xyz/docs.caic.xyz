@@ -1,5 +1,6 @@
 // VitePress site configuration.
 import { defineConfig } from 'vitepress'
+import llmstxt from 'vitepress-plugin-llms'
 
 export default defineConfig({
   title: 'caic-xyz docs',
@@ -8,6 +9,7 @@ export default defineConfig({
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    ['link', { rel: 'llms-index', type: 'text/plain', href: '/llms.txt' }],
     // Open Graph
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'docs.caic.xyz' }],
@@ -19,10 +21,14 @@ export default defineConfig({
     ['meta', { name: 'twitter:title', content: 'docs.caic.xyz' }],
     ['meta', { name: 'twitter:description', content: 'Coding Agents in Containers' }],
     ['meta', { name: 'twitter:image', content: 'https://docs.caic.xyz/md-quickstart.gif' }],
-    ['script', {}, `fetch('https://discord.com/api/guilds/1475502872564338822/widget.json')
+    [
+      'script',
+      {},
+      `fetch('https://discord.com/api/guilds/1475502872564338822/widget.json')
       .then(r=>r.json()).then(d=>{if(d.instant_invite){
         document.querySelectorAll('a[href*="discord.com/widget"]').forEach(a=>a.href=d.instant_invite)
-      }}).catch(()=>{})`],
+      }}).catch(()=>{})`,
+    ],
   ],
 
   themeConfig: {
@@ -71,5 +77,14 @@ export default defineConfig({
     },
   },
 
-	srcExclude: ['**/AGENTS.md', '**/CLAUDE.md', '**/README.md']
+  srcExclude: ['**/AGENTS.md', '**/CLAUDE.md', '**/README.md'],
+
+  vite: {
+    plugins: [
+      llmstxt({
+        title: 'caic-xyz docs',
+        description: 'Documentation for caic and md',
+      }),
+    ],
+  },
 })
