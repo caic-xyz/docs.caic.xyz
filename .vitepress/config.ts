@@ -80,6 +80,7 @@ export default defineConfig({
   srcExclude: ['**/AGENTS.md', '**/CLAUDE.md', '**/README.md'],
 
   vite: {
+    logLevel: 'warn',
     plugins: [
       llmstxt({
         title: 'caic-xyz docs',
