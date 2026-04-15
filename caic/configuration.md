@@ -22,9 +22,9 @@ Without a config file, caic starts with sensible defaults: listens on `localhost
 
 | Flag | Default | Description |
 |---|---|---|
-| `-config-dir` | `~/.config/caic` | Override the config directory |
-| `-version` | — | Print version and exit |
-| `-print-url` | — | Print the server URL and exit (port must be available) |
+| `-config-dir` | `~/.config/caic` | Override the config directory. |
+| `-print-url` | — | Print the server URL and exit. Verifies the port is available. |
+| `-version` | — | Print version and exit. |
 
 ## Directories
 
