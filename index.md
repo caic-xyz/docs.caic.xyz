@@ -8,7 +8,7 @@ hero:
     - theme: brand
       text: Get started with caic
       link: /caic/
-    - theme: alt
+    - theme: brand
       text: Get started with md
       link: /md/
 
