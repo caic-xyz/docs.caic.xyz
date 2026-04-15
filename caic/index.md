@@ -8,7 +8,7 @@ caic lets you run AI coding agents (Claude Code, Codex, Gemini CLI, Kilo, OpenCo
 
 ## Platform support
 
-caic is supported on **Linux** and **Windows via WSL2**. Interested in improving macOS support? [Join the Discord](https://discord.com/widget?id=1475502872564338822).
+caic is supported on **Linux**, **macOS**, and **Windows via WSL2**.
 
 ## Key features
 

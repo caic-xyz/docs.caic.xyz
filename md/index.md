@@ -13,7 +13,7 @@ AI coding agents work best in YOLO mode (full command execution). But running th
 
 ## Platform support
 
-md is supported on **Linux** and **Windows via WSL2**. Interested in improving macOS support? [Join the Discord](https://discord.com/widget?id=1475502872564338822).
+md is supported on **Linux**, **macOS**, and **Windows via WSL2**.
 
 ## The solution
 
