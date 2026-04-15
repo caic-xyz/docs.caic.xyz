@@ -1,3 +1,4 @@
+// VitePress site configuration.
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
@@ -69,4 +70,6 @@ export default defineConfig({
       provider: 'local',
     },
   },
+
+	srcExclude: ['**/AGENTS.md', '**/CLAUDE.md', '**/README.md']
 })
