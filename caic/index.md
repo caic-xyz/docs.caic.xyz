@@ -15,6 +15,7 @@ caic is supported on **Linux**, **macOS**, and **Windows via WSL2**.
 - **Parallel agents** — run many agents simultaneously on different branches
 - **Resilient sessions** — server restarts don't kill running agents; a relay process inside each container keeps agents alive across SSH disconnects
 - **Forge integration** — automatic PR/MR creation and CI monitoring for [GitHub](./github) and [GitLab](./gitlab)
+- **Lightweight** — single Go binary, low memory and CPU footprint
 - **Web UI** — SolidJS frontend embedded in the binary
 - **Android app** — voice-first companion app to manage agents from your phone
 
