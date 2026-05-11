@@ -1,0 +1,5 @@
+# pnpm allowed build scripts for pnpm v11.
+allowBuilds:
+  esbuild: true
+  sharp: true
+  workerd: true

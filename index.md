@@ -1,3 +1,5 @@
+<!-- docs.caic.xyz -->
+
 ---
 layout: home
 
@@ -22,3 +24,14 @@ features:
     details: CLI that creates branch-locked containers for AI agents. Safe parallel work across multiple branches without conflicts. Powers caic.
     link: /md/
 ---
+
+## Documentation
+
+- [caic](./caic/)
+- [md](./md/)
+
+## Getting help
+
+- GitHub issues: [caic-xyz/md](https://github.com/caic-xyz/md/issues)
+- Discord: [caic-xyz community](https://discord.gg/caic)
+- Include `md version` output and the error message when reporting issues

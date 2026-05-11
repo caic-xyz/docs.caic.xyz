@@ -1,3 +1,4 @@
+// VitePress theme with medium-zoom and Asciinema player.
 import DefaultTheme from "vitepress/theme";
 import mediumZoom from "medium-zoom";
 import { onMounted, watch, nextTick } from "vue";

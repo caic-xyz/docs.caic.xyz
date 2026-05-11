@@ -1,3 +1,4 @@
+<!-- Tailscale networking inside containers: SSH over tailnet, VNC, HTTPS, ACL policy, ephemeral nodes -->
 # Tailscale
 
 The `-tailscale` flag enables [Tailscale](https://tailscale.com) networking inside the container, allowing SSH access from any machine on your tailnet and serving HTTP over HTTPS on the tailnet.
@@ -72,7 +73,5 @@ Then open `https://<host>.<tailnet>.ts.net` from any tailnet device.
 
 ## Cleanup
 
-When you run `md stop`:
-
-- Ephemeral nodes (API key auth) are automatically removed from the tailnet
-- Browser-authenticated nodes must be deleted manually at [login.tailscale.com/admin/machines](https://login.tailscale.com/admin/machines)
+- **Ephemeral nodes** (authorized via `TAILSCALE_API_KEY`): automatically removed from the tailnet when the container stops.
+- **Browser-authenticated nodes**: must be deleted manually at [login.tailscale.com/admin/machines](https://login.tailscale.com/admin/machines). Without `TAILSCALE_API_KEY`, md cannot remove them.
