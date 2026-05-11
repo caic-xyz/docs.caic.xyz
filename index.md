@@ -1,6 +1,5 @@
-<!-- docs.caic.xyz -->
-
 ---
+# docs.caic.xyz
 layout: home
 
 hero:

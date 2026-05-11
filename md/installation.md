@@ -1,4 +1,7 @@
-<!-- prerequisites, curl install, from source, platform notes, verification, upgrade, uninstall -->
+---
+# prerequisites, curl install, from source, platform notes, verification, upgrade, uninstall
+---
+
 # Installation
 
 ## Prerequisites

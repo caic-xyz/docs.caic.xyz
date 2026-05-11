@@ -1,4 +1,7 @@
-<!-- environment variables, agent config mounts, build cache injection, cache names and paths -->
+---
+# environment variables, agent config mounts, build cache injection, cache names and paths
+---
+
 # Configuration
 
 ## Container naming

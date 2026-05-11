@@ -1,4 +1,7 @@
-<!-- md image hierarchy, build pipeline, container lifecycle, submodule handling, startup flow -->
+---
+# md image hierarchy, build pipeline, container lifecycle, submodule handling, startup flow
+---
+
 # Architecture
 
 md uses a three-layer Docker image hierarchy. Understanding how the layers fit together helps you reason about build speed, cache behavior, and when images get rebuilt.

@@ -1,4 +1,7 @@
-<!-- Tailscale networking inside containers: SSH over tailnet, VNC, HTTPS, ACL policy, ephemeral nodes -->
+---
+# Tailscale networking inside containers: SSH over tailnet, VNC, HTTPS, ACL policy, ephemeral nodes
+---
+
 # Tailscale
 
 The `-tailscale` flag enables [Tailscale](https://tailscale.com) networking inside the container, allowing SSH access from any machine on your tailnet and serving HTTP over HTTPS on the tailnet.

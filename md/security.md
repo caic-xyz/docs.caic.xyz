@@ -1,4 +1,7 @@
-<!-- security model: SSH isolation, Linux capabilities, credential isolation, network restrictions, Tailscale -->
+---
+# security model: SSH isolation, Linux capabilities, credential isolation, network restrictions, Tailscale
+---
+
 # Security
 
 This page documents the security boundaries of md containers: what is isolated, what is shared, and how to restrict outbound network access.

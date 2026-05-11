@@ -1,4 +1,7 @@
-<!-- branch-locked Docker containers for AI coding agents -->
+---
+# branch-locked Docker containers for AI coding agents
+---
+
 # md
 
 **Branch-locked development containers for AI coding agents.** Each container is locked to a repository-branch pair. Safe parallel work, no conflicts.

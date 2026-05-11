@@ -1,4 +1,7 @@
-<!-- design rationale: why generated Dockerfile, rebuild triggers, cache injection, env injection, agent mounts -->
+---
+# design rationale: why generated Dockerfile, rebuild triggers, cache injection, env injection, agent mounts
+---
+
 # Design
 
 This page explains the key design decisions behind md: why things work the way they do, and the trade-offs that were considered.

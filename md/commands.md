@@ -1,4 +1,7 @@
-<!-- CLI reference: start, run, fork, pull, push, diff, build-image, prune, cache flags, VNC -->
+---
+# CLI reference: start, run, fork, pull, push, diff, build-image, prune, cache flags, VNC
+---
+
 # Commands
 
 ## Container lifecycle

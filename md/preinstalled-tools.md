@@ -1,4 +1,7 @@
-<!-- preinstalled tools inventory: languages, editors, debuggers, browsers, AI agents, package managers -->
+---
+# preinstalled tools inventory: languages, editors, debuggers, browsers, AI agents, package managers
+---
+
 # Preinstalled Tools
 
 Every md container ships with a curated set of development tools, pre-configured and ready to use. The full inventory is available at `/home/user/src/tool_versions.md` inside the container, generated at image build time.

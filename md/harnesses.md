@@ -1,4 +1,7 @@
-<!-- AI coding agent harnesses: Claude Code, Codex, Gemini, Pi, Qwen, Kilo, OpenCode, Goose, Kimi, Amp -->
+---
+# AI coding agent harnesses: Claude Code, Codex, Gemini, Pi, Qwen, Kilo, OpenCode, Goose, Kimi, Amp
+---
+
 # Harnesses
 
 The container includes [`/home/user/src/AGENTS.md`](https://github.com/caic-xyz/md/blob/main/rsc/user/home/user/src/AGENTS.md) with information about preinstalled tools.
