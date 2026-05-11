@@ -24,11 +24,6 @@ features:
     link: /md/
 ---
 
-## Documentation
-
-- [caic](./caic/)
-- [md](./md/)
-
 ## Getting help
 
 - GitHub issues: [caic-xyz/md](https://github.com/caic-xyz/md/issues)
