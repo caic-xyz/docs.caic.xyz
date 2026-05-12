@@ -48,3 +48,9 @@ curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
 See [Installation](./installation) for full setup, and [Configuration](./configuration) for config file reference and service setup.
+
+## Getting help
+
+- GitHub issues: [caic-xyz/caic](https://github.com/caic-xyz/caic/issues)
+- Discord: [caic-xyz community](https://discord.gg/caic)
+- Include `caic -version` output and the error message when reporting issues
