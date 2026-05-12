@@ -21,14 +21,6 @@ export default defineConfig({
     ['meta', { name: 'twitter:title', content: 'docs.caic.xyz' }],
     ['meta', { name: 'twitter:description', content: 'Coding Agents in Containers' }],
     ['meta', { name: 'twitter:image', content: 'https://docs.caic.xyz/md-quickstart.gif' }],
-    [
-      'script',
-      {},
-      `fetch('https://discord.com/api/guilds/1475502872564338822/widget.json')
-      .then(r=>r.json()).then(d=>{if(d.instant_invite){
-        document.querySelectorAll('a[href*="discord.com/widget"]').forEach(a=>a.href=d.instant_invite)
-      }}).catch(()=>{})`,
-    ],
   ],
 
   themeConfig: {

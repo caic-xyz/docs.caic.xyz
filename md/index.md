@@ -68,5 +68,5 @@ curl -fsSL https://caic.xyz/install.sh | bash
 ## Getting help
 
 - GitHub issues: [caic-xyz/md](https://github.com/caic-xyz/md/issues)
-- Discord: [caic-xyz community](https://discord.gg/caic)
+- Discord: [caic-xyz community](https://discord.gg/caic){.discord-cta}
 - Include `md version` output and the error message when reporting issues

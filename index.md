@@ -40,4 +40,4 @@ md creates branch-locked containers so agents can work safely without touching y
 
 ## Join the community
 
-[Join us on Discord](https://discord.gg/caic) — get help, share feedback, and follow development.
+[Join us on Discord](https://discord.gg/caic){.discord-cta} — get help, share feedback, and follow development.

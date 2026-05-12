@@ -63,5 +63,5 @@ See [Installation](./installation) for full setup, and [Configuration](./configu
 ## Getting help
 
 - GitHub issues: [caic-xyz/caic](https://github.com/caic-xyz/caic/issues)
-- Discord: [caic-xyz community](https://discord.gg/caic)
+- Discord: [caic-xyz community](https://discord.gg/caic){.discord-cta}
 - Include `caic -version` output and the error message when reporting issues

@@ -13,23 +13,39 @@ const DISCORD_GUILD_ID = "1475502872564338822";
 
 async function updateDiscordLinks() {
   try {
-    const resp = await fetch(
+    const wResp = await fetch(
       `https://discord.com/api/guilds/${DISCORD_GUILD_ID}/widget.json`,
     );
-    const data = await resp.json();
-    const count = data.presence_count || 0;
+    const wData = await wResp.json();
+    const inviteCode = wData.instant_invite
+      ? new URL(wData.instant_invite).pathname.split("/").pop()
+      : null;
+    let memberCount = 0;
+    if (inviteCode) {
+      const iResp = await fetch(
+        `https://discord.com/api/invites/${inviteCode}?with_counts=true`,
+      );
+      const iData = await iResp.json();
+      memberCount = iData.approximate_member_count || 0;
+    }
     document
-      .querySelectorAll('a[href*="discord.gg/caic"]')
+      .querySelectorAll('a[href*="discord.gg/caic"], a[href*="discord.com/widget"]')
       .forEach((a) => {
         const el = a as HTMLAnchorElement;
-        if (data.instant_invite) el.href = data.instant_invite;
-        el.title = `${count} members online`;
+        const isWidgetLink = el.href.includes("discord.com/widget");
+        if (wData.instant_invite) el.href = wData.instant_invite;
+        if (isWidgetLink) {
+          el.title = `${memberCount} members`;
+          return;
+        }
+        const countText = memberCount > 0 ? ` (${memberCount} members)` : "";
+        el.title = `${memberCount} members`;
         const orig = el.getAttribute("data-discord-orig-text");
         if (!orig) {
           el.setAttribute("data-discord-orig-text", el.textContent || "");
         }
         const base = orig || el.textContent || "";
-        el.textContent = `${base} (${count} online)`;
+        el.textContent = `${base}${countText}`;
       });
   } catch {
     // Discord API unreachable; links fall back to discord.gg/caic
