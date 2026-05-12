@@ -74,6 +74,20 @@ md-otherproject-fix-bug
 
 Special characters in repo or branch names are sanitized to hyphens. When started outside a git repository, containers get random names like `md-agent-a1b2c3d4`.
 
+## Container labels
+
+md stores container metadata as Docker labels so that `md list` can reconstruct container state without a sidecar database. Labels are read-only after container creation.
+
+| Label | Purpose |
+|---|---|
+| `md.repos` | Repository list (base64-encoded JSON) |
+| `md.display` | VNC display enabled (`"1"` or empty) |
+| `md.tailscale` | Tailscale networking enabled (`"1"` or empty) |
+| `md.tailscale_ephemeral` | Tailscale node is ephemeral (`"1"` or empty) |
+| `md.usb` | USB passthrough enabled (`"1"` or empty) |
+
+You can add your own labels with `md start --label key=value` (repeatable). Custom labels are useful for automation: for example, caic adds `caic=<task-id>` and `harness=<name>` labels to track task ownership.
+
 ## SSH and networking
 
 All ports are bound to `127.0.0.1`. No external network exposure from the host:

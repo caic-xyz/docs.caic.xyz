@@ -49,6 +49,17 @@ curl -fsSL https://caic.xyz/install.sh | bash
 
 See [Installation](./installation) for full setup, and [Configuration](./configuration) for config file reference and service setup.
 
+## Documentation
+
+- [Installation](./installation) — prerequisites, platform notes, from-source builds
+- [Configuration](./configuration) — config file reference, auth modes, HTTPS exposure
+- [GitHub Integration](./github) — automatic PR creation and CI monitoring
+- [GitLab Integration](./gitlab) — automatic MR creation and CI monitoring
+- [Android App](./android) — voice-first companion app
+- [Architecture](./architecture) — system components, task lifecycle, relay, startup
+- [Design](./design) — design rationale, trade-offs, core principles
+- [Security](./security) — authentication, credential handling, isolation model
+
 ## Getting help
 
 - GitHub issues: [caic-xyz/caic](https://github.com/caic-xyz/caic/issues)

@@ -49,6 +49,8 @@ export default defineConfig({
             { text: 'GitLab Integration', link: '/caic/gitlab' },
             { text: 'Android App', link: '/caic/android' },
             { text: 'Architecture', link: '/caic/architecture' },
+            { text: 'Design', link: '/caic/design' },
+            { text: 'Security', link: '/caic/security' },
           ],
         },
       ],
