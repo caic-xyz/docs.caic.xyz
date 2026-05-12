@@ -30,13 +30,15 @@ Manage multiple AI coding agents in parallel from a single web UI. Each task run
 
 ![caic web UI showing an agent working on a task](/screenshots/task-detail.webp)
 
+Learn more about [caic](./caic)
+
 ## md in 30 seconds
 
 md creates branch-locked containers so agents can work safely without touching your local checkout.
 
 <AsciinemaPlayer src="/md-quickstart.cast" />
 
-[md on GitHub →](https://github.com/caic-xyz/md)
+Learn more about [md](./md)
 
 ## Join the community
 
