@@ -1,5 +1,5 @@
 ---
-# security model: authentication, forge tokens, IP geo, webhooks, SSH isolation, container sandbox, secret scanning, voice security
+# security model: authentication, forge tokens, GitHub token injection, sudo access, IP geo, webhooks, SSH isolation, container sandbox, secret scanning, voice security
 ---
 
 # Security
@@ -98,7 +98,32 @@ All config files live in `~/.config/caic/`. Set `chmod 700` on this directory to
 
 ### Token auto-detection
 
-When no GitHub token is configured, caic tries `gh auth token` from the GitHub CLI. This is convenient for single-user setups but means the token lives in the caic process memory. The token is only used for forge API calls, never sent to containers unless `GITHUB_TOKEN` is explicitly configured in core env.
+When no GitHub token is configured in `config.toml` and no OAuth is configured, caic tries `gh auth token` from the GitHub CLI as a fallback. This is convenient for single-user setups but means the token lives in the caic process memory. The resolved token is used for forge API calls and, if GitHub token injection is enabled, for container environment injection.
+
+### GitHub token injection
+
+When a task is created with GitHub token injection enabled, caic resolves a token and passes it into the container's environment. The resolution order is:
+
+1. The OAuth user's access token (if the user authenticated via GitHub)
+2. The server-level PAT from `config.toml`
+3. `gh auth token` from the GitHub CLI (fallback when no config token and no OAuth)
+
+The token is not stored in the container image or on disk inside the container. It is injected at runtime over the encrypted SSH channel, so it never traverses the network in cleartext.
+
+This means agents can authenticate to GitHub (for pushing, PR creation, CI access) without you manually configuring credentials. If the token expires or is revoked, the next task start will pick up the new token automatically.
+
+### Sudo access
+
+When `--sudo` is enabled for a task, md generates a random password per container. caic retrieves this password at task start and makes it available to the agent. The password grants root **within the container's user namespace only**. It does not grant host root.
+
+Key properties:
+
+- Each container gets a unique, randomly generated password
+- The password is never baked into the container image
+- The password is useless after the container is destroyed and recreated (a new one is generated)
+- The password is stored as a Docker label on the container
+
+This allows agents to install packages, modify system files, or perform other root operations when needed, without shipping a shared or static root credential.
 
 ### Masked logging
 
@@ -112,6 +137,8 @@ caic uses md containers, which provide:
 - **No host file access**: the agent works in the container's copy of the repository, not the host checkout
 - **SSH-only access**: caic communicates with containers over SSH, not Docker exec. This means the container's SSH security model applies (key auth only, no password)
 - **Restricted capabilities**: containers run with minimum Linux capabilities. `--privileged` is never used, the host network is never shared, and no host PID or IPC namespaces are exposed
+- **Per-task sudo passwords**: each container gets a unique random sudo password, not shared across tasks
+- **GitHub token injection**: tokens are resolved at task start and injected into the container
 
 See [md Security](../md/security) for the full container security model.
 

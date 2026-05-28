@@ -1,5 +1,5 @@
 ---
-# security model: SSH isolation, Linux capabilities, credential isolation, network restrictions, Tailscale
+# security model: SSH isolation, Linux capabilities, sudo access, credential isolation, network restrictions, Tailscale
 ---
 
 # Security
@@ -92,6 +92,17 @@ What is **not** added:
 - No host network mode (`--network host`)
 - No host PID or IPC namespace sharing
 - No Docker socket access
+
+## Sudo access
+
+When `--sudo` is passed, md generates a random password per container and configures `sudo` to accept it. The password is never baked into the image or stored on disk inside the container. It is stored as a Docker label on the container, so each container gets a unique, ephemeral credential.
+
+```bash
+md start --sudo
+md sudo-password   # prints the container's random password
+```
+
+The password grants root **within the container's user namespace only**. It does not grant host root, and it is useless if the container is destroyed and recreated (a new password is generated). This avoids shipping a shared or static root credential in the image while still letting agents or CI scripts escalate when needed.
 
 ## Credential isolation
 
