@@ -41,7 +41,7 @@ md run -- echo "md works"
 
 ### Dependencies
 
-- Go 1.26+
+- Go (recent version)
 - Docker
 
 ### Build and install

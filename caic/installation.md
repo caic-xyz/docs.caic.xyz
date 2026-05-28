@@ -77,7 +77,7 @@ tail -f /tmp/caic.log
 
 ### Dependencies
 
-- Go 1.25+
+- Go (recent version)
 - Docker installed and running
 
 ### Build and install

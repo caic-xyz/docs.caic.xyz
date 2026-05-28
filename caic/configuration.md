@@ -45,6 +45,7 @@ Relative paths in the config file (e.g. `geo_db`, `app_private_key_pem`) are res
 |---|---|---|
 | `root` | `"."` | Parent directory containing git repositories managed by caic. Tilde (`~`) is expanded to the user's home directory |
 | `auto_update` | `"50 4 * * *"` | Cron schedule for auto-update (checks GitHub Releases). Set to `""` to disable |
+| `runtime` | auto-detect | Container runtime: `"docker"` or `"podman"`. When unset, caic detects the installed runtime. Podman runs rootless |
 
 #### `[core.env]`
 
@@ -60,6 +61,7 @@ Environment variables inherited by the server process. Falls back to the host en
 ```toml
 [core]
 root = "~/projects"
+runtime = "podman"
 
 [core.env]
 TAILSCALE_API_KEY = "tskey-api-..."
@@ -75,6 +77,10 @@ When enabled, caic checks [GitHub Releases](https://github.com/caic-xyz/caic/rel
 # Disable auto-update:
 auto_update = ""
 ```
+
+### Preferences
+
+`~/.config/caic/preferences.json` stores per-user settings (resource limits, cache configuration, auto-fix behavior, per-repository preferences) independent of `config.toml`. Edit it directly or through the settings UI.
 
 ### `[server]`
 

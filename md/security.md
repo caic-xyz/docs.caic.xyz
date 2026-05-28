@@ -14,8 +14,9 @@ All container ports are bound to `127.0.0.1`, never `0.0.0.0`. SSH and VNC are o
 
 ```bash
 $ md list
-Container                     Status     Uptime       Features
-md-myrepo-main               running    2m34s        display
+Container          Status     Repos           Uptime  Features
+--------------------------------------------------------------
+md-myrepo-main     running    myrepo:main     47m40s  display
 $ grep Port ~/.ssh/config.d/md-myrepo-main.conf
   Port 54321
 ```
@@ -83,7 +84,8 @@ Docker containers run with restricted capabilities by default. md adds only the 
 | `SYS_PTRACE` | strace, gdb, delve, lldb | Scoped to container PID namespace: cannot attach to host processes |
 | `seccomp=unconfined` | Chrome sandbox, strace, bpf | Does **not** grant capabilities: only removes syscall allowlist |
 | `apparmor=unconfined` (Docker only) | Chrome namespace creation | Container-scoped |
-| `NET_ADMIN`, `NET_RAW`, `MKNOD` (with `--tailscale`) | TUN device for Tailscale | Required for Tailscale to function |
+| `NET_ADMIN`, `NET_RAW` (with `--tailscale`) | TUN device for Tailscale (plus `--device=/dev/net/tun`) | Required for Tailscale to function |
+| `SYS_ADMIN` (with `--sudo`) | Root access, `/dev/fuse` | Grants full root within the container; for rootless Podman fuse mounts |
 
 What is **not** added:
 - `--privileged` is never used

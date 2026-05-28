@@ -57,11 +57,12 @@ Key states:
 | **Stopping** | Graceful shutdown in progress |
 | **Stopped** | Container stopped but preserved (can be revived) |
 | **Purging** | Container being permanently deleted |
+| **Failed** | Task encountered an error |
 | **Purged** | Task is final, log archived |
 
 ### How tasks are created
 
-A task is initiated via the web UI or API with a prompt, choosing a repository, branch, and agent harness. The server then:
+A task is initiated via the web UI or API with a prompt, choosing a repository (or multiple repositories), branch, and agent harness. The server then:
 
 1. Creates a dedicated branch (`caic-N`) on the host
 2. Launches an md container with that branch checked out
@@ -69,11 +70,13 @@ A task is initiated via the web UI or API with a prompt, choosing a repository, 
 4. Starts the agent and captures its session ID for future resumes
 5. Streams all agent output back as SSE events
 
-Each task is fully isolated: two tasks on the same repository use different branches and different containers. They cannot interfere with each other.
+Tasks can span multiple repositories, allowing the agent to work across related codebases in a single task. Each task is fully isolated: two tasks on the same repository use different branches and different containers. They cannot interfere with each other.
 
 ### Git model
 
-Each task gets a dedicated branch like `caic-0`, `caic-1`, etc. The number increments per repository. The task starts from the repository's default branch (or a user-selected base). When the agent commits changes, they land on the task's branch. Only at sync time are those changes pushed to the remote — until then, everything is local.
+Each task gets a dedicated branch like `caic-0`, `caic-1`, etc. The number increments per repository. The task starts from the repository's default branch (or a user-selected base). When the agent commits changes, they land on the task's branch. Only at sync time are those changes pushed to the remote. Until then, everything is local.
+
+For tasks spanning multiple repositories, each repository gets its own dedicated branch. The agent works across all repos within the same task, and changes are pushed together at sync time.
 
 ## The relay: agent persistence
 

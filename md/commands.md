@@ -4,6 +4,16 @@
 
 # Commands
 
+## Global flags
+
+These flags apply to all `md` commands:
+
+| Flag | Description |
+|---|---|
+| `--runtime <runtime>` | Select container runtime: `docker` or `podman` (default: auto-detect) |
+| `--control-master` | Enable SSH ControlMaster connection multiplexing (disabled on Windows) |
+| `-v, --verbose` | Verbose output |
+
 ## Container lifecycle
 
 | Command | Description |
@@ -18,6 +28,7 @@
 | `md list` | List all md containers |
 | `md list --json` | List containers as JSON |
 | `md list --stats` | Include resource usage stats (CPU, memory, disk, network) |
+| `md sudo-password` | Print the container's random sudo password |
 | `md stop` | Stop the container (preserves filesystem for later revival) |
 | `md start` (on stopped container) | Revive a stopped container (re-queries SSH port, restores SSH config) |
 | `md purge` | Stop and permanently remove the container |
@@ -39,6 +50,8 @@
 | `--label key=value`, `-l` | Add Docker container label (repeatable) |
 | `--extra-repo path[:branch]`, `-e` | Map an additional git repository (repeatable) |
 | `--docker-flag "arg1 arg2"` | Extra flags passed verbatim to `docker run` (shell-quoted, repeatable) |
+| `--sudo` | Enable root access with a random password; grants `SYS_ADMIN` and `/dev/fuse` |
+| `-q, --quiet` | Suppress informational output |
 | `--control-master` | Enable SSH ControlMaster connection multiplexing |
 
 ## Access
@@ -74,7 +87,13 @@ md fork -source md-myrepo-main
 md fork -e ../other-project -display
 ```
 
-Fork flags mirror `md start`: `--display`, `--tailscale`, `--usb`, `--github`, `--cpus`, `--no-ssh`, `--docker-flag`, `--label`, `--extra-repo`.
+Fork flags mirror `md start` plus:
+
+| Flag | Description |
+|---|---|
+| `-s, --source <name>` | Source container name (default: auto-detect from repo) |
+| `--sudo` | Enable root access with a random password; grants `SYS_ADMIN` and `/dev/fuse` |
+| `-q, --quiet` | Suppress informational output |
 
 Each repo (source and extra) gets a unique destination branch derived from its source branch (e.g. `main` → `main-0`, then `main-1`, etc.).
 

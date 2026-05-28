@@ -134,7 +134,7 @@ The voice bridge connects the web UI or Android app to Gemini Live via WebRTC:
 2. Client establishes a WebRTC connection to the caic server
 3. Server bridges WebRTC audio to Gemini's WebSocket API
 
-The voice bridge uses a standalone JWT secret, not the session secret. Audio data never touches disk and is processed in-memory through opus codec wrappers. The WebRTC implementation uses Pion with an IPv4-only network transport to minimize the network attack surface.
+The voice bridge uses a standalone JWT secret, not the session secret. Audio data never touches disk and is processed in-memory through a pure-Go audio codec. The WebRTC transport is IPv4-only.
 
 ## Server restarts and credential hygiene
 
