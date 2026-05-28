@@ -63,6 +63,32 @@ The `~/.config/md` directory is mounted **read-only** to prevent accidental modi
 
 `~/.config/agents` is always mounted, regardless of which harnesses you use. This is the recommended place for a centralized AGENTS.md and skills directory. See [Harnesses](./harnesses#centralizing-agentsmd) for setup instructions.
 
+## Self-hosted models
+
+When configuring a custom LLM provider that runs on your host machine, use `host.docker.internal` instead of `localhost`. The container cannot reach `localhost` on your host directly.
+
+For example, in `~/.pi/agent/models.json` with Pi and llama.cpp:
+
+```json
+{
+  "providers": {
+    "llama-cpp": {
+      "baseUrl": "http://host.docker.internal:8081/v1",
+      "api": "openai-completions",
+      "apiKey": "none",
+      "models": [
+        {
+          "id": "my-model",
+          "input": ["text", "image"]
+        }
+      ]
+    }
+  }
+}
+```
+
+This works on macOS, Linux, and Windows with Docker Desktop. On Linux without Docker Desktop, you may need to add `--add-host=host.docker.internal:host-gateway` to your Docker run command or configure it in your Docker daemon settings.
+
 ## Build cache injection
 
 md bakes your local build-tool caches into the container image at build time. This avoids slow cold-start downloads: the container starts with warm caches.
