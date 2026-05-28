@@ -142,6 +142,8 @@ wrangler pages deploy
 
 ## Pre-publish checklist
 
+**The build must pass (`pnpm run build`) before any change is committed or deployed.** No exceptions.
+
 Before considering a doc change done, verify:
 
 - [ ] No source file paths (`.go`, `.py`, `.ts`) in user-facing pages
