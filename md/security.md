@@ -104,6 +104,8 @@ md sudo-password   # prints the container's random password
 
 The password grants root **within the container's user namespace only**. It does not grant host root, and it is useless if the container is destroyed and recreated (a new password is generated). This avoids shipping a shared or static root credential in the image while still letting agents or CI scripts escalate when needed.
 
+Running rootless Podman inside the container (nested containers) requires `--sudo` for the `SYS_ADMIN` capability and `/dev/fuse`, and your host must run a rootful Docker or Podman daemon. Rootless Docker or Podman hosts cannot supply the nested capabilities and are not supported for this use.
+
 ## Credential isolation
 
 ### What the container does NOT have access to
@@ -129,7 +131,7 @@ When building images locally (`md build-image`), the `GITHUB_TOKEN` is passed as
 
 - **Agent config directories**: bind-mounted read-write (e.g. `~/.claude`, `~/.config/opencode`)
 - **Build caches**: baked into image at build time (one-way copy, not live-mount)
-- **`/etc/localtime`**: bind-mounted read-only (timezone sync, Linux only)
+- **`/etc/localtime`**: bind-mounted read-only (timezone sync, on Linux, macOS, and Windows)
 - **`/dev/bus/usb`**: with `--usb` flag (Linux only)
 
 ### What is NOT shared

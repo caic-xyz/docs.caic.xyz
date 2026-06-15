@@ -28,7 +28,7 @@ caic is a Go HTTP server with an embedded SolidJS web UI that orchestrates AI co
 │  │       │         └─────────┘                       │  │
 │  │       │ stdout/stdin (NDJSON)                     │  │
 │  │  ┌────▼─────┐                                     │  │
-│  │  │ agent CLI│  (Claude Code, Codex, Gemini, etc.) │  │
+│  │  │ agent CLI│  (Claude Code, Codex, OpenCode, Pi) │  │
 │  │  └──────────┘                                     │  │
 │  └───────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
@@ -52,12 +52,15 @@ Key states:
 | **Starting** | Connecting the agent backend |
 | **Running** | Agent is actively producing output |
 | **Waiting** | Agent finished a turn, awaiting user input |
-| **Asking** | Agent asked a question via `AskUserQuestion` |
-| **HasPlan** | Agent finished planning and produced a plan file |
+| **Asking** | Agent asked a question |
+| **HasPlan** | Agent finished planning and produced a plan |
+| **Pulling** | Pulling changes from the container |
+| **Pushing** | Pushing changes to the remote |
 | **Stopping** | Graceful shutdown in progress |
 | **Stopped** | Container stopped but preserved (can be revived) |
+| **Crashed** | Agent session crashed; the container is preserved and can be revived |
 | **Purging** | Container being permanently deleted |
-| **Failed** | Task encountered an error |
+| **Failed** | Unrecoverable error; the container is not revivable |
 | **Purged** | Task is final, log archived |
 
 ### How tasks are created
@@ -129,8 +132,6 @@ caic supports multiple AI coding agents through a shared backend interface. Each
 |---|---|---|
 | Claude Code | SSH + relay | NDJSON `stream-json` |
 | Codex | SSH + relay | NDJSON |
-| Gemini CLI | SSH + relay | NDJSON `stream-json` |
-| Kilo Code | SSH + relay | HTTP SSE (via bridge) |
 | OpenCode | SSH + relay | ACP (JSON-RPC) |
 | Pi | SSH + relay | NDJSON |
 
@@ -138,9 +139,9 @@ Each backend is responsible for parsing its agent's wire format into normalized 
 
 The abstractions are layered:
 
-- **Container layer** (`internal/container`): wraps md's Docker operations (launch, stop, fork, revive)
-- **Task layer** (`internal/task`): orchestrates a single task's lifecycle (runner, session management, git operations)
-- **Agent layer** (`internal/agent`): SSH session management, message parsing, relay deployment
+- **Container layer**: wraps md's Docker operations (launch, stop, fork, revive)
+- **Task layer**: orchestrates a single task's lifecycle (session management, git operations)
+- **Agent layer**: SSH session management, message parsing, relay deployment
 
 ## API design
 
@@ -156,7 +157,7 @@ The API is JSON-over-HTTP with Server-Sent Events for real-time streaming:
 
 When auth is enabled (OAuth configured), all API routes except auth endpoints require a valid JWT session. The JWT is sent as a cookie (`caic_session`) or `Authorization: Bearer` header (for Android and API clients).
 
-Routes for `/api/v1/auth/` are always public. Webhook endpoints (`/webhooks/github`, `/webhooks/gitlab`) have their own HMAC signature verification.
+API routes are namespaced under `/api/caic/v1/` (and `/api/voicegateway/v1/` for the voice gateway). Auth routes under `/api/caic/v1/auth/` are always public. Webhook endpoints (`/webhooks/github`, `/webhooks/gitlab`) have their own HMAC signature verification.
 
 ### Response compression
 
@@ -213,7 +214,13 @@ The bot's comments include links back to the caic instance so you can follow the
 
 ## WebRTC voice
 
-caic supports voice interaction via a WebRTC-to-Gemini-WebSocket bridge. When configured with a Gemini API key and an open UDP port, the server can relay audio from the web UI or Android app to Gemini Live for voice conversations with the agent.
+caic supports voice interaction over WebRTC. The web UI or Android app streams audio to a voice gateway, which runs in one of three modes:
+
+- **Embedded**: caic hosts the gateway in-process when a Gemini API key is set. Audio is relayed to Gemini Live.
+- **Standalone**: a separate gateway you host elsewhere, advertised by URL.
+- **Local stack**: a half-duplex, on-device pipeline (managed llama.cpp for speech recognition and the LLM, plus a local text-to-speech engine) instead of Gemini Live.
+
+The gateway authorizes sessions with short-lived, service-signed tokens issued by the caic backend. See the voice gateway settings in [Configuration](./configuration).
 
 ## Container stats
 

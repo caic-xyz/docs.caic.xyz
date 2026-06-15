@@ -39,6 +39,8 @@ export default defineConfig({
             { text: 'Configuration', link: '/caic/configuration' },
             { text: 'GitHub Integration', link: '/caic/github' },
             { text: 'GitLab Integration', link: '/caic/gitlab' },
+            { text: 'Voice', link: '/caic/voice' },
+            { text: 'MCP Server', link: '/caic/mcp' },
             { text: 'Android App', link: '/caic/android' },
             { text: 'Architecture', link: '/caic/architecture' },
             { text: 'Design', link: '/caic/design' },

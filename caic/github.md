@@ -34,7 +34,7 @@ For single-user deployments.
    - Permissions: `Pull requests` (read/write), `Checks` (read)
 2. Add to `~/.config/caic/config.toml`:
    ```toml
-   [github]
+   [github.pat]
    token = "github_pat_..."
    ```
 
@@ -53,13 +53,13 @@ For multi-user deployments where each user logs in with their GitHub account.
    [server]
    external_url = "https://<your-domain>"
 
-   [github]
-   oauth_client_id = "<client-id>"
-   oauth_client_secret = "<client-secret>"
-   oauth_allowed_users = ["alice", "bob"]
+   [github.oauth]
+   client_id = "<client-id>"
+   client_secret = "<client-secret>"
+   allowed_users = ["alice", "bob"]
    ```
 
-`oauth_allowed_users` is mandatory — only listed users can log in.
+`allowed_users` restricts login to the listed GitHub usernames. Leave it unset to allow any GitHub user who completes the OAuth flow. Set it to keep login private.
 
 ### Granting organization access
 
@@ -85,11 +85,11 @@ For org-wide automation with webhooks and bot-driven task creation.
 3. Install the app on your organization or repositories (the app must be public for org installs)
 4. Add to `~/.config/caic/config.toml`:
    ```toml
-   [github]
+   [github.app]
+   id = 12345
+   private_key_pem = "private-key.pem"
+   allowed_owners = ["my-org"]
    webhook_secret = "<webhook-secret>"
-   app_id = 12345
-   app_private_key_pem = "private-key.pem"
-   app_allowed_owners = ["my-org"]
    ```
 
 Generate a webhook secret: `openssl rand -hex 32`.

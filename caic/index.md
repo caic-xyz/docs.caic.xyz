@@ -4,7 +4,7 @@
 
 ## What is caic?
 
-caic lets you run AI coding agents (Claude Code, Codex, Gemini CLI, Kilo, OpenCode) in isolated [md](../md/) containers, orchestrated through a unified web UI and Android app. Each task runs in its own container so agents never interfere with each other or your local checkout.
+caic lets you run AI coding agents (Claude Code, Codex, OpenCode, Pi) in isolated [md](../md/) containers, orchestrated through a unified web UI and Android app. Each task runs in its own container so agents never interfere with each other or your local checkout.
 
 ## Platform support
 
@@ -17,6 +17,8 @@ caic is supported on **Linux**, **macOS**, and **Windows via WSL2**.
 - **Forge integration** — automatic PR/MR creation and CI monitoring for [GitHub](./github) and [GitLab](./gitlab)
 - **Lightweight** — single Go binary, low memory and CPU footprint
 - **Web UI** — SolidJS frontend embedded in the binary
+- **Voice control** — supervise and steer agents hands-free with [voice mode](./voice)
+- **MCP server** — connect Claude or ChatGPT to your tasks through the [MCP endpoint](./mcp)
 - **Android app** — voice-first companion app to manage agents from your phone
 
 ## Screenshots
@@ -55,6 +57,8 @@ See [Installation](./installation) for full setup, and [Configuration](./configu
 - [Configuration](./configuration) — config file reference, auth modes, HTTPS exposure
 - [GitHub Integration](./github) — automatic PR creation and CI monitoring
 - [GitLab Integration](./gitlab) — automatic MR creation and CI monitoring
+- [Voice](./voice) — hands-free supervision with embedded, standalone, or fully local gateways
+- [MCP Server](./mcp) — connect external MCP clients over OAuth
 - [Android App](./android) — voice-first companion app
 - [Architecture](./architecture) — system components, task lifecycle, relay, startup
 - [Design](./design) — design rationale, trade-offs, core principles

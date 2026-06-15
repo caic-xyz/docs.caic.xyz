@@ -17,7 +17,7 @@ Sessions are delivered as:
 - **Cookie** (`caic_session`): for the web UI, set with `HttpOnly`, `SameSite=Lax`, and `Secure` (when accessed over HTTPS)
 - **Authorization: Bearer** header: for Android and API clients
 
-Tokens expire after a fixed duration. There is no refresh token mechanism — when a session expires, you re-authenticate. This keeps the authentication surface small and auditable.
+Web and API session tokens expire after a fixed duration. Session login has no refresh token mechanism: when a session expires, you re-authenticate. This keeps the session authentication surface small and auditable. (MCP clients use a separate OAuth flow with refresh tokens; see [MCP endpoint](#mcp-endpoint).)
 
 ### OAuth 2.0 login
 
@@ -54,10 +54,12 @@ caic supports country-level access control using MaxMind GeoLite2 databases. Whe
 | `local` | Loopback and RFC 1918 private addresses |
 | `tailscale` | Tailscale CGNAT range (`100.64.0.0/10`) |
 | `github` | GitHub webhook IPs (fetched live from `api.github.com/meta`) |
+| `anthropic` | Published Anthropic outbound IPs (for Claude MCP clients) |
+| `openai` | Published ChatGPT integration and Codex cloud IPs (for ChatGPT MCP clients) |
 | Country code | ISO 3166-1 alpha-2 (e.g. `CA`, `US`, `DE`) |
 | CIDR range | e.g. `203.0.113.0/24` |
 
-Requests from non-allowed IPs receive HTTP 403. Geo-lookup results are logged for every request.
+Named origins (`local`, `tailscale`, `github`, `anthropic`, `openai`) resolve before country lookups. Requests from non-allowed IPs receive HTTP 403. Geo-lookup results are logged for every request.
 
 The default allowlist is `["local", "tailscale", "github"]`, which blocks all internet traffic except GitHub webhooks.
 
@@ -125,6 +127,8 @@ Key properties:
 
 This allows agents to install packages, modify system files, or perform other root operations when needed, without shipping a shared or static root credential.
 
+Sudo is unavailable under rootless Podman. Use Docker if your tasks need sudo-enabled containers.
+
 ### Masked logging
 
 API keys and tokens are masked in log output. Only the last few characters are shown, enough to identify which key is in use without exposing the full secret.
@@ -153,15 +157,31 @@ Before pushing changes to a remote, caic scans the diff for:
 
 Found issues are reported to the agent so it can fix them before the push. This is a safety net, not a security boundary: an agent could still exfiltrate data through other channels.
 
+## MCP endpoint
+
+caic exposes an MCP server so remote agent clients (such as Claude and ChatGPT) can manage tasks. The endpoint is disabled when authentication is off and the server binds a non-loopback address, so an exposed server never serves MCP without authentication.
+
+Remote clients authenticate with OAuth 2.0 Authorization Code plus PKCE, with Dynamic Client Registration so a client can register itself. Access tokens are JWTs; refresh tokens are opaque, rotating, and valid for 30 days.
+
+When a client connects, a consent page lets you grant a subset of scopes or deny the request. Read-only scopes are pre-selected. Available scopes:
+
+| Scope | Grants |
+|---|---|
+| `caic:mcp.read` | Read access to MCP resources |
+| `caic:tasks.read` | Read task state and history |
+| `caic:tasks.write` | Create tasks and send input |
+| `caic:tasks.admin` | Stop, purge, and otherwise administer tasks |
+| `caic:repos.write` | Push branches and write to repositories |
+
+You revoke a connected client's grant at any time from Settings. Forge tools (PR creation, pushes) require linked forge authority. An audit log of MCP actions is persisted.
+
+To let a Claude or ChatGPT MCP client reach your server, add `"anthropic"` or `"openai"` to `allow_origins`. See [Configuration](./configuration) and the [MCP server](./mcp) page.
+
 ## WebRTC voice security
 
-The voice bridge connects the web UI or Android app to Gemini Live via WebRTC:
+Voice can run embedded in caic, as a standalone gateway you host elsewhere, or as a local model stack. The transport is WebRTC; audio is processed in-memory and never touches disk.
 
-1. Client obtains a short-lived JWT from the `/api/v1/voice/token` endpoint
-2. Client establishes a WebRTC connection to the caic server
-3. Server bridges WebRTC audio to Gemini's WebSocket API
-
-The voice bridge uses a standalone JWT secret, not the session secret. Audio data never touches disk and is processed in-memory through a pure-Go audio codec. The WebRTC transport is IPv4-only.
+Voice sessions are authorized with service-signed tokens, not a per-request token endpoint. The caic backend signs short-lived, scoped Ed25519 tokens for authenticated users. The voice gateway verifies them against the public keys of trusted issuers it has imported. The private signing key stays on the caic backend and the gateway only ever sees public keys, so a compromised gateway cannot mint tokens.
 
 ## Server restarts and credential hygiene
 

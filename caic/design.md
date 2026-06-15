@@ -17,7 +17,7 @@ Every task gets its own Docker container. This is the fundamental isolation boun
 - You can delete a task's container without affecting anything else
 - Resource limits apply per-task, not per-application
 
-Containers share no state with each other by default. Configurable cache mounts (host directories mapped into containers) can be shared across tasks, which is useful for build caches and package managers. Each container is locked to a dedicated branch, and a task may span multiple repositories.
+Containers share no state with each other by default. Configurable cache mounts (host directories mapped into containers) can be shared across tasks, which is useful for build caches and package managers. Well-known caches are opt-in: you enable the ones you want in the Settings UI. Each container is locked to a dedicated branch, and a task may span multiple repositories.
 
 ### Zero host modification
 

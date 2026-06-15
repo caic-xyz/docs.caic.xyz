@@ -44,8 +44,8 @@ Relative paths in the config file (e.g. `geo_db`, `app_private_key_pem`) are res
 | Key | Default | Description |
 |---|---|---|
 | `root` | `"."` | Parent directory containing git repositories managed by caic. Tilde (`~`) is expanded to the user's home directory |
-| `auto_update` | `"50 4 * * *"` | Cron schedule for auto-update (checks GitHub Releases). Set to `""` to disable |
-| `runtime` | auto-detect | Container runtime: `"docker"` or `"podman"`. When unset, caic detects the installed runtime. Podman runs rootless |
+| `auto_update` | `"50 4 * * *"` | Cron schedule for auto-update (checks GitHub Releases). Supports cron step syntax (`*/N`, `start/N`, e.g. `*/15 * * * *`). Set to `""` to disable |
+| `runtime` | auto-detect | Container runtime: `"docker"` or `"podman"`. When unset (`""`), caic auto-detects (Docker preferred, then Podman). sudo is unsupported with rootless Podman, so use Docker if you need sudo-enabled containers |
 
 #### `[core.env]`
 
@@ -54,7 +54,7 @@ Environment variables inherited by the server process. Falls back to the host en
 | Key | Purpose |
 |---|---|
 | `TAILSCALE_API_KEY` | Tailscale API key for ephemeral container nodes. Obtain from [Tailscale admin](https://login.tailscale.com/admin/settings/keys) |
-| `GEMINI_API_KEY` | Gemini API key for voice agent (WebRTC bridge) and title generation. Obtain from [Google AI Studio](https://aistudio.google.com/app/apikey) |
+| `GEMINI_API_KEY` | Gemini API key for the embedded voice gateway and title generation. Obtain from [Google AI Studio](https://aistudio.google.com/app/apikey) |
 | `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` | Proxy settings for forge API calls (GitHub, GitLab) when the server is behind a corporate proxy |
 | `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / etc | Optional API keys for LLM generated commit description |
 
@@ -70,7 +70,7 @@ GEMINI_API_KEY = "AIza..."
 
 #### Auto-update
 
-When enabled, caic checks [GitHub Releases](https://github.com/caic-xyz/caic/releases) on the given cron schedule and replaces the binary in place when a new version is found. The binary self-update triggers the config watcher, causing a restart with the new version.
+When enabled, caic checks [GitHub Releases](https://github.com/caic-xyz/caic/releases) on the given cron schedule and replaces the binary in place when a new version is found. The schedule accepts cron step syntax (`*/N`, `start/N`), so `*/15 * * * *` checks every 15 minutes. The binary self-update triggers the config watcher, causing a restart with the new version.
 
 ```toml
 [core]
@@ -80,7 +80,7 @@ auto_update = ""
 
 ### Preferences
 
-`~/.config/caic/preferences.json` stores per-user settings (resource limits, cache configuration, auto-fix behavior, per-repository preferences) independent of `config.toml`. Edit it directly or through the settings UI.
+`~/.config/caic/preferences.json` stores per-user settings independent of `config.toml`. Edit it directly or through the Settings UI, which exposes the container image, CPU architecture and platform, CPU cores, well-known caches (now opt-in), custom cache mappings, custom host mounts (with enabled and read-only toggles), auto-fix CI and PR toggles, per-model thinking effort, and version info with manual update.
 
 ### `[server]`
 
@@ -88,7 +88,6 @@ auto_update = ""
 |---|---|---|
 | `http` | `":2242"` | HTTP listen address. Port-only addresses (`:2242`) bind to localhost. Use `"0.0.0.0:2242"` to listen on all interfaces |
 | `external_url` | `"auto"` | Public base URL. `"auto"` locks from the first FQDN request. Set explicitly for OAuth and webhooks |
-| `webrtc_port` | `0` | UDP port for WebRTC ICE. `0` = enabled with ephemeral port; `-1` = disabled. Requires `GEMINI_API_KEY` in `core.env`. Open this port for UDP traffic if using a static port |
 | `geo_db` | — | Path to a [MaxMind GeoLite2](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data) MMDB file for country-code resolution. If unset and `GeoLite2-Country.mmdb` exists in the config directory, it is used automatically |
 | `allow_origins` | `["local", "tailscale", "github"]` | Allowlist for incoming HTTP requests. Unmatched IPs get HTTP 403 |
 
@@ -104,14 +103,55 @@ auto_update = ""
 |---|---|
 | `"local"` | Loopback and RFC 1918 private addresses |
 | `"tailscale"` | Tailscale CGNAT range (`100.64.0.0/10`) |
-| `"github"` | GitHub webhook IPs (fetched live from `api.github.com/meta`) |
+| `"github"` | GitHub webhook IPs (fetched live from `api.github.com/meta`). Needed for the GitHub App |
+| `"anthropic"` | Published Anthropic outbound IPs. Needed for Claude MCP clients |
+| `"openai"` | Published ChatGPT integration and Codex cloud IPs. Needed for ChatGPT MCP clients |
 | CIDR range | e.g. `"203.0.113.0/24"` |
 | Country code | ISO 3166-1 alpha-2 (e.g. `"CA"`, `"US"`); requires `geo_db` |
+
+Named origins (`local`, `tailscale`, `github`, `anthropic`, `openai`) resolve before country lookups.
 
 ```toml
 [server]
 geo_db = "GeoLite2-Country.mmdb"
 allow_origins = ["local", "tailscale", "github", "CA"]
+```
+
+### `[voice-gateway]`
+
+Voice availability is derived automatically from your configuration:
+
+- **Standalone gateway**: set `url` to advertise a separate voice gateway you run elsewhere.
+- **Embedded**: leave `url` empty and set `GEMINI_API_KEY` (in `[core.env]`). caic hosts the gateway in-process.
+- **Disabled**: leave `url` empty and `GEMINI_API_KEY` unset.
+
+| Key | Default | Description |
+|---|---|---|
+| `url` | — | URL of a standalone voice gateway. When set, caic advertises it instead of hosting one |
+
+#### `[voice-gateway.config]`
+
+Runtime config for the embedded gateway, used only when caic hosts it in-process. The API key is always read from `GEMINI_API_KEY`.
+
+| Key | Default | Description |
+|---|---|---|
+| `model` | `"gemini-3.1-flash-live-preview"` | Gemini Live model for the embedded gateway |
+| `backend` | `"gemini-live"` | `"gemini-live"` uses Gemini Live. `"local-stack"` runs a local, half-duplex stack instead |
+
+#### `[voice-gateway.config.server]`
+
+| Key | Default | Description |
+|---|---|---|
+| `webrtc_udp_port` | `0` | UDP port for WebRTC ICE. `0` = OS-assigned ephemeral port. A value `>0` pins a static port; open it for UDP traffic in your firewall. Requires `GEMINI_API_KEY` |
+
+With `backend = "local-stack"`, voice runs half-duplex with a managed llama.cpp instance for ASR and the LLM plus KittenTTS for text-to-speech. Omit the local-stack tables to let caic manage llama.cpp with a default Gemma model, or point them at servers you run yourself. See [`contrib/voice-gateway-config.toml`](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for the full template.
+
+```toml
+[voice-gateway.config]
+backend = "gemini-live"
+
+[voice-gateway.config.server]
+webrtc_udp_port = 3479
 ```
 
 ### `[ai]`
@@ -120,17 +160,15 @@ LLM provider for title generation and commit descriptions.
 
 | Key | Default | Description |
 |---|---|---|
-| `provider` | auto-detect | Provider name. When unset, probes in this order: `codex`, `opencode`, `claudecode`, `gemini`, then any other available provider |
+| `provider` | auto-detect | Provider name. When unset, probes in this order: `codex`, `opencode`, `claudecode`, then any other available provider |
 | `model` | cheapest | Model name or alias. Uses the provider's cheapest model when unset |
 
 Available providers: see the [genai providers](https://pkg.go.dev/github.com/maruel/genai/providers) package.
 
-When provider is `gemini`, the `GEMINI_API_KEY` from `[core.env]` is used automatically.
-
 ```toml
 [ai]
-provider = "gemini"
-model = "gemini-2.5-flash"
+provider = "codex"
+model = "gpt-5-mini"
 ```
 
 ### `[harness]`
@@ -154,35 +192,59 @@ GEMINI_API_KEY = "AIza..."
 OPENROUTER_API_KEY = "sk-or-..."
 ```
 
-Available harness names: `claude`, `codex`, `gemini`, `kilo`, `opencode`, `pi`.
+Available harness names: `claude`, `codex`, `opencode`, `pi`.
 
-### `[github]`
+### `[github.*]`
 
-See [GitHub Integration](./github) for full setup instructions.
+GitHub settings live in three subsections by authentication method. See [GitHub Integration](./github) for full setup instructions.
+
+`[github.pat]`:
 
 | Key | Default | Description |
 |---|---|---|
-| `token` | — | Personal access token. Mutually exclusive with `oauth_client_id`. Falls back to `gh auth token` when unset and OAuth is not configured |
-| `oauth_client_id` | — | OAuth app client ID. Mutually exclusive with `token` |
-| `oauth_client_secret` | — | OAuth app client secret. Required when `oauth_client_id` is set |
-| `oauth_allowed_users` | — | GitHub usernames permitted to log in. **Required** when OAuth is configured |
-| `app_id` | — | GitHub App ID. Independent of PAT/OAuth |
-| `app_private_key_pem` | — | Path to GitHub App PEM private key file. Relative to the config directory |
-| `app_allowed_owners` | — | GitHub orgs/users allowed to install the app. Installs from other accounts are rejected |
+| `token` | — | Personal access token. Falls back to `gh auth token` when unset and OAuth is not configured |
+
+`[github.oauth]`:
+
+| Key | Default | Description |
+|---|---|---|
+| `client_id` | — | OAuth app client ID. Mutually exclusive with a PAT |
+| `client_secret` | — | OAuth app client secret. Required when `client_id` is set |
+| `allowed_users` | — | GitHub usernames permitted to log in. When unset, any GitHub user who completes OAuth can log in |
+
+`[github.app]` (layered on top of PAT or OAuth, not mutually exclusive):
+
+| Key | Default | Description |
+|---|---|---|
+| `id` | — | GitHub App ID |
+| `private_key_pem` | — | Path to GitHub App PEM private key file. Relative to the config directory |
+| `allowed_owners` | — | GitHub orgs/users allowed to install the app. Installs from other accounts are rejected |
 | `webhook_secret` | — | HMAC-SHA256 secret for webhook verification. Generate with `openssl rand -hex 32` |
 
-### `[gitlab]`
+### `[gitlab.*]`
 
-See [GitLab Integration](./gitlab) for full setup instructions.
+The top-level `[gitlab]` table holds instance settings; credentials live in subsections by authentication method. See [GitLab Integration](./gitlab) for full setup instructions.
+
+`[gitlab]`:
 
 | Key | Default | Description |
 |---|---|---|
-| `token` | — | Personal access token (scope: `api`). Mutually exclusive with `oauth_client_id` |
-| `oauth_client_id` | — | OAuth app client ID. Mutually exclusive with `token` |
-| `oauth_client_secret` | — | OAuth app client secret. Required when `oauth_client_id` is set |
-| `oauth_allowed_users` | — | GitLab usernames permitted to log in. **Required** when OAuth is configured |
-| `url` | `"https://gitlab.com"` | GitLab instance URL. Must be a valid URL with no path |
+| `url` | — | GitLab instance URL. Empty targets gitlab.com; set only for a self-hosted instance |
 | `webhook_secret` | — | Shared secret for webhook verification. Generate with `openssl rand -hex 32` |
+
+`[gitlab.pat]`:
+
+| Key | Default | Description |
+|---|---|---|
+| `token` | — | Personal access token (scope: `api`). Mutually exclusive with OAuth |
+
+`[gitlab.oauth]`:
+
+| Key | Default | Description |
+|---|---|---|
+| `client_id` | — | OAuth app client ID. Mutually exclusive with a PAT |
+| `client_secret` | — | OAuth app client secret. Required when `client_id` is set |
+| `allowed_users` | — | GitLab usernames permitted to log in. When unset, any GitLab user who completes OAuth can log in |
 
 ### `[debug]`
 

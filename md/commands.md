@@ -33,6 +33,27 @@ These flags apply to all `md` commands:
 | `md start` (on stopped container) | Revive a stopped container (re-queries SSH port, restores SSH config) |
 | `md purge` | Stop and permanently remove the container |
 
+Re-running `md start` from a repo whose container is stopped or exited is the supported way to revive it. md prints `Reviving stopped container` and reuses the existing container with a fresh SSH port; it does not create a duplicate. If the container is already running, `md start` returns an error and tells you to `ssh` in instead.
+
+## List output
+
+`md list --json` emits one object per container. The `name`, `state`, `uptime`, and `ssh_port` fields are always present. The remaining fields appear only when they apply:
+
+| Field | When present |
+|---|---|
+| `name` | Always |
+| `state` | Always |
+| `uptime` | Always |
+| `ssh_port` | Always |
+| `vncPort` | Container started with `--display` |
+| `display` | Container started with `--display` |
+| `tailscale` | Container started with `--tailscale` |
+| `fqdn` | Tailscale is enabled (the container's tailnet name) |
+| `sudo` | Container started with `--sudo` |
+| `usb` | Container started with `--usb` |
+| `repos` | Container has one or more mapped repos |
+| `stats` | `--stats` was passed (CPU, memory, network, disk) |
+
 ## Start flags
 
 | Flag | Description |
@@ -41,6 +62,7 @@ These flags apply to all `md` commands:
 | `-r, -repo <path>` | Path to git repository (default: current directory) |
 | `--image <ref>` | Full base Docker image (e.g. `ghcr.io/caic-xyz/md-user:2026-05-09`) |
 | `--tag <tag>` | Tag for the default base image (`ghcr.io/caic-xyz/md-user:<tag>`) |
+| `--platform <platform>` | Build and run for `linux/amd64` or `linux/arm64` (default: host architecture) |
 | `--display`, `-d` | Enable X11/VNC virtual desktop (port 5901) |
 | `--tailscale` | Enable [Tailscale](./tailscale) networking |
 | `--usb` | Pass through USB devices (`/dev/bus/usb`, Linux only) |
@@ -50,6 +72,8 @@ These flags apply to all `md` commands:
 | `--label key=value`, `-l` | Add Docker container label (repeatable) |
 | `--extra-repo path[:branch]`, `-e` | Map an additional git repository (repeatable) |
 | `--docker-flag "arg1 arg2"` | Extra flags passed verbatim to `docker run` (shell-quoted, repeatable) |
+| `--cache <name>` | Add a well-known cache or a custom `host:container[:ro]` directory (repeatable) |
+| `--mount host:container[:ro]` | Bind-mount a host directory into the running container (repeatable) |
 | `--sudo` | Enable root access with a random password; grants `SYS_ADMIN` and `/dev/fuse` |
 | `-q, --quiet` | Suppress informational output |
 | `--control-master` | Enable SSH ControlMaster connection multiplexing |
@@ -61,12 +85,16 @@ These flags apply to all `md` commands:
 | `ssh md-<repo>-<branch>` | SSH into the container directly |
 | `md vnc` | Open VNC connection to the container desktop |
 
+`md vnc` auto-detects the container from your current repository and branch, the same way `md stop` and `md purge` do. Run it from inside the repo directory with no arguments. You can also pass a container name as a positional argument, or target a specific container with `-b/--branch` and `-r/--repo`.
+
 ## Syncing
 
 | Command | Description |
 |---|---|
 | `md diff` | Show changes vs. base branch (`git diff base`). Extra args forwarded to git, e.g. `md diff --stat` |
 | `md diff --all` | Show diffs for all repos in the container |
+
+`md diff` is non-mutating. It leaves the container's git index untouched and runs with git locks disabled, so it is safe to run while an agent is working in the container. Untracked files still appear in the diff.
 | `md pull` | Pull changes from container and integrate into local branch |
 | `md pull --all` | Pull changes for all repos |
 | `md fetch` | Fetch changes from container without integrating (updates remote-tracking ref) |
@@ -107,7 +135,7 @@ md run -- cargo check
 md run --image ghcr.io/caic-xyz/md-user:2025-05-09 -- npm ci
 ```
 
-Supports: `--image`, `--tag`, `--repo`, `--branch`, `--github`, `--cpus`, `--docker-flag`, and all cache flags.
+Supports: `--image`, `--tag`, `--platform`, `--repo`, `--branch`, `--github`, `--cpus`, `--docker-flag`, `--mount`, and all cache flags.
 
 ## Workflows
 
@@ -214,6 +242,8 @@ Once built, use the local images:
 md start -image md-user-local
 ```
 
+By default `md build-image` targets your host architecture. Pass `--platform linux/amd64` or `--platform linux/arm64` to build for a different architecture. The platform is part of the specialized image hash, so cross-architecture builds and runs produce distinct images.
+
 ### `md prune`
 
 Removes unused `md-specialized-*` and `md-fork-*` images no longer referenced by any container. Also cleans the Docker build cache.
@@ -227,6 +257,8 @@ Removes unused `md-specialized-*` and `md-fork-*` images no longer referenced by
 | `--cache <name>` | Add a well-known cache (use with `--no-caches`) or custom `host:container[:ro]` |
 
 Caches are baked into the image at build time. Only caches whose host directories exist are included; missing directories are silently skipped. The image rebuilds only when the active cache set changes.
+
+For custom caches, append `:ro` to make the copied directory read-only inside the container. The container path accepts `~` or a leading `~/`, which expand to `/home/user`. For a live bind-mount that reflects host changes at runtime, use `--mount` instead of `--cache`. See [Configuration](./configuration#mount-vs-cache) for the difference.
 
 ### Well-known caches
 

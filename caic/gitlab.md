@@ -41,7 +41,7 @@ For single-user deployments.
 1. [Create a personal access token](https://gitlab.com/-/user_settings/personal_access_tokens) with the `api` scope
 2. Add to `~/.config/caic/config.toml`:
    ```toml
-   [gitlab]
+   [gitlab.pat]
    token = "glpat-..."
    ```
 
@@ -59,13 +59,13 @@ For multi-user deployments where each user logs in with their GitLab account.
    [server]
    external_url = "https://<your-domain>"
 
-   [gitlab]
-   oauth_client_id = "<application-id>"
-   oauth_client_secret = "<secret>"
-   oauth_allowed_users = ["alice", "bob"]
+   [gitlab.oauth]
+   client_id = "<application-id>"
+   client_secret = "<secret>"
+   allowed_users = ["alice", "bob"]
    ```
 
-`oauth_allowed_users` is mandatory — only listed users can log in.
+`allowed_users` restricts login to the listed GitLab usernames. Leave it unset to allow any GitLab user who completes the OAuth flow. Set it to keep login private.
 
 ## Webhooks (optional)
 

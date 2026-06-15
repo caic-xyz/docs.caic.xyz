@@ -115,6 +115,27 @@ md start -no-cache go-mod -no-cache cargo   # skip specific caches
 md start -no-caches                           # disable all caches
 md start -no-caches -cache go-mod            # only go-mod
 md start -cache /path/to/my/cache:/home/user/.mycache  # custom cache
+md start -cache /path/to/refdata:~/refdata:ro          # read-only, tilde path
+```
+
+For custom caches, append `:ro` to make the directory read-only inside the container. The container path may use `~` or a leading `~/`, which expand to `/home/user`.
+
+### Mount vs. cache {#mount-vs-cache}
+
+`--cache` and `--mount` both bring a host directory into the container, but they behave differently:
+
+| | `--cache host:container[:ro]` | `--mount host:container[:ro]` |
+|---|---|---|
+| When applied | Build time | Runtime |
+| Relationship to host | One-way copy baked into the image | Live bind-mount |
+| Host changes after start | Not reflected (frozen at build) | Reflected immediately |
+| Triggers an image rebuild | Yes, when the cache set changes | No |
+
+Use `--cache` for warm package-manager caches that you don't need to stay in sync with the host. Use `--mount` when you want the container to see host changes live, for example a shared dataset or a directory you edit on the host while an agent works. Append `:ro` to either for a read-only directory, and use `~` or `~/` in the container path to mean `/home/user`.
+
+```bash
+md start --mount ~/datasets:~/datasets        # live, read-write
+md start --mount ~/secrets:~/secrets:ro       # live, read-only
 ```
 
 ## GitHub authentication inside the container

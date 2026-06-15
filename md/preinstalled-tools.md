@@ -8,7 +8,7 @@ Every md container ships with a curated set of development tools, pre-configured
 
 ## Core utilities
 
-bash, git, curl, wget, rsync, jq, grep, ripgrep, less, file, find, xargs, sed, awk, bubblewrap, xvfb, tokei, xxd
+bash, git, curl, wget, rsync, jq, grep, ripgrep, less, man, file, find, xargs, sed, awk, col, bubblewrap, inotifywait, xvfb, tmux, tokei, xxd, sudo
 
 ## Editors
 
@@ -69,7 +69,7 @@ strace, lsof, dlv (Go debugger), lldb / rust-lldb, objdump, radare2 (r2)
 
 ## Networking
 
-curl, wget, net-tools, iproute2, nmap, dig, host, nslookup, whois, tailscale
+curl, wget, net-tools, iproute2, ping, fping, traceroute, tcptraceroute, nmap, tcpdump, dig, host, nslookup, whois, tailscale
 
 ## GitHub
 

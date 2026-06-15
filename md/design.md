@@ -27,6 +27,10 @@ md never modifies files on your host checkout. Changes made inside the container
 
 All well-known build caches (Go modules, Cargo registries, npm, pip, Gradle, Maven, pnpm, Bun, uv, Android keys) are baked into the container image at build time. This avoids the slow cold-start problem where a fresh container downloads hundreds of megabytes before the first `npm install`.
 
+### Works with Docker or Podman
+
+md auto-detects the container runtime on your host so you don't have to configure it. If both Docker and Podman are available, or you want to force a choice, pass `--runtime docker` or `--runtime podman`. Any other value is rejected with a clear error rather than being passed through to an unknown command.
+
 ## How the specialized image is built
 
 On `md start`, md generates a Dockerfile at runtime and builds the specialized image on top of the `md-user` image. The Dockerfile adds three things:

@@ -62,6 +62,14 @@ This image is rebuilt automatically when:
 
 Each repo gets a `base` branch inside the container that mirrors the host branch it was started from. The container's working branch tracks `base`, so agents can `git diff base` to see their changes.
 
+### Container runtime
+
+md auto-detects whether to use Docker or Podman on your host. To force one, pass `--runtime docker` or `--runtime podman`. Any other value is rejected with a clear error.
+
+### Mapping multiple repos
+
+Each repo is mounted under `~/src/` using its directory name. When two mapped repos share the same base name, md mounts them under disambiguated paths relative to their common parent directory instead of letting them collide. For example, mapping `~/work/api` and `~/play/api` mounts them as `~/src/work/api` and `~/src/play/api`.
+
 ## How containers are named
 
 Containers follow the pattern `md-<repo>-<branch>`:
