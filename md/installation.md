@@ -31,7 +31,7 @@ This installs both `caic` and `md` binaries to `~/.local/bin/`.
 
 ```bash
 md version
-# md v0.13.0
+# md v0.14.1
 
 # Quick smoke test
 md run -- echo "md works"

@@ -17,13 +17,13 @@ Sessions are delivered as:
 - **Cookie** (`caic_session`): for the web UI, set with `HttpOnly`, `SameSite=Lax`, and `Secure` (when accessed over HTTPS)
 - **Authorization: Bearer** header: for Android and API clients
 
-Web and API session tokens expire after a fixed duration. Session login has no refresh token mechanism: when a session expires, you re-authenticate. This keeps the session authentication surface small and auditable. (MCP clients use a separate OAuth flow with refresh tokens; see [MCP endpoint](#mcp-endpoint).)
+Web and API session tokens expire after a fixed duration. Session login has no refresh token mechanism: when a session expires, you re-authenticate. Forge OAuth access tokens are refreshed when the provider returns refresh tokens. MCP clients use a separate OAuth flow with refresh tokens; see [MCP endpoint](#mcp-endpoint).
 
 ### OAuth 2.0 login
 
-caic implements the OAuth 2.0 Authorization Code flow for GitHub and GitLab, using only Go's standard library (no third-party OAuth libraries). The flow:
+caic implements the OAuth 2.0 Authorization Code flow for GitHub, GitLab, and Google Sign-In, using only Go's standard library (no third-party OAuth libraries). Google Sign-In authenticates dashboard access only and does not grant forge authority. The flow:
 
-1. User clicks "Login with GitHub/GitLab"
+1. User clicks a login provider
 2. Browser redirects to the provider's authorize endpoint
 3. User authorizes the caic OAuth app
 4. Provider redirects back with an authorization code
@@ -31,7 +31,7 @@ caic implements the OAuth 2.0 Authorization Code flow for GitHub and GitLab, usi
 6. caic fetches the user's profile to verify identity
 7. JWT session is issued
 
-**Allowed users**: when OAuth is configured, the `oauth_allowed_users` list is mandatory. Only users on this list can log in, regardless of whether the OAuth app is authorized. This prevents anyone with a GitHub/GitLab account from accessing your caic instance.
+**Allowed users**: each OAuth provider supports an `allowed_users` list. When set, only users on the list can log in, regardless of whether the OAuth app is authorized. Leaving it unset allows any user who completes that provider's OAuth flow, so set it for private deployments.
 
 **CSRF protection**: the OAuth flow uses a state cookie with HMAC verification. The state value is randomly generated per login attempt.
 
@@ -161,17 +161,17 @@ Found issues are reported to the agent so it can fix them before the push. This 
 
 caic exposes an MCP server so remote agent clients (such as Claude and ChatGPT) can manage tasks. The endpoint is disabled when authentication is off and the server binds a non-loopback address, so an exposed server never serves MCP without authentication.
 
-Remote clients authenticate with OAuth 2.0 Authorization Code plus PKCE, with Dynamic Client Registration so a client can register itself. Access tokens are JWTs; refresh tokens are opaque, rotating, and valid for 30 days.
+Remote clients authenticate with OAuth 2.0 Authorization Code plus PKCE, with Dynamic Client Registration so a client can register itself. Access tokens are ES256 JWTs. Refresh tokens are opaque, rotating, and valid for 30 days. Clients that support DPoP can use sender-constrained tokens.
 
 When a client connects, a consent page lets you grant a subset of scopes or deny the request. Read-only scopes are pre-selected. Available scopes:
 
 | Scope | Grants |
 |---|---|
-| `caic:mcp.read` | Read access to MCP resources |
+| `caic:mcp.read` | Basic MCP tools, usage, and non-task resources |
 | `caic:tasks.read` | Read task state and history |
-| `caic:tasks.write` | Create tasks and send input |
-| `caic:tasks.admin` | Stop, purge, and otherwise administer tasks |
-| `caic:repos.write` | Push branches and write to repositories |
+| `caic:tasks.write` | Create tasks, send input, stop, and revive |
+| `caic:tasks.admin` | Purge tasks |
+| `caic:repos.write` | Clone repositories, push branches, and fix PR CI |
 
 You revoke a connected client's grant at any time from Settings. Forge tools (PR creation, pushes) require linked forge authority. An audit log of MCP actions is persisted.
 
@@ -191,7 +191,7 @@ On server restart:
 - The `settings.json` session secret is re-loaded from disk
 - OAuth user data is re-read from `users.json`
 
-No credentials are persisted in container labels, environment variables, or other transient state.
+Forge tokens, OAuth secrets, session secrets, and webhook secrets are not persisted in container labels or other transient container state. The md sudo password is the exception: it is a container-local credential stored as a Docker label so caic can retrieve it for that container.
 
 ## What is NOT protected
 

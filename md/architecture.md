@@ -43,10 +43,12 @@ This image is rebuilt automatically when:
 - Your SSH keys have changed (new key pair generated)
 - The set of active caches has changed (you added or removed a cache directory)
 
+If a registry pull fails but md already has a local copy of the remote base image, md warns and keeps using the local copy. A first run with no local base image still fails.
+
 ## What happens during `md start`
 
 ```
-1. Pull base image `md-user` (if updated on registry)
+1. Pull base image `md-user` (if updated on registry, or use the local copy if the pull fails and one exists)
 2. Build specialized image `md-specialized-*` (if SSH keys or caches changed)
 3. Start container with docker run
    - Bind SSH port to 127.0.0.1 (random port)

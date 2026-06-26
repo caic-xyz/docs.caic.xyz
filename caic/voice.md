@@ -26,14 +26,14 @@ url = "https://voice.example.com"
 
 ## Local stack
 
-The local stack runs voice entirely on your own hardware with no cloud API key. Set the backend to `local-stack` and the gateway uses a managed [llama.cpp](https://github.com/ggml-org/llama.cpp) for speech recognition and the language model, and KittenTTS for speech synthesis. It is half-duplex, meaning you speak and listen in turns rather than at the same time.
+The local stack runs voice entirely on your own hardware with no cloud API key. Set the backend to `local-stack` and the gateway uses managed [llama.cpp](https://github.com/ggml-org/llama.cpp) servers for speech recognition and the language model, plus KittenTTS for speech synthesis. It is half-duplex, meaning you speak and listen in turns rather than at the same time.
 
 ```toml
 [voice-gateway.config]
 backend = "local-stack"
 ```
 
-By default caic manages llama.cpp with a bundled model, so you do not need to run anything yourself. You can point at servers you run instead. See the [gateway config template](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for the local stack options.
+By default caic manages a Qwen3 ASR model, a Gemma LLM, and a KittenTTS worker, so you do not need to run anything yourself. You can point ASR or LLM at servers you run instead. See the [gateway config template](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for the local stack options.
 
 ## WebRTC and firewalls
 

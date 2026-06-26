@@ -63,7 +63,7 @@ md tracks several pieces of information to decide whether the specialized image 
 
 Only caches whose host directories **currently exist** are tracked. If you remove `~/.cache/pip`, the pip cache is silently excluded; no rebuild is triggered. If you later re-create it, the cache set changes and triggers a rebuild.
 
-For images pulled from a registry, md checks whether a newer version is available without downloading it: a quick metadata check, not a full image pull.
+For images pulled from a registry, md checks whether a newer version is available without downloading it: a quick metadata check, not a full image pull. If a later pull fails and a local copy already exists, md warns and rebuilds from that local copy. This keeps existing environments usable during registry outages.
 
 ## Cache injection design
 

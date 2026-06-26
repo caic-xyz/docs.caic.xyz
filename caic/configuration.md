@@ -144,7 +144,7 @@ Runtime config for the embedded gateway, used only when caic hosts it in-process
 |---|---|---|
 | `webrtc_udp_port` | `0` | UDP port for WebRTC ICE. `0` = OS-assigned ephemeral port. A value `>0` pins a static port; open it for UDP traffic in your firewall. Requires `GEMINI_API_KEY` |
 
-With `backend = "local-stack"`, voice runs half-duplex with a managed llama.cpp instance for ASR and the LLM plus KittenTTS for text-to-speech. Omit the local-stack tables to let caic manage llama.cpp with a default Gemma model, or point them at servers you run yourself. See [`contrib/voice-gateway-config.toml`](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for the full template.
+With `backend = "local-stack"`, voice runs half-duplex with managed llama.cpp servers for speech recognition and the LLM plus KittenTTS for speech synthesis. Omit the local-stack tables to let caic manage the default Qwen3 ASR model and Gemma LLM, or point them at servers you run yourself. See [`contrib/voice-gateway-config.toml`](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for the full template.
 
 ```toml
 [voice-gateway.config]
@@ -245,6 +245,18 @@ The top-level `[gitlab]` table holds instance settings; credentials live in subs
 | `client_id` | — | OAuth app client ID. Mutually exclusive with a PAT |
 | `client_secret` | — | OAuth app client secret. Required when `client_id` is set |
 | `allowed_users` | — | GitLab usernames permitted to log in. When unset, any GitLab user who completes OAuth can log in |
+
+### `[google.oauth]`
+
+Google Sign-In authenticates dashboard users only. It does not provide forge access for repositories, CI, PRs, or MRs. Configure GitHub or GitLab for forge operations.
+
+| Key | Default | Description |
+|---|---|---|
+| `client_id` | — | Google OAuth client ID |
+| `client_secret` | — | Google OAuth client secret. Required when `client_id` is set |
+| `allowed_users` | — | Google account emails permitted to log in. When unset, any Google user who completes OAuth can log in |
+
+Use `https://<your-domain>/auth/google/callback` as the authorized redirect URI in Google Cloud Console.
 
 ### `[debug]`
 

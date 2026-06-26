@@ -50,7 +50,7 @@ The relay daemon runs as a background process inside each container:
 3. It listens on a Unix socket for attach/detach clients
 4. On attach, it replays events from a byte offset — zero loss
 
-The caic server never talks directly to the agent. Instead, it runs an SSH command that calls `relay.py attach`. The relay bridges stdin/stdout between the SSH client and the agent process.
+The caic server never talks directly to the agent. Instead, it attaches over SSH to the relay. The relay bridges stdin/stdout between the SSH client and the agent process.
 
 ### Byte-offset reconnect
 

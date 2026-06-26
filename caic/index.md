@@ -17,6 +17,7 @@ caic is supported on **Linux**, **macOS**, and **Windows via WSL2**.
 - **Forge integration** — automatic PR/MR creation and CI monitoring for [GitHub](./github) and [GitLab](./gitlab)
 - **Lightweight** — single Go binary, low memory and CPU footprint
 - **Web UI** — SolidJS frontend embedded in the binary
+- **Task inspection**: view launch config, runtime image, platform, caches, mounts, and diagnostics for each task
 - **Voice control** — supervise and steer agents hands-free with [voice mode](./voice)
 - **MCP server** — connect Claude or ChatGPT to your tasks through the [MCP endpoint](./mcp)
 - **Android app** — voice-first companion app to manage agents from your phone

@@ -52,7 +52,7 @@ For self-hosted, create the token at your instance's settings page and include `
 For multi-user deployments where each user logs in with their GitLab account.
 
 1. [Create a GitLab OAuth app](https://gitlab.com/-/user_settings/applications)
-   - Redirect URI: `https://<your-domain>/api/v1/auth/gitlab/callback`
+   - Redirect URI: `https://<your-domain>/auth/gitlab/callback`
    - Scopes: `api`, `read_user`
 2. Add to `~/.config/caic/config.toml`:
    ```toml

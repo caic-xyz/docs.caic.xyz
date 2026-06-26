@@ -7,13 +7,15 @@ caic exposes a Model Context Protocol (MCP) endpoint at `/api/caic/v1/mcp`. It l
 The endpoint serves both tools and resources:
 
 - **Tools**: list tasks, get task detail, read an agent's last message, get usage, send a message, answer a question, create a task, fork a task, stop, revive, or purge a task, clone a repository, push a task branch, and fix a PR's CI.
-- **Resources**: read-only views of your repositories and tasks, addressable by path or task number.
+- **Resources**: read-only views of your repositories, tasks, and usage. Aggregate resources use `caic://repos`, `caic://tasks`, and `caic://usage`; individual repositories and tasks have their own resource URIs.
 
 Some tools require a linked forge. Pushing a task branch or fixing a PR's CI needs a connected GitHub or GitLab identity. See [GitHub](./github) and [GitLab](./gitlab) for linking a forge.
 
+Clients that support MCP subscriptions can listen for task or repository resource changes. Notifications are invalidations: when a resource update arrives, the client should read the resource again.
+
 ## Connecting a client
 
-Remote clients connect over OAuth 2.0 using the Authorization Code flow with PKCE and Dynamic Client Registration, so you do not pre-register each client by hand. Point your client at your caic server's base URL and start the connection. The client discovers the endpoint, registers itself, and sends you to caic to sign in and approve access.
+Remote clients connect over OAuth 2.0 using the Authorization Code flow with PKCE and Dynamic Client Registration, so you do not pre-register each client by hand. Clients that support DPoP can use sender-constrained access tokens. Point your client at your caic server's base URL and start the connection. The client discovers the endpoint, registers itself, and sends you to caic to sign in and approve access.
 
 ### Consent and scopes
 
@@ -25,9 +27,9 @@ The scopes are:
 |---|---|
 | `caic:mcp.read` | Use basic MCP tools including usage and non-task resources |
 | `caic:tasks.read` | Read task information |
-| `caic:tasks.write` | Create and manage tasks |
-| `caic:tasks.admin` | Administer tasks (cancel, delete) |
-| `caic:repos.write` | Manage repositories |
+| `caic:tasks.write` | Create tasks, send input, stop, and revive |
+| `caic:tasks.admin` | Purge tasks |
+| `caic:repos.write` | Clone repositories, push branches, and fix PR CI |
 
 The grant covers caic MCP only. No GitHub, GitLab, OpenAI, or Anthropic credentials are shared with the client.
 

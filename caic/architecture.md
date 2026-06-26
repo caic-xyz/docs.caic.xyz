@@ -24,7 +24,7 @@ caic is a Go HTTP server with an embedded SolidJS web UI that orchestrates AI co
 │  ┌───────────────────────────────┼───────────────────┐  │
 │  │ CONTAINER (per task)          │                   │  │
 │  │                 ┌─────────┐   │                   │  │
-│  │     relay.py ◄──┤ SSH     │◄──┘                   │  │
+│  │  relay daemon ◄─┤ SSH     │◄──┘                   │  │
 │  │       │         └─────────┘                       │  │
 │  │       │ stdout/stdin (NDJSON)                     │  │
 │  │  ┌────▼─────┐                                     │  │
@@ -83,7 +83,7 @@ For tasks spanning multiple repositories, each repository gets its own dedicated
 
 ## The relay: agent persistence
 
-The relay is a Python daemon (`relay.py`) that runs inside each container and manages the agent subprocess. It is the reason caic can survive server restarts without losing agent sessions.
+The relay is a daemon that runs inside each container and manages the agent subprocess. It is the reason caic can survive server restarts without losing agent sessions.
 
 ### Why a relay
 
@@ -155,9 +155,9 @@ The API is JSON-over-HTTP with Server-Sent Events for real-time streaming:
 
 ### Authentication
 
-When auth is enabled (OAuth configured), all API routes except auth endpoints require a valid JWT session. The JWT is sent as a cookie (`caic_session`) or `Authorization: Bearer` header (for Android and API clients).
+When auth is enabled (OAuth configured), protected API routes require a valid JWT session. The JWT is sent as a cookie (`caic_session`) or `Authorization: Bearer` header (for Android and API clients).
 
-API routes are namespaced under `/api/caic/v1/` (and `/api/voicegateway/v1/` for the voice gateway). Auth routes under `/api/caic/v1/auth/` are always public. Webhook endpoints (`/webhooks/github`, `/webhooks/gitlab`) have their own HMAC signature verification.
+API routes are namespaced under `/api/caic/v1/` and `/api/voicegateway/v1/`. Browser login routes are public under `/auth/`, server bootstrap data is public under `/server-info/`, and Go Mode discovery is public at `/.well-known/gomode.json`. The MCP endpoint stays at `/api/caic/v1/mcp` and uses MCP bearer tokens when OAuth is configured. Webhook endpoints (`/webhooks/github`, `/webhooks/gitlab`) have their own HMAC signature verification.
 
 ### Response compression
 
@@ -196,9 +196,9 @@ Different levels of forge integration are available:
 
 | Mode | Config | Capabilities |
 |---|---|---|
-| PAT | `[github] token` or `[gitlab] token` | Single-user, polling only |
-| OAuth | `oauth_client_id` + `oauth_client_secret` | Multi-user with login, polling only |
-| GitHub App | `app_id` + `app_private_key_pem` | Webhooks, auto task creation from issues/PRs/comments |
+| PAT | `[github.pat] token` or `[gitlab.pat] token` | Single-user, polling only |
+| OAuth | `[github.oauth]` or `[gitlab.oauth]` | Multi-user with login, polling only |
+| GitHub App | `[github.app]` | Webhooks, auto task creation from issues/PRs/comments |
 
 See [GitHub Integration](./github) and [GitLab Integration](./gitlab) for setup details.
 
@@ -224,7 +224,7 @@ The gateway authorizes sessions with short-lived, service-signed tokens issued b
 
 ## Container stats
 
-While tasks are running, caic polls Docker every 5 seconds for container resource metrics: CPU percentage, memory usage, network I/O, block I/O, and disk usage. These are streamed to the UI as stats events.
+While tasks are running, caic streams container resource metrics from the md runtime: CPU percentage, memory usage, network I/O, block I/O, and disk usage. These are sent to the UI as stats events.
 
 ## Configuration watching
 

@@ -23,7 +23,7 @@ Config keys are documented in [Configuration](./configuration#github). This page
 | OAuth | Multiple users with login | Login via GitHub | No | No |
 | GitHub App | Org-wide automation | App installation | Yes | Yes |
 
-PAT and OAuth are mutually exclusive. GitHub App can be layered on top of either.
+GitHub App can be layered on top of PAT, OAuth, or both. A PAT can also provide server-level GitHub credentials when no user token is available.
 
 ## PAT setup
 
@@ -47,7 +47,7 @@ See your tokens at [github.com/settings/personal-access-tokens](https://github.c
 For multi-user deployments where each user logs in with their GitHub account.
 
 1. [Create a GitHub OAuth app](https://github.com/settings/applications/new)
-   - Callback URL: `https://<your-domain>/api/v1/auth/github/callback`
+   - Callback URL: `https://<your-domain>/auth/github/callback`
 2. Add to `~/.config/caic/config.toml`:
    ```toml
    [server]
