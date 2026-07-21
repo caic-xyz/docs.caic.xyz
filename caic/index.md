@@ -1,6 +1,6 @@
 # caic
 
-**Coding Agents in Containers.** Manage multiple AI coding agents running in parallel in isolated Docker containers. Access them from your phone with Tailscale. All private.
+**Coding Agents in Containers.** Manage multiple AI coding agents running in parallel in isolated containers powered by Docker or Podman. Access them from your phone with Tailscale. All private.
 
 ## What is caic?
 
@@ -13,7 +13,11 @@ caic is supported on **Linux**, **macOS**, and **Windows via WSL2**.
 ## Key features
 
 - **Parallel agents** — run many agents simultaneously on different branches
+- **Flexible runtimes** — use Docker and Podman side by side, then choose the runtime for each new task
 - **Resilient sessions** — server restarts don't kill running agents; a relay process inside each container keeps agents alive across SSH disconnects
+- **Recoverable workspaces** — fork a running, stopped, or crashed task to try a new direction without losing its workspace
+- **Task visibility** — review setup output and full failure details, track provider quota reset times, and wrap long lines in diffs
+- **Fast task actions** — right-click a task card to push, stop, revive, purge, fork, or compact it without opening the task
 - **Forge integration** — automatic PR/MR creation and CI monitoring for [GitHub](./github) and [GitLab](./gitlab)
 - **Lightweight** — single Go binary, low memory and CPU footprint
 - **Web UI** — SolidJS frontend embedded in the binary

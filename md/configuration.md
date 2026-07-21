@@ -54,14 +54,14 @@ The `--github` flag tries `$GITHUB_TOKEN` first, then falls back to `gh auth tok
 These host directories are automatically bind-mounted into each container:
 
 - `~/.amp`, `~/.claude`, `~/.codex`, `~/.gemini`, `~/.kilocode`, `~/.kimi`, `~/.pi`, `~/.qwen`
-- `~/.config/agents`, `~/.config/amp`, `~/.config/goose`, `~/.config/opencode`
+- `~/.agents`, `~/.config/amp`, `~/.config/goose`, `~/.config/opencode`
 - `~/.local/share/amp`, `~/.local/share/goose`, `~/.local/share/opencode`
 - `~/.local/state/opencode`
 - `~/.android` (ADB keys)
 
 The `~/.config/md` directory is mounted **read-only** to prevent accidental modification of SSH keys from inside the container.
 
-`~/.config/agents` is always mounted, regardless of which harnesses you use. This is the recommended place for a centralized AGENTS.md and skills directory. See [Harnesses](./harnesses#centralizing-agentsmd) for setup instructions.
+`~/.agents` is always mounted, regardless of which harnesses you use. This is the recommended place for a centralized AGENTS.md and skills directory. See [Harnesses](./harnesses#sharing-the-same-agentsmd-across-harnesses) for setup instructions.
 
 ## Self-hosted models
 

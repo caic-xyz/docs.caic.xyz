@@ -26,20 +26,20 @@ The container includes [`/home/user/src/AGENTS.md`](https://github.com/caic-xyz/
 By default, each harness looks for its own config file (e.g. `~/.claude/CLAUDE.md`, `~/.pi/agent/AGENTS.md`). If you'd prefer a single AGENTS.md shared across all your agents, symlinks make this easy:
 
 ```bash
-mkdir -p ~/.config/agents ~/.config/amp ~/.claude ~/.codex ~/.config/goose ~/.gemini \
+mkdir -p ~/.agents ~/.config/amp ~/.claude ~/.codex ~/.config/goose ~/.gemini \
          ~/.kimi ~/.kilocode/rules ~/.config/opencode ~/.pi/agent ~/.qwen
 
-echo "Read ~/AGENTS.md if present." >> ~/.config/agents/AGENTS.md
-ln -s ../../.config/agents/AGENTS.md ~/.config/amp/AGENTS.md
-ln -s ../.config/agents/AGENTS.md    ~/.claude/CLAUDE.md
-ln -s ../.config/agents/AGENTS.md    ~/.codex/AGENTS.md
-ln -s ../.config/agents/AGENTS.md    ~/.config/goose/AGENTS.md
-ln -s ../.config/agents/AGENTS.md    ~/.gemini/AGENTS.md
-ln -s ../.config/agents/AGENTS.md    ~/.kimi/KIMI.md
-ln -s ../../.config/agents/AGENTS.md ~/.kilocode/rules/AGENTS.md
-ln -s ../../.config/agents/AGENTS.md ~/.config/opencode/AGENTS.md
-ln -s ../../.config/agents/AGENTS.md ~/.pi/agent/AGENTS.md
-ln -s ../.config/agents/AGENTS.md    ~/.qwen/AGENTS.md
+echo "Read ~/AGENTS.md if present." >> ~/.agents/AGENTS.md
+ln -s ../../.agents/AGENTS.md ~/.config/amp/AGENTS.md
+ln -s ../.agents/AGENTS.md    ~/.claude/CLAUDE.md
+ln -s ../.agents/AGENTS.md    ~/.codex/AGENTS.md
+ln -s ../../.agents/AGENTS.md ~/.config/goose/AGENTS.md
+ln -s ../.agents/AGENTS.md    ~/.gemini/AGENTS.md
+ln -s ../.agents/AGENTS.md    ~/.kimi/KIMI.md
+ln -s ../../.agents/AGENTS.md ~/.kilocode/rules/AGENTS.md
+ln -s ../../.agents/AGENTS.md ~/.config/opencode/AGENTS.md
+ln -s ../../.agents/AGENTS.md ~/.pi/agent/AGENTS.md
+ln -s ../.agents/AGENTS.md    ~/.qwen/AGENTS.md
 ```
 
 You can skip any harness you don't use. Each agent works fine with its own config file too: nothing requires symlinks.
@@ -49,16 +49,16 @@ You can skip any harness you don't use. Each agent works fine with its own confi
 If you use multiple agents, you can share the same skills directory rather than copying skills into each harness's location:
 
 ```bash
-mkdir -p ~/.config/agents/skills ~/.claude ~/.codex ~/.config/goose \
+mkdir -p ~/.agents/skills ~/.claude ~/.codex ~/.config/goose \
          ~/.gemini/antigravity ~/.kimi ~/.kilocode ~/.config/opencode ~/.pi/agent ~/.qwen
 
-ln -s ../.config/agents/skills/          ~/.claude/skills
-ln -s ../.config/agents/skills/          ~/.codex/skills
-ln -s ../.config/agents/skills/          ~/.config/goose/skills
-ln -s ../../.config/agents/skills/       ~/.gemini/antigravity/skills
-ln -s ../.config/agents/skills/          ~/.gemini/skills
-ln -s ../.config/agents/skills/          ~/.kimi/skills
-ln -s ../.config/agents/skills/          ~/.kilocode/skills
+ln -s ../.agents/skills/                 ~/.claude/skills
+ln -s ../.agents/skills/                 ~/.codex/skills
+ln -s ../../.agents/skills/              ~/.config/goose/skills
+ln -s ../../.agents/skills/              ~/.gemini/antigravity/skills
+ln -s ../.agents/skills/                 ~/.gemini/skills
+ln -s ../.agents/skills/                 ~/.kimi/skills
+ln -s ../.agents/skills/                 ~/.kilocode/skills
 ```
 
 Again, none of this is required. Each harness looks in its own directory by default.
@@ -67,7 +67,7 @@ Skills locations by harness:
 
 | Agent | Skills path |
 |---|---|
-| amp | `~/.config/agents/skills/**/SKILL.md` |
+| amp | `~/.agents/skills/**/SKILL.md` |
 | claude | `~/.claude/skills/<name>/SKILL.md` |
 | codex | `~/.codex/skills/**/SKILL.md` |
 | gemini | `~/.gemini/skills/<name>/SKILL.md` |

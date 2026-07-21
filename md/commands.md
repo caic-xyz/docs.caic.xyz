@@ -24,7 +24,7 @@ These flags apply to all `md` commands:
 | `md start -usb` | Start with USB device passthrough (for ADB, Linux only) |
 | `md start -no-ssh` | Start container without opening an SSH session |
 | `md run <cmd>` | Start a temporary container, run a command, then clean up |
-| `md fork` | Snapshot a running container and create a new one on fresh branches |
+| `md fork` | Snapshot a running or stopped container and create a new one on fresh branches |
 | `md list` | List all md containers |
 | `md list --json` | List containers as JSON |
 | `md list --stats` | Include resource usage stats (CPU, memory, disk, network) |
@@ -69,9 +69,10 @@ Re-running `md start` from a repo whose container is stopped or exited is the su
 | `--github` | Inject `GITHUB_TOKEN` into the container |
 | `--no-ssh` | Don't SSH into the container after starting |
 | `--cpus <n>` | Max CPU cores (default: `NumCPU - 2`, minimum 2; 0 = no limit) |
-| `--label key=value`, `-l` | Add Docker container label (repeatable) |
-| `--extra-repo path[:branch]`, `-e` | Map an additional git repository (repeatable) |
-| `--docker-flag "arg1 arg2"` | Extra flags passed verbatim to `docker run` (shell-quoted, repeatable) |
+| `--label key=value`, `-l` | Add a container label (repeatable) |
+| `--extra-repo path[:branch1[,branch2...]]`, `-e` | Map an additional git repository and optionally one or more branches (repeatable) |
+| `--extra-branch <name>` | Map an additional branch from the primary repository (repeatable) |
+| `--docker-flag "arg1 arg2"` | Extra flags passed verbatim to `docker` or `podman run` (shell-quoted, repeatable) |
 | `--cache <name>` | Add a well-known cache or a custom `host:container[:ro]` directory (repeatable) |
 | `--mount host:container[:ro]` | Bind-mount a host directory into the running container (repeatable) |
 | `--sudo` | Enable root access with a random password; grants `SYS_ADMIN` and `/dev/fuse` |
@@ -102,7 +103,7 @@ Re-running `md start` from a repo whose container is stopped or exited is the su
 
 ## Fork
 
-`md fork` snapshots a running container's entire filesystem (installed packages, build artifacts, agent state) and creates a new container where each repo is checked out on a fresh branch.
+`md fork` snapshots a running or stopped container's entire filesystem (installed packages, build artifacts, agent state) and creates a new container where each repo is checked out on a fresh branch.
 
 ```bash
 # Fork the current container
@@ -135,7 +136,29 @@ md run -- cargo check
 md run --image ghcr.io/caic-xyz/md-user:2025-05-09 -- npm ci
 ```
 
-Supports: `--image`, `--tag`, `--platform`, `--repo`, `--branch`, `--github`, `--cpus`, `--docker-flag`, `--mount`, and all cache flags.
+Run flags:
+
+| Flag | Description |
+|---|---|
+| `-b, -branch <name>` | Branch to use (default: current branch) |
+| `-r, -repo <path>` | Path to git repository (default: current directory) |
+| `--image <ref>` | Full base image |
+| `--tag <tag>` | Tag for the default base image |
+| `--platform <platform>` | Build and run for `linux/amd64` or `linux/arm64` |
+| `--cache <name>` | Add a well-known cache or custom `host:container[:ro]` directory (repeatable) |
+| `--no-cache <name>` | Exclude a default cache (repeatable) |
+| `--no-caches` | Disable all default caches |
+| `--mount host:container[:ro]` | Bind-mount a host directory into the container (repeatable) |
+| `--extra-repo path[:branch1[,branch2...]]`, `-e` | Map an additional repository (repeatable) |
+| `--github` | Inject `GITHUB_TOKEN` into the container |
+| `--env NAME` | Copy an environment variable from the host (repeatable) |
+| `--env NAME=value` | Set an environment variable only for this run (repeatable) |
+| `--env NAME=` | Remove an inherited environment variable for this run (repeatable) |
+| `--apply-patch` | Apply repository changes from the temporary container to your host after a successful command |
+| `--cpus <n>` | Maximum CPU cores (0 means no limit) |
+| `--docker-flag "arg1 arg2"` | Extra flags passed verbatim to `docker` or `podman run` (repeatable) |
+
+`--apply-patch` requires a git repository. It applies the temporary container's changes after the command succeeds, then removes the container.
 
 ## Workflows
 
@@ -157,6 +180,17 @@ All repos are cloned into `~/src/<name>` inside the container. The first repo is
 md diff --all      # show diffs for every repo
 md pull --all      # pull changes from every repo
 ```
+
+### Multiple branches from one repository
+
+Map extra branches from the primary repository when one task needs to compare or update related work:
+
+```bash
+# Start on the current branch and map two more branches
+md start --extra-branch release --extra-branch docs
+```
+
+The current branch, or the branch passed with `--branch`, remains primary. `md diff` reports only the primary branch. Use Git inside the container to inspect changes on the additional branches. They remain available to `md pull`, `md push`, and `md fork`.
 
 ### Fork workflow
 
@@ -194,6 +228,12 @@ md run --image ghcr.io/caic-xyz/md-user:2026-05-09 -- npm ci && npm test
 
 # Pass through GitHub token for private repos
 md run --github -- npm install
+
+# Pass a temporary API key without saving it in a file
+md run --env MY_API_KEY -- npm test
+
+# Keep a one-shot command's changes
+md run --apply-patch -- npm run format
 ```
 
 ## AI commit messages

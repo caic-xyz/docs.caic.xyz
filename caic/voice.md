@@ -37,7 +37,9 @@ By default caic manages a Qwen3 ASR model, a Gemma LLM, and a KittenTTS worker, 
 
 ## WebRTC and firewalls
 
-Voice streams over WebRTC, which needs a reachable UDP port. By default caic uses an OS-assigned ephemeral port, which works for local use. For remote access, set a static port with `webrtc_udp_port` and open that UDP port in your firewall:
+Voice streams over WebRTC, which needs a reachable UDP port. By default caic uses an OS-assigned ephemeral port, which works for local use. When a browser connects from outside your LAN, caic automatically asks a compatible UPnP router to map the selected UDP port and advertises that external address. The mapping is removed when the gateway stops.
+
+For a firewall rule that stays the same across restarts, set a static port with `webrtc_udp_port` and open that UDP port in your firewall:
 
 ```toml
 [voice-gateway.config.server]

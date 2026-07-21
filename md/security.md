@@ -77,7 +77,7 @@ Each container gets its own `known_hosts` file with the host key pinned to `[127
 
 ## Linux capabilities
 
-Docker containers run with restricted capabilities by default. md adds only the minimum needed:
+Containers run with restricted capabilities by default. md adds only the minimum needed:
 
 | Capability | Why | Risk |
 |---|---|---|

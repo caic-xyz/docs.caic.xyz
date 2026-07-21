@@ -93,7 +93,7 @@ Agent config directories are bind-mounted into the container, not copied into th
 
 md mounts all known agent directories from your host: home paths (`~/.claude`, `~/.codex`, `~/.pi`, and others), XDG config paths (`~/.config/opencode`, `~/.config/goose`), XDG data and state paths. The full list is in [Configuration](./configuration#agent-configuration-files).
 
-The `~/.config/md` directory is mounted read-only to prevent accidental modification of SSH keys from inside the container. `~/.config/agents` is always mounted regardless of which harnesses you use, so you can maintain a centralized AGENTS.md and skills directory.
+The `~/.config/md` directory is mounted read-only to prevent accidental modification of SSH keys from inside the container. `~/.agents` is always mounted regardless of which harnesses you use, so you can maintain a centralized AGENTS.md and skills directory.
 
 On the host, md creates a `~/.claude.json` → `~/.claude/claude.json` symlink so Claude Code can find its configuration at the home-directory level.
 

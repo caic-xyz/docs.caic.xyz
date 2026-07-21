@@ -34,7 +34,7 @@ caic is a Go HTTP server with an embedded SolidJS web UI that orchestrates AI co
 └─────────────────────────────────────────────────────────┘
 ```
 
-Each task runs in its own Docker container. The caic server communicates with the container over SSH. Inside the container, a Python relay daemon manages the agent process and survives SSH disconnects.
+Each task runs in its own Docker or Podman container. The caic server communicates with the container over SSH. Inside the container, a Python relay daemon manages the agent process and survives SSH disconnects. When both runtimes are available, you can select one for each new task.
 
 ## How tasks work
 
@@ -48,7 +48,7 @@ Key states:
 |---|---|
 | **Pending** | Task created, queued |
 | **Branching** | Creating a dedicated git branch on the host |
-| **Provisioning** | Launching the Docker container |
+| **Provisioning** | Launching the task container |
 | **Starting** | Connecting the agent backend |
 | **Running** | Agent is actively producing output |
 | **Waiting** | Agent finished a turn, awaiting user input |
@@ -81,6 +81,8 @@ Each task gets a dedicated branch like `caic-0`, `caic-1`, etc. The number incre
 
 For tasks spanning multiple repositories, each repository gets its own dedicated branch. The agent works across all repos within the same task, and changes are pushed together at sync time.
 
+You can fork a running, stopped, or crashed task. The fork starts with a separate workspace and fresh branches while retaining the source task's filesystem, including installed tools and agent history.
+
 ## The relay: agent persistence
 
 The relay is a daemon that runs inside each container and manages the agent subprocess. It is the reason caic can survive server restarts without losing agent sessions.
@@ -106,10 +108,10 @@ The relay periodically checks `git diff` in the container and emits diff stat me
 
 When caic starts, it goes through a phased initialization:
 
-1. **Parallel I/O**: discovers git repositories under the root directory, loads purged task logs from disk, and lists Docker containers — all concurrently
+1. **Parallel I/O**: discovers git repositories under the root directory, loads purged task logs from disk, and lists containers from every available runtime concurrently
 2. **Runner init**: creates a runner per discovered repository, which scans git branches and initializes agent backends
 3. **Log loading**: loads recently-active purged tasks (last 14 days, up to 5 per repo) from JSONL log files so their history appears in the UI
-4. **Container adoption**: for each running Docker container with a caic label, checks whether the relay is alive and auto-reattaches
+4. **Container adoption**: for each running caic container, checks whether the relay is alive and auto-reattaches
 
 Container adoption is the key to zero-loss restarts. It checks:
 
@@ -122,7 +124,7 @@ If the relay is alive, caic spawns a background goroutine to reattach, and the t
 
 ### Container death detection
 
-caic watches Docker events for container die events. When a container exits, the corresponding task is archived as Stopped. It can be revived later — the container's filesystem is preserved.
+caic watches container events for task exits. When a container exits, the corresponding task is archived as Stopped. It can be revived later because its filesystem is preserved.
 
 ## Agent backend abstraction
 

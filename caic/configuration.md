@@ -45,7 +45,6 @@ Relative paths in the config file (e.g. `geo_db`, `app_private_key_pem`) are res
 |---|---|---|
 | `root` | `"."` | Parent directory containing git repositories managed by caic. Tilde (`~`) is expanded to the user's home directory |
 | `auto_update` | `"50 4 * * *"` | Cron schedule for auto-update (checks GitHub Releases). Supports cron step syntax (`*/N`, `start/N`, e.g. `*/15 * * * *`). Set to `""` to disable |
-| `runtime` | auto-detect | Container runtime: `"docker"` or `"podman"`. When unset (`""`), caic auto-detects (Docker preferred, then Podman). sudo is unsupported with rootless Podman, so use Docker if you need sudo-enabled containers |
 
 #### `[core.env]`
 
@@ -61,7 +60,6 @@ Environment variables inherited by the server process. Falls back to the host en
 ```toml
 [core]
 root = "~/projects"
-runtime = "podman"
 
 [core.env]
 TAILSCALE_API_KEY = "tskey-api-..."
@@ -80,7 +78,9 @@ auto_update = ""
 
 ### Preferences
 
-`~/.config/caic/preferences.json` stores per-user settings independent of `config.toml`. Edit it directly or through the Settings UI, which exposes the container image, CPU architecture and platform, CPU cores, well-known caches (now opt-in), custom cache mappings, custom host mounts (with enabled and read-only toggles), auto-fix CI and PR toggles, per-model thinking effort, and version info with manual update.
+`~/.config/caic/preferences.json` stores per-user settings independent of `config.toml`. Edit it directly or through the Settings UI, which exposes the container image, CPU architecture and platform, CPU cores, the preferred runtime when both Docker and Podman are available, well-known caches (now opt-in), custom cache mappings, custom host mounts (with enabled and read-only toggles), auto-fix CI and PR toggles, per-model thinking effort, and version info with manual update.
+
+caic detects every available container runtime at startup. When more than one is available, choose the default for new tasks in Settings. Each task keeps the runtime it was created with. Sudo is unavailable with rootless Podman, so select Docker for sudo-enabled tasks.
 
 ### `[server]`
 

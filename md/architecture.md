@@ -50,7 +50,7 @@ If a registry pull fails but md already has a local copy of the remote base imag
 ```
 1. Pull base image `md-user` (if updated on registry, or use the local copy if the pull fails and one exists)
 2. Build specialized image `md-specialized-*` (if SSH keys or caches changed)
-3. Start container with docker run
+3. Start container with the selected runtime
    - Bind SSH port to 127.0.0.1 (random port)
    - Bind VNC port if --display (random port, 127.0.0.1 only)
    - Mount agent config directories from host

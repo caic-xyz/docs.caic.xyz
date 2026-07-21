@@ -1,5 +1,5 @@
 ---
-# branch-locked Docker containers for AI coding agents
+# branch-locked containers for AI coding agents
 ---
 
 # md
@@ -26,6 +26,7 @@ md is supported on **Linux**, **macOS**, and **Windows via WSL2**.
 - Run agents on multiple branches simultaneously
 - Switch local branches without affecting running agents
 - Run tests in parallel without conflicts
+- Map additional branches into one container when an agent needs to compare or update related work
 - Keep your local checkout clean
 - Delete containers cleanly when done
 

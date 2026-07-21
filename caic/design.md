@@ -10,7 +10,7 @@ This page explains the key design decisions behind caic: why things work the way
 
 ### One container, one task
 
-Every task gets its own Docker container. This is the fundamental isolation boundary:
+Every task gets its own container. This is the fundamental isolation boundary:
 
 - Agents on different branches don't interfere with each other's working trees
 - Server restarts don't kill running agents (the relay persists inside the container)
