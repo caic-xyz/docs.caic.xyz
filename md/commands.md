@@ -149,6 +149,7 @@ The sync commands accept `-b/--branch <name>` and `-r/--repo <path>` to select a
 | `diff` | `--full` | Compare the whole branch with its upstream merge base |
 | `pull` | `--all` | Operate on all repositories in the container |
 | `pull` | `-n, --no-describe` | Use a fixed commit message instead of an AI-generated description |
+| `pull` | `--tokens <count>` | Set the model context window used for AI commit descriptions |
 | `push` | `--all` | Operate on all repositories in the container |
 
 `md pull` fast-forwards when the host branch is behind the container. It rebases host-only commits when both sides advanced. When the container rewrote history, it resets a host branch that has not advanced or rebases host-only commits onto the rewritten history. These operations can rewrite host commit IDs. During a reset, an untracked host file is overwritten if the container now tracks the same path. md refuses to begin if the host has tracked changes or a rebase in progress.
@@ -311,7 +312,7 @@ md run --apply-patch -- npm run format
 
 ## AI commit messages
 
-`md pull` can generate commit messages using an LLM. It analyzes the diff and recent commit history to produce a conventional commit message.
+`md pull` can generate commit messages using an LLM. It analyzes the diff and recent commit history to produce a conventional commit message. The prompt defaults to a rationale body and permits its omission only for an obviously trivial, self-explanatory change. It asks the model to limit message lines to 120 characters.
 
 ### Setup
 
@@ -320,13 +321,14 @@ Set the provider and model via environment variables; the full list of acceptabl
 ```bash
 export ASK_PROVIDER=deepseek
 export ASK_MODEL=deepseek-v4-flash
+export GIT_DESC_TOKENS=64000
 ```
 
 If not set, md auto-discovers available providers on your system. It prefers CLI-based providers in this order: `pi`, `codex`, `opencode`, `claudecode`, then any others alphabetically. The model defaults to a cheap/fast option.
 
 For an OpenAI-compatible endpoint, set `ASK_PROVIDER=openaicompatible`, set `ASK_REMOTE` to the endpoint URL, and set `ASK_API_KEY_NAME` to the name of the environment variable that contains its API key. Pass `-n` or `--no-describe` to `md pull` when you want a fixed commit message without contacting a provider.
 
-For large diffs, md uses a progressive reduction pipeline to fit within the LLM's context window. See [Design](./design#ai-commit-message-pipeline) for details.
+`GIT_DESC_TOKENS` sets the default model context window used to budget requests. It defaults to 64000 and must be at least 8000. Use `md pull --tokens <count>` for a one-off override. For large diffs, md reports its reduction and summarization progress while keeping every request within this budget. See [Design](./design#ai-commit-message-pipeline) for details.
 
 ## Build
 

@@ -125,11 +125,16 @@ The `--github` flag tries `$GITHUB_TOKEN` first, then falls back to `gh auth tok
 
 ## AI commit message pipeline
 
-When `md pull` generates commit messages, it handles diffs of any size through a progressive reduction pipeline:
+When `md pull` generates commit messages, it derives an input budget from the model's context window. Set the default with `GIT_DESC_TOKENS` or override it for one pull with `--tokens`. It defaults to 64000 tokens and must be at least 8000. md conservatively estimates three characters per token and reserves one quarter of the window for instructions, reasoning, and the answer.
 
-1. **Full diff**: if the entire diff fits within the LLM's context window, generate a commit message directly
-2. **Reduced context**: trim diff context lines to 3 per hunk, keeping only the most relevant surrounding code
-3. **Filtered**: exclude test files, data files (`.json`, `.yaml`, `.yml`), and generated files (lock files, vendored dependencies). Each filter is applied progressively: a filter is skipped if it would eliminate all remaining files.
-4. **Map-reduce**: split the remaining files into context-sized chunks, summarize each in parallel (up to 4 concurrent LLM calls), then synthesize a unified commit message from the summaries
+The generation prompt defaults to a rationale body. It permits a subject-only message only for an obviously trivial, self-explanatory change. Changes that affect behavior, interfaces, dependencies, data, architecture, or multiple meaningful concerns require a body. The prompt asks the model to limit every message line to 120 characters.
 
-At every step, the pipeline preserves an annotation listing which files were omitted, so the LLM knows they existed. This is the same pipeline used by caic for pull request descriptions.
+Before contacting the model, md asks Git for a normalized patch with fixed `a/` and `b/` prefixes, path quoting, line indicators, context size, rename detection, and submodule formatting. It disables color, external diff drivers, text conversion, and relative paths so your Git configuration cannot unexpectedly change the model input. md then removes diff metadata that does not help describe the change, omits the contents of deleted and lock files, and truncates unusually long lines. It handles larger diffs through a progressive reduction pipeline:
+
+1. **Full diff**: if the cleaned diff fits, generate a commit message directly.
+2. **Reduced context**: trim context to three lines around each change.
+3. **Omitted bodies**: replace test and JSON/YAML file bodies with an omission marker while retaining their filenames.
+4. **Balanced parts**: split between files and hunks where possible. An oversized hunk is split between lines, so one large generated or modified file cannot exceed the budget by itself. Each part receives shorter metadata that omits recent commit details already available to the final request.
+5. **Parallel summaries**: summarize up to four parts concurrently, then synthesize one commit message. If the summaries themselves exceed the budget, split oversized responses and merge them in additional rounds until the final request fits.
+
+md prints progress when it reduces or splits a large diff and while it merges summaries. Every model request must succeed and return content. A failed part is never silently discarded. md reports the generation failure and uses its fixed fallback commit message.
