@@ -29,6 +29,7 @@ md is supported on **Linux**, **macOS**, and **Windows via WSL2**.
 - Map additional branches into one container when an agent needs to compare or update related work
 - Keep your local checkout clean
 - Delete containers cleanly when done
+- Use Docker or Podman, including rootless Podman on Linux
 
 ## Quick start
 
@@ -48,6 +49,8 @@ md diff
 md pull
 ```
 
+Every mapped branch must already exist on the host and have an upstream. See [Syncing](./commands#syncing) for `md diff`, `md pull`, and remote-state behavior.
+
 ## Install
 
 ```bash
@@ -59,7 +62,7 @@ curl -fsSL https://caic.xyz/install.sh | bash
 - [Commands](./commands): full command reference, workflows (fork, multi-repo, CI)
 - [Installation](./installation): prerequisites, platform notes, from-source builds
 - [Configuration](./configuration): caches, environment variables, agent configs
-- [Harnesses](./harnesses): agent-specific setup (Claude Code, Codex, Gemini, Pi, etc.)
+- [Harnesses](./harnesses): agent-specific setup and persisted configuration
 - [Preinstalled Tools](./preinstalled-tools): what's available inside every container
 - [Tailscale](./tailscale): remote access over your tailnet
 - [Architecture](./architecture): image hierarchy, build pipeline, container lifecycle

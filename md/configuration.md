@@ -12,8 +12,8 @@ Containers are named `md-<repo-name>-<branch-name>`. Each is locked to a repo-br
 
 Each md container includes:
 
-- **Isolated git clone**: `~/src/<repo-name>` tracks a `base` branch matching your local branch
-- **User-mapped permissions**: runs as your local user ID for correct file permissions
+- **Isolated Git checkout**: `~/src/<repo-name>` is synchronized explicitly with your host checkout
+- **User-mapped permissions**: Docker and rootful Podman use your host user ID. Rootless Podman maps your host user to the container's fixed `1000:1000` user
 - **SSH access**: `ssh md-<repo>-<branch>` with StrictHostKeyChecking
 - **Preinstalled tools**: [full inventory](./preinstalled-tools)
 - **Shell environment**: PATH and env vars available in all bash invocations (interactive, non-interactive, login, and non-login)
@@ -22,7 +22,7 @@ Each md container includes:
 
 Env vars reach the container through three mechanisms, merged in order:
 
-1. **`.env` file** in your repository root: repo-specific secrets (auto-mounted)
+1. **`.env` file** in each mapped repository root: repo-specific secrets sent at startup
 2. **`~/.config/md/env`**: global defaults for all your containers
 3. **`--github` flag**: injects `GITHUB_TOKEN` at startup
 
@@ -51,13 +51,24 @@ The `--github` flag tries `$GITHUB_TOKEN` first, then falls back to `gh auth tok
 
 ## Agent configuration files
 
-These host directories are automatically bind-mounted into each container:
+These host directories are automatically bind-mounted into each container. The XDG entries use `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, and `XDG_STATE_HOME` when you have set them. The table shows their default paths.
 
-- `~/.amp`, `~/.claude`, `~/.codex`, `~/.gemini`, `~/.kilocode`, `~/.kimi`, `~/.pi`, `~/.qwen`
-- `~/.agents`, `~/.config/amp`, `~/.config/goose`, `~/.config/opencode`
-- `~/.local/share/amp`, `~/.local/share/goose`, `~/.local/share/opencode`
-- `~/.local/state/opencode`
-- `~/.android` (ADB keys)
+| Purpose | Host paths | Access |
+|---|---|---|
+| Shared agent instructions and skills | `~/.agents` | Read-write |
+| Amp | `~/.amp`, `~/.config/amp`, `~/.local/share/amp` | Read-write |
+| Android and ADB | `~/.android` | Read-write |
+| Claude Code | `~/.claude` | Read-write |
+| Codex | `~/.codex` | Read-write |
+| Goose | `~/.config/goose`, `~/.local/share/goose` | Read-write |
+| Kilo Code | `~/.kilocode` | Read-write |
+| Kimi | `~/.kimi` | Read-write |
+| OpenCode | `~/.config/opencode`, `~/.local/share/opencode`, `~/.local/state/opencode` | Read-write |
+| Pi | `~/.pi` | Read-write |
+| Qwen Code | `~/.qwen` | Read-write |
+| md configuration | `~/.config/md` | Read-only |
+
+If one of these directories contains a symlink to another directory, md also mounts the resolved target so the link continues to work in the container.
 
 The `~/.config/md` directory is mounted **read-only** to prevent accidental modification of SSH keys from inside the container.
 
@@ -87,7 +98,11 @@ For example, in `~/.pi/agent/models.json` with Pi and llama.cpp:
 }
 ```
 
-This works on macOS, Linux, and Windows with Docker Desktop. On Linux without Docker Desktop, you may need to add `--add-host=host.docker.internal:host-gateway` to your Docker run command or configure it in your Docker daemon settings.
+This works with Podman and with Docker Desktop on macOS, Linux, and Windows. On Linux with Docker Engine, you may need to pass the host mapping explicitly:
+
+```bash
+md start --docker-flag='--add-host=host.docker.internal:host-gateway'
+```
 
 ## Build cache injection
 

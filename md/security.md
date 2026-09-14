@@ -23,7 +23,7 @@ $ grep Port ~/.ssh/config.d/md-myrepo-main.conf
 
 ### Outbound: unrestricted by default
 
-The container uses Docker's default bridge network, which allows full outbound internet access. This is intentional: AI coding agents need to install packages, clone repositories, call APIs, and access documentation.
+The container uses the selected runtime's default bridge network, which allows full outbound internet access. This is intentional: AI coding agents need to install packages, clone repositories, call APIs, and access documentation.
 
 ### Restricting outbound access
 
@@ -31,14 +31,14 @@ For sensitive workloads, two approaches are available:
 
 **Tailscale ACLs**: when the container is connected via `--tailscale`, outbound access can be controlled through Tailscale ACL policies. See [Tailscale](./tailscale) for setup.
 
-**Docker network restrictions**: pass `--docker-flag` to `md start` for Docker-level network controls. For example, to block all outbound traffic:
+**Container network restrictions**: pass `--docker-flag` to `md start` for runtime-level network controls. For example, to block all outbound traffic with Docker:
 
 ```bash
 docker network create --internal restricted
 md start --docker-flag='--network restricted'
 ```
 
-This blocks outbound routing at the Docker level. SSH access still works (host to container via the mapped port), but the container cannot reach the internet.
+This blocks outbound routing at the runtime level. SSH access still works from the host through the mapped port, but the container cannot reach the internet. Podman users can pass an equivalent Podman network flag.
 
 ## SSH security
 
@@ -84,8 +84,8 @@ Containers run with restricted capabilities by default. md adds only the minimum
 | `SYS_PTRACE` | strace, gdb, delve, lldb | Scoped to container PID namespace: cannot attach to host processes |
 | `seccomp=unconfined` | Chrome sandbox, strace, bpf | Does **not** grant capabilities: only removes syscall allowlist |
 | `apparmor=unconfined` (Docker only) | Chrome namespace creation | Container-scoped |
-| `NET_ADMIN`, `NET_RAW` (with `--tailscale`) | TUN device for Tailscale (plus `--device=/dev/net/tun`) | Required for Tailscale to function |
-| `SYS_ADMIN` (with `--sudo`) | Root access, `/dev/fuse` | Grants full root within the container; for rootless Podman fuse mounts |
+| `NET_ADMIN`, `NET_RAW` | Network interface administration and packet capture | Scoped to the container network namespace, but permits changing its routes and firewall rules and capturing its traffic |
+| `SYS_ADMIN` (with `--sudo`) | Nested containers; md also passes through `/dev/fuse` and `/dev/net/tun` | Grants broad administration rights within the container |
 
 What is **not** added:
 - `--privileged` is never used
@@ -95,7 +95,7 @@ What is **not** added:
 
 ## Sudo access
 
-When `--sudo` is passed, md generates a random password per container and configures `sudo` to accept it. The password is never baked into the image or stored on disk inside the container. It is stored as a Docker label on the container, so each container gets a unique, ephemeral credential.
+When `--sudo` is passed, md generates a random password per container and configures `sudo` to accept it. The password is never baked into the image or stored on disk inside the container. It is kept in the container's runtime metadata, so each container gets a unique, ephemeral credential.
 
 ```bash
 md start --sudo
@@ -106,12 +106,14 @@ The password grants root **within the container's user namespace only**. It does
 
 Running rootless Podman inside the container (nested containers) requires `--sudo` for the `SYS_ADMIN` capability and `/dev/fuse`, and your host must run a rootful Docker or Podman daemon. Rootless Docker or Podman hosts cannot supply the nested capabilities and are not supported for this use.
 
+Using rootless Podman as the host runtime is supported for normal md containers. It maps your host user to the image's fixed `user` account at UID/GID `1000:1000`, keeping host config mounts writable without changing their ownership. Forked containers retain writable user-owned files after md repairs ownership from the runtime snapshot.
+
 ## Credential isolation
 
 ### What the container does NOT have access to
 
 - Your host SSH keys: the container has its own generated key pair
-- Your host `.gitconfig`: the container gets a template
+- Your complete host Git configuration: md copies the global `user.name` and `user.email`, plus the effective values for each mapped repository. The effective values include repository-local overrides. Values that are not configured on the host remain unset
 - Your GitHub credentials: unless you use `--github` or `gh auth login` inside the container
 - Your host environment variables: only `GITHUB_TOKEN` (with `--github`) and variables from `.env` files
 
@@ -121,9 +123,9 @@ API keys for AI providers (Anthropic, OpenAI, Google, etc.) are injected via `.e
 
 Since the SSH channel is encrypted and goes through `127.0.0.1`, keys never traverse the network.
 
-### Docker build secrets
+### Image build secrets
 
-When building images locally (`md build-image`), the `GITHUB_TOKEN` is passed as a Docker build secret, preventing it from appearing in image layers or build logs.
+When building images locally (`md build-image`), the `GITHUB_TOKEN` is passed as a build secret, preventing it from appearing in image layers or build logs.
 
 ## Filesystem isolation
 
@@ -132,13 +134,16 @@ When building images locally (`md build-image`), the `GITHUB_TOKEN` is passed as
 - **Agent config directories**: bind-mounted read-write (e.g. `~/.claude`, `~/.config/opencode`)
 - **Build caches**: baked into image at build time (one-way copy, not live-mount)
 - **`/etc/localtime`**: bind-mounted read-only (timezone sync, on Linux, macOS, and Windows)
-- **`/dev/bus/usb`**: with `--usb` flag (Linux only)
+- **`/dev/kvm`**: passed through automatically when it is available and writable on the host
+- **`/dev/net/tun`**: with `--tailscale` or `--sudo`
+- **`/dev/fuse`**: with `--sudo`
+- **Raw USB devices and attached USB serial adapters**: with `--usb` (Linux only). Raw USB devices attached later appear automatically. Restart the container to add a newly attached `/dev/ttyUSB*` or `/dev/ttyACM*` adapter
 
 ### What is NOT shared
 
 - The host git checkout: the container has its own clone
 - Home directory contents other than agent config paths
-- `/proc`, `/sys`, `/dev` (container has its own namespaces)
+- Host `/proc`, `/sys`, and `/dev` other than the device passthrough listed above
 - Docker socket
 
 ## Tailscale

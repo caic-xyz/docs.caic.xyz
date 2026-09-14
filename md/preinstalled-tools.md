@@ -8,7 +8,7 @@ Every md container ships with a curated set of development tools, pre-configured
 
 ## Core utilities
 
-bash, git, curl, wget, rsync, jq, grep, ripgrep, less, man, file, find, xargs, sed, awk, col, bubblewrap, inotifywait, xvfb, tmux, tokei, xxd, sudo
+bash, git, curl, wget, rsync, jq, grep, ripgrep, less, man, file, find, xargs, sed, awk, col, bubblewrap, inotifywait, `/usr/bin/time` (GNU time), xvfb, tmux, tokei, xxd, sudo
 
 ## Editors
 
@@ -27,7 +27,7 @@ google-chrome (amd64), chromium (arm64 fallback), chrome-devtools-mcp
 | TypeScript | `tsc`, `tsx`, `eslint` |
 | Rust | `rustc`, `cargo`, `rustup`, `cargo-binstall` |
 | Python | `python3`, `uv`, `pylint`, `ruff` |
-| Java | `java` (JRE) |
+| Java | `java` (JDK 21, headless) |
 | R | `R` |
 
 ## Package managers
@@ -36,7 +36,7 @@ google-chrome (amd64), chromium (arm64 fallback), chrome-devtools-mcp
 
 ## Build tools
 
-cmake, ninja-build, ccache, make, gcc, g++, gradle, maven, golangci-lint, actionlint, shellcheck, shfmt
+build-essential, cmake, ninja-build, ccache, make, gcc, g++, arm-linux-gnueabi-gcc, gradle, golangci-lint, actionlint, shellcheck, shfmt, libsodium-dev, protobuf-compiler, cargo-binstall, pylint, ruff, uv, asciinema
 
 ## AI coding agents
 
@@ -44,12 +44,13 @@ cmake, ninja-build, ccache, make, gcc, g++, gradle, maven, golangci-lint, action
 |---|---|
 | Claude Code | `claude` |
 | Codex | `codex` |
-| Gemini CLI | `gemini` |
 | Kilo Code | `kilo` |
 | OpenCode | `opencode` |
 | Amp CLI | `amp` |
 | Pi | `pi` |
-| Qwen Code | `qwen-code` |
+| Qwen Code | `qwen` |
+| Kimi | `kimi` |
+| Agent Browser | `agent-browser` |
 
 ## Containers
 
@@ -57,19 +58,23 @@ podman (rootless inside the container)
 
 ## Virtualization
 
-qemu-kvm, libvirt-clients
+qemu-kvm, libvirt-clients, libguestfs-tools (`guestfish`, `guestmount`, `virt-inspector`)
 
 ## Android
 
 android-sdk, gradle, adb, sdkmanager
 
+## Database
+
+sqlite3
+
 ## Debugging & profiling
 
-strace, lsof, dlv (Go debugger), lldb / rust-lldb, objdump, radare2 (r2)
+binwalk, strace, lsof, dlv (Go debugger), lldb / rust-lldb, objdump, aarch64-linux-gnu-objdump, arm-linux-gnueabi-objdump, radare2 (r2)
 
 ## Networking
 
-curl, wget, net-tools, iproute2, ping, fping, traceroute, tcptraceroute, nmap, tcpdump, dig, host, nslookup, whois, tailscale
+curl, wget, net-tools, iproute2, ping, fping, traceroute, tcptraceroute, nmap, tcpdump, dig, host, nslookup, whois, sshpass, tailscale
 
 ## GitHub
 
@@ -81,7 +86,11 @@ brotli, zstd, unzip, ffmpeg, imagemagick
 
 ## Embedded
 
-flex, bison, gperf, dfu-util, libusb-1.0-0
+flex, bison, gperf, dfu-util, libusb-1.0-0, pahole (dwarves), libelf-dev
+
+## Math
+
+bc
 
 ## Version report
 

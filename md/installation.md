@@ -6,14 +6,16 @@
 
 ## Prerequisites
 
-- **Docker** (v27+)
+- **Docker or Podman**
 - **git**
+
+md uses Docker when both runtime commands are installed. It selects Podman automatically only when the `docker` command is not installed. Pass the global flag `--runtime docker` or `--runtime podman` before a command to select one explicitly. Use `--runtime podman` when a Podman compatibility shim provides the `docker` command.
 
 ### Platform-specific notes
 
 | Platform | Recommendation |
 |---|---|
-| **Linux** | Docker Engine. |
+| **Linux** | Docker Engine or Podman. Rootless Podman is supported. |
 | **macOS** | [Docker Desktop](https://docs.docker.com/desktop/setup/install/mac-install/). |
 | **Windows** | Docker Desktop with WSL2 backend. Run `md` from inside the WSL2 Linux distribution. |
 
@@ -31,7 +33,6 @@ This installs both `caic` and `md` binaries to `~/.local/bin/`.
 
 ```bash
 md version
-# md v0.14.1
 
 # Quick smoke test
 md run -- echo "md works"
@@ -42,7 +43,7 @@ md run -- echo "md works"
 ### Dependencies
 
 - Go (recent version)
-- Docker
+- Docker or Podman
 
 ### Build and install
 
@@ -63,7 +64,7 @@ Existing containers continue to work after upgrading. The container image is reb
 To force a rebuild with the latest base image:
 
 ```bash
-md prune    # remove old specialized images
+md prune    # remove unused md images and build caches from installed runtimes
 md start    # will pull latest base and rebuild
 ```
 
@@ -86,5 +87,5 @@ rm ~/.local/bin/md ~/.local/bin/caic
 
 - [Commands](./commands): full command reference
 - [Configuration](./configuration): caches, environment variables
-- [Harnesses](./harnesses): agent-specific setup (Claude Code, Codex, Gemini, etc.)
+- [Harnesses](./harnesses): agent-specific setup and persisted configuration
 - [Tailscale](./tailscale): remote access over your tailnet

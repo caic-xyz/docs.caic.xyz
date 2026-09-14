@@ -4,7 +4,7 @@
 
 # Architecture
 
-md uses a three-layer Docker image hierarchy. Understanding how the layers fit together helps you reason about build speed, cache behavior, and when images get rebuilt.
+md uses a three-layer container image hierarchy with Docker or Podman. Understanding how the layers fit together helps you reason about build speed, cache behavior, and when images get rebuilt.
 
 ## Image hierarchy
 
@@ -24,7 +24,7 @@ Rebuilt monthly. Default tag is `:latest`; pin to a version tag like `:2026-05-0
 
 ### User image
 
-Built on top of the root image. Contains language toolchains and AI coding agents: Go, Node.js, Bun, Rust, Python, R, Android SDK, and LLM tools (Claude Code, Codex, Gemini CLI, Kilo Code, OpenCode, Pi, Qwen Code). Also includes Neovim, git-maruel, and radare2.
+Built on top of the root image. Contains language toolchains and AI coding agents: Go, Node.js, Bun, Rust, Python, R, Android SDK, and LLM tools (Claude Code, Codex, Kilo Code, OpenCode, Pi, Qwen Code). Also includes Neovim, git-maruel, and radare2.
 
 Rebuilt weekly. Default tag is `:latest`; pin to a version tag like `:2026-05-01` for reproducible environments.
 
@@ -34,6 +34,7 @@ Built on your machine when you run `md start`. It adds three things on top of th
 
 1. **Dedicated SSH credentials**: the container's host key (for server identity) and an `authorized_keys` file containing your md user public key at `~/.ssh/md`
 2. **Build caches**: copies of your host's package manager caches (Go modules, Cargo registries, npm, etc.) so the container starts warm
+3. **Agent config mount points**: empty directories with the ownership needed for host config bind mounts
 
 The image name includes a hash of the base image and active cache configuration, so different cache setups produce distinct images.
 
@@ -54,19 +55,29 @@ If a registry pull fails but md already has a local copy of the remote base imag
    - Bind SSH port to 127.0.0.1 (random port)
    - Bind VNC port if --display (random port, 127.0.0.1 only)
    - Mount agent config directories from host
-   - Add Tailscale capabilities if --tailscale
+   - Grant the standard debugging and container-network capabilities
+   - Pass through the TUN device if --tailscale or --sudo
+   - Pass through raw USB and attached USB serial adapters if --usb
 4. Wait for SSH to become ready
 5. Send .env files into the container
-6. Push git repositories from host to container (parallel per repo)
-7. Set up git remotes on the host
-8. Open SSH session (unless --no-ssh)
+6. Transfer mapped branches, cached remote refs, and selected tags into the container (parallel per repository)
+7. Configure branch upstreams and remotes in the container, and copy the host's global and repository-specific Git names and emails
+8. Add a container remote to each host checkout
+9. Record the initial Git integration point for each mapped branch
+10. Open SSH session (unless --no-ssh)
 ```
 
-Each repo gets a `base` branch inside the container that mirrors the host branch it was started from. The container's working branch tracks `base`, so agents can `git diff base` to see their changes.
+The first mapped branch is checked out in the container. Each mapped branch keeps the same upstream and effective push remote as its host branch, and the host's remotes are configured in the container. The container also receives every remote-tracking ref already cached in the host checkout, so commands such as `git rebase origin/main` work without network access. Network operations from the container still require credentials. See [Syncing](./commands#syncing) for how to refresh the container's view of remote state.
+
+md records the container commit most recently established in the host branch as an integration point. `md diff` compares against this point, so it continues to show unintegrated work after an agent amends, resets, or rebases commits. `md diff --full` instead compares the whole checked-out branch with its upstream merge base.
+
+On the host, the container-specific remote keeps a remote-tracking ref for each mapped branch. These refs record the container commits the host saw during synchronization. `md pull` integrates from them. Only `md pull` moves existing host branches, while `md fork` creates new ones.
 
 ### Container runtime
 
-md auto-detects whether to use Docker or Podman on your host. To force one, pass `--runtime docker` or `--runtime podman`. Any other value is rejected with a clear error.
+md uses Docker when both runtime commands are installed. It selects Podman automatically only when the `docker` command is not installed. To force one, place `--runtime docker` or `--runtime podman` before the command. Use `--runtime podman` when a Podman compatibility shim provides the `docker` command. The selected runtime owns that command's containers and images.
+
+With rootless Podman, the host user maps to the image's fixed `user` account at UID/GID `1000:1000`. This keeps host config mounts writable even when your host UID and GID differ. Docker and rootful Podman instead adapt the container account to your host IDs.
 
 ### Mapping multiple repos
 
@@ -84,19 +95,11 @@ md-otherproject-fix-bug
 
 Special characters in repo or branch names are sanitized to hyphens. When started outside a git repository, containers get random names like `md-agent-a1b2c3d4`.
 
-## Container labels
+## Saved container settings
 
-md stores container metadata as Docker labels so that `md list` can reconstruct container state without a sidecar database. Labels are read-only after container creation.
+Each container retains its mapped repositories and whether display, Tailscale, USB, and sudo access were enabled. md reads these settings from the selected runtime, so commands such as `md list`, `md start` on a stopped container, and `md fork` do not need a sidecar database.
 
-| Label | Purpose |
-|---|---|
-| `md.repos` | Repository list (base64-encoded JSON) |
-| `md.display` | VNC display enabled (`"1"` or empty) |
-| `md.tailscale` | Tailscale networking enabled (`"1"` or empty) |
-| `md.tailscale_ephemeral` | Tailscale node is ephemeral (`"1"` or empty) |
-| `md.usb` | USB passthrough enabled (`"1"` or empty) |
-
-You can add your own labels with `md start --label key=value` (repeatable). Custom labels are useful for automation: for example, caic adds `caic=<task-id>` and `harness=<name>` labels to track task ownership.
+You can add your own runtime labels with `md start --label key=value` (repeatable). Custom labels are useful when another tool needs to associate a container with external work.
 
 ## SSH and networking
 
@@ -111,7 +114,7 @@ SSH uses key-based authentication only. md generates two key pairs on first use:
 
 ## Submodule handling
 
-Git submodules are transferred from your host to the container without network access. The host's `.git/modules/` bare repositories are pushed via SSH into the container, and the container configures local file:// URLs so `git submodule update` works without fetching from the internet. This works for nested submodules at any depth.
+Git submodules are transferred from your host to the container without network access. The container configures local URLs so `git submodule update` works without fetching from the internet. This works for nested submodules at any depth. The `--tags` expression used for the parent repository also filters tags in initialized submodules.
 
 ## Shell environment
 
@@ -128,7 +131,7 @@ Environment variables are loaded through modular scripts in `~/.config/bash.d/`,
 
 ### Image pruning
 
-`md prune` removes specialized and fork images that are no longer referenced by any container. It also cleans the Docker build cache.
+`md prune` removes specialized and fork images that are no longer referenced by any container. Without a global `--runtime` selection, it checks every installed supported runtime and cleans each runtime's build cache.
 
 ### Container cleanup
 
@@ -138,6 +141,8 @@ Environment variables are loaded through modular scripts in `~/.config/bash.d/`,
 
 ## How forking works
 
-`md fork` takes a snapshot of a running container's entire filesystem and creates a new container from it. Each repository gets a fresh branch name derived from the source (e.g. `main` → `main-0`).
+`md fork` takes a snapshot of a running or stopped container's entire filesystem and creates a new container from it. Each repository gets a fresh primary branch name derived from the source, for example `main` becomes `main-0`. Additional mapped branches keep their names.
 
-This preserves installed packages, build artifacts, and agent history while letting you explore a different approach on divergent branches. The forked container is fully independent: deleting the source container has no effect on the fork.
+This preserves installed packages, build artifacts, agent history, commits, and uncommitted changes while letting you explore a different approach. md creates the new primary branches on the host and treats inherited committed work as already integrated. Inherited uncommitted work remains visible in `md diff`. The source container is unchanged, and deleting it has no effect on the fork.
+
+Display, Tailscale, USB, and sudo settings are inherited from the source. Override any of them with `--display`, `--tailscale`, `--usb`, or `--sudo`. Add `=false` to disable an inherited setting, for example `md fork --usb=false`.

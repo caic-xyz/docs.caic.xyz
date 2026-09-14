@@ -1,5 +1,5 @@
 ---
-# AI coding agent harnesses: Claude Code, Codex, Gemini, Pi, Qwen, Kilo, OpenCode, Goose, Kimi, Amp
+# AI coding agent harnesses: Claude Code, Codex, Pi, Qwen, Kilo, OpenCode, Goose, Kimi, Amp
 ---
 
 # Harnesses
@@ -8,25 +8,24 @@ The container includes [`/home/user/src/AGENTS.md`](https://github.com/caic-xyz/
 
 ## Supported agents
 
-| Agent | Config file |
-|---|---|
-| [amp](https://ampcode.com/manual#AGENTS.md) | `~/.config/amp/AGENTS.md` |
-| [claude](https://www.anthropic.com/engineering/claude-code-best-practices) | `~/.claude/CLAUDE.md` |
-| [codex](https://developers.openai.com/codex/guides/agents-md/) | `~/.codex/AGENTS.md` |
-| [gemini](https://geminicli.com/docs/cli/gemini-md/) | `~/.gemini/GEMINI.md` |
-| [kilo](https://kilo.ai/docs/agent-behavior/custom-rules) | `~/.kilocode/rules/*.md` |
-| [opencode](https://opencode.ai/docs/rules/) | `~/.config/opencode/AGENTS.md` |
-| [pi](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/README.md) | `~/.pi/agent/AGENTS.md` |
-| [qwen](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/) | `~/.qwen/QWEN.md` |
-| [goose](https://block.github.io/goose/docs/) | `~/.config/goose/AGENTS.md` |
-| [kimi](https://github.com/MoonshotAI/kimi-cli) | `~/.kimi/KIMI.md` |
+| Agent | Instruction file | Host config mounted automatically |
+|---|---|---|
+| [amp](https://ampcode.com/manual#AGENTS.md) | `~/.config/amp/AGENTS.md` | Yes |
+| [claude](https://www.anthropic.com/engineering/claude-code-best-practices) | `~/.claude/CLAUDE.md` | Yes |
+| [codex](https://developers.openai.com/codex/guides/agents-md/) | `~/.codex/AGENTS.md` | Yes |
+| [kilo](https://kilo.ai/docs/agent-behavior/custom-rules) | `~/.kilocode/rules/*.md` | Yes |
+| [opencode](https://opencode.ai/docs/rules/) | `~/.config/opencode/AGENTS.md` | Yes |
+| [pi](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/README.md) | `~/.pi/agent/AGENTS.md` | Yes |
+| [qwen](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/) | `~/.qwen/QWEN.md` | Yes |
+| [goose](https://block.github.io/goose/docs/) | `~/.config/goose/AGENTS.md` | Yes |
+| [kimi](https://github.com/MoonshotAI/kimi-cli) | `~/.kimi/KIMI.md` | Yes |
 
 ## Sharing the same AGENTS.md across harnesses
 
 By default, each harness looks for its own config file (e.g. `~/.claude/CLAUDE.md`, `~/.pi/agent/AGENTS.md`). If you'd prefer a single AGENTS.md shared across all your agents, symlinks make this easy:
 
 ```bash
-mkdir -p ~/.agents ~/.config/amp ~/.claude ~/.codex ~/.config/goose ~/.gemini \
+mkdir -p ~/.agents ~/.config/amp ~/.claude ~/.codex ~/.config/goose \
          ~/.kimi ~/.kilocode/rules ~/.config/opencode ~/.pi/agent ~/.qwen
 
 echo "Read ~/AGENTS.md if present." >> ~/.agents/AGENTS.md
@@ -34,7 +33,6 @@ ln -s ../../.agents/AGENTS.md ~/.config/amp/AGENTS.md
 ln -s ../.agents/AGENTS.md    ~/.claude/CLAUDE.md
 ln -s ../.agents/AGENTS.md    ~/.codex/AGENTS.md
 ln -s ../../.agents/AGENTS.md ~/.config/goose/AGENTS.md
-ln -s ../.agents/AGENTS.md    ~/.gemini/AGENTS.md
 ln -s ../.agents/AGENTS.md    ~/.kimi/KIMI.md
 ln -s ../../.agents/AGENTS.md ~/.kilocode/rules/AGENTS.md
 ln -s ../../.agents/AGENTS.md ~/.config/opencode/AGENTS.md
@@ -50,13 +48,11 @@ If you use multiple agents, you can share the same skills directory rather than 
 
 ```bash
 mkdir -p ~/.agents/skills ~/.claude ~/.codex ~/.config/goose \
-         ~/.gemini/antigravity ~/.kimi ~/.kilocode ~/.config/opencode ~/.pi/agent ~/.qwen
+         ~/.kimi ~/.kilocode ~/.config/opencode ~/.pi/agent ~/.qwen
 
 ln -s ../.agents/skills/                 ~/.claude/skills
 ln -s ../.agents/skills/                 ~/.codex/skills
 ln -s ../../.agents/skills/              ~/.config/goose/skills
-ln -s ../../.agents/skills/              ~/.gemini/antigravity/skills
-ln -s ../.agents/skills/                 ~/.gemini/skills
 ln -s ../.agents/skills/                 ~/.kimi/skills
 ln -s ../.agents/skills/                 ~/.kilocode/skills
 ```
@@ -70,7 +66,6 @@ Skills locations by harness:
 | amp | `~/.agents/skills/**/SKILL.md` |
 | claude | `~/.claude/skills/<name>/SKILL.md` |
 | codex | `~/.codex/skills/**/SKILL.md` |
-| gemini | `~/.gemini/skills/<name>/SKILL.md` |
 | kilo | `~/.kilocode/skills/<name>/SKILL.md` |
 | opencode | `~/.config/opencode/skill/<name>/SKILL.md` |
 | pi | `~/.pi/agent/skills/**/SKILL.md` |

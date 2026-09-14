@@ -19,9 +19,19 @@ Each container is locked to a single repository-branch pair. You can:
 
 **Containers share no mounts, caches, or state with each other.**
 
-### Zero host modification
+### Explicit Git synchronization
 
-md never modifies files on your host checkout. Changes made inside the container stay there until you explicitly `md pull`. The host sees the container as a git remote: your working tree is untouched.
+The host and container have separate Git repositories. Changes made inside the container stay there until you explicitly run `md pull`. Starting a container adds a container-specific remote to the host checkout, but does not move your host branches. `md push` moves host state into the container. `md pull` is the only regular synchronization command that integrates container work into existing host branches, while `md fork` creates new host branches for the fork.
+
+### Stable integration points
+
+Agents often amend, reset, or rebase their work. md therefore keeps a Git integration point for each mapped branch rather than relying on the branch's earlier commit remaining in its history. `md diff` compares the checked-out container branch with that point and shows work not yet integrated into the host. `md diff --full` uses the upstream merge base when you need the whole branch instead.
+
+Integration points move only after a successful synchronization. A failed pull leaves unapplied work visible. A push moves the point to the pushed host commit, so the next `md diff` is empty. Forks start with inherited committed work integrated into their new host branches, while inherited uncommitted work remains visible.
+
+### Remote state without credentials
+
+md transfers the host checkout's cached remote-tracking refs into the container at startup and before synchronization commands. It also preserves every mapped branch's upstream and effective push remote. This supports offline rebases and triangular workflows without putting repository credentials in the container. The trade-off is that the container sees the host's last fetched state. A network push from inside the container still requires credentials. See [Syncing](./commands#syncing) for the refresh workflow.
 
 ### Warm caches by default
 
@@ -29,7 +39,9 @@ All well-known build caches (Go modules, Cargo registries, npm, pip, Gradle, Mav
 
 ### Works with Docker or Podman
 
-md auto-detects the container runtime on your host so you don't have to configure it. If both Docker and Podman are available, or you want to force a choice, pass `--runtime docker` or `--runtime podman`. Any other value is rejected with a clear error rather than being passed through to an unknown command.
+md prefers Docker when both runtime commands are installed and selects Podman automatically only when the `docker` command is absent. You can force a choice with `--runtime docker` or `--runtime podman`. Explicitly select Podman when a compatibility shim provides a command named `docker`.
+
+Docker and rootful Podman adapt the container user to the host UID and GID. Rootless Podman instead maps the host user to the image's fixed UID/GID `1000:1000`. This keeps bind-mounted configuration writable without recursively changing ownership across the container home. When a rootless Podman fork is created from a snapshot, md restores user ownership inside the fork before work resumes.
 
 ## How the specialized image is built
 
@@ -91,7 +103,7 @@ This reduces total startup latency. The `.env` transfer doubles as the SSH readi
 
 Agent config directories are bind-mounted into the container, not copied into the image. This means settings persist across container rebuilds.
 
-md mounts all known agent directories from your host: home paths (`~/.claude`, `~/.codex`, `~/.pi`, and others), XDG config paths (`~/.config/opencode`, `~/.config/goose`), XDG data and state paths. The full list is in [Configuration](./configuration#agent-configuration-files).
+md mounts all configured harness directories from your host. This includes home paths, XDG config paths, and XDG data and state paths. The full list is in [Configuration](./configuration#agent-configuration-files).
 
 The `~/.config/md` directory is mounted read-only to prevent accidental modification of SSH keys from inside the container. `~/.agents` is always mounted regardless of which harnesses you use, so you can maintain a centralized AGENTS.md and skills directory.
 
@@ -101,7 +113,7 @@ On the host, md creates a `~/.claude.json` → `~/.claude/claude.json` symlink s
 
 Environment variables reach the container through three mechanisms, merged in order:
 
-1. **`.env` file** in your repository root: repo-specific secrets (auto-mounted)
+1. **`.env` file** in each mapped repository root: repo-specific secrets sent at startup
 2. **`~/.config/md/env`**: global defaults for all your containers
 3. **`--github` flag** at startup: injects `GITHUB_TOKEN`
 
