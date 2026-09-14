@@ -106,7 +106,7 @@ Re-running `md start` from a repo whose container is stopped or exited is the su
 | `--sudo` | Enable root access with a random password; grants `SYS_ADMIN` and `/dev/fuse` |
 | `-q` | Suppress informational output |
 
-Every mapped branch must exist on the host and have an upstream. `md start` transfers mapped branches, selected tags, and all remote-tracking refs cached by the host. It preserves each branch's upstream and effective push remote. The refs in the container are only as current as the host checkout. Run `git fetch` on the host first when current remote state matters, then run `md diff`, `md pull`, or `md push` to refresh the cached remote refs in the container.
+Every mapped branch must exist on the host and have an upstream. This remains required when you revive, synchronize, diff, or fork a container. If a branch or upstream is missing, md stops and explains how to repair it. `md start` transfers mapped branches, selected tags, and all remote-tracking refs cached by the host. Other local branches do not become container branches unless a mapped branch tracks one as its upstream. md preserves each mapped branch's upstream and effective push remote. The refs in the container are only as current as the host checkout. Run `git fetch` on the host first when current remote state matters, then run `md diff`, `md pull`, or `md push` to refresh the cached remote refs in the container.
 
 An upstream can be another local branch through Git's `.` remote. md mirrors that local branch so the upstream also resolves in the container. A non-primary mapped branch cannot track the primary branch because a fork renames the primary while additional branches keep their names.
 
@@ -135,7 +135,7 @@ Repository-local Git hooks are available in the container when `core.hooksPath` 
 | `md push` | Back up the current repository's container branches, then replace them with host state |
 | `md push --all` | Push every repository mapped into the container |
 
-`md diff` moves no branch and leaves the container's Git index untouched. It refreshes cached remote refs and runs with Git locks disabled, so it is safe to run while an agent is working. Extra arguments are forwarded to `git diff`, for example `md diff --stat` or `md diff --name-only`. With `--exit-code` or `--quiet`, it preserves Git's exit status: 0 for no differences, 1 for differences, and 2 for an error.
+`md diff` moves no branch and leaves the container's Git index untouched. It refreshes cached remote refs and runs with Git locks disabled, so it is safe to run while an agent is working. During an interrupted rebase in the container, it identifies the branch from the rebase state and still compares against that branch's integration point. Extra arguments are forwarded to `git diff`, for example `md diff --stat` or `md diff --name-only`. With `--exit-code` or `--quiet`, it preserves Git's exit status: 0 for no differences, 1 for differences, and 2 for an error.
 
 If the checked-out branch was created inside the container and has no integration point, `md diff` shows the whole branch. If the branch includes a newer upstream than its integration point, the output may include upstream commits. md reports either case on standard error. Use `md diff --full` when you want the branch comparison with its upstream.
 
@@ -151,9 +151,15 @@ The sync commands accept `-b/--branch <name>` and `-r/--repo <path>` to select a
 | `pull` | `-n, --no-describe` | Use a fixed commit message instead of an AI-generated description |
 | `push` | `--all` | Operate on all repositories in the container |
 
-`md pull` fast-forwards when the host branch is behind the container. It rebases host-only commits when both sides advanced. When the container rewrote history, it resets a host branch that has not advanced or rebases host-only commits onto the rewritten history. These operations can rewrite host commit IDs. md refuses to begin if the host has tracked changes or a rebase in progress. If integration conflicts, it leaves the conflict unresolved for you to inspect and resolve. Successfully integrated branches remain integrated if a later mapped branch fails. Integration points move only after every mapped branch succeeds, so `md diff` may continue to show work that already reached the host after a partial failure.
+`md pull` fast-forwards when the host branch is behind the container. It rebases host-only commits when both sides advanced. When the container rewrote history, it resets a host branch that has not advanced or rebases host-only commits onto the rewritten history. These operations can rewrite host commit IDs. During a reset, an untracked host file is overwritten if the container now tracks the same path. md refuses to begin if the host has tracked changes or a rebase in progress.
 
-`md push` first commits Git-visible container changes and creates timestamped backup branches inside the container. It then resets the mapped container branches to the host branches. It refuses to run when a mapped host branch has uncommitted changes. Ignored untracked files in the container are not part of the backup and can be overwritten when the host tracks the same path.
+If integration conflicts, md leaves the rebase unresolved for you to inspect. The host checkout may be on another mapped branch where that rebase was needed. Resolve the conflict and run `git rebase --continue`, then run `md pull` again so md records the current integration points. If you instead run `git rebase --abort`, that branch and later mapped branches remain unintegrated. Running `md pull` again retries the integration and may produce the same conflict. Successfully integrated branches remain integrated if a later mapped branch fails. Integration points move only after every mapped branch succeeds, so `md diff` may continue to show work that already reached the host after a partial failure.
+
+`md push` first commits Git-visible container changes and creates backup branches inside the container. It creates `backup-<timestamp>` at the checked-out commit and `backup-<timestamp>-<n>-<sanitized-branch>` for each mapped branch. Characters such as `/` become `-` in the sanitized branch name. To recover, enter the container, run `git branch --list 'backup-*'`, and check out or reset to the backup you need. md has no separate restore command.
+
+The check for uncommitted changes on mapped host branches happens after this backup. A refused push can therefore still commit pending container changes and create the backup branches. If the check passes, md resets the mapped container branches to the host branches. Ignored untracked files in the container are not part of the backup and can be overwritten when the host tracks the same path.
+
+For the complete behavioral model, see [Git model: host branches, container branches, and what each command does](https://github.com/caic-xyz/md/blob/main/docs/GIT_MODEL.md).
 
 ## Fork
 

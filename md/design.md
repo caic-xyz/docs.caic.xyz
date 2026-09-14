@@ -29,6 +29,8 @@ Agents often amend, reset, or rebase their work. md therefore keeps a Git integr
 
 Integration points move only after a successful synchronization. A failed pull leaves unapplied work visible. A push moves the point to the pushed host commit, so the next `md diff` is empty. Forks start with inherited committed work integrated into their new host branches, while inherited uncommitted work remains visible.
 
+md keeps the commits needed by integration points reachable and disables pruning of unreachable Git objects inside containers. Long-lived containers can therefore use more disk space after repeated rebases, resets, and amendments.
+
 ### Remote state without credentials
 
 md transfers the host checkout's cached remote-tracking refs into the container at startup and before synchronization commands. It also preserves every mapped branch's upstream and effective push remote. This supports offline rebases and triangular workflows without putting repository credentials in the container. The trade-off is that the container sees the host's last fetched state. A network push from inside the container still requires credentials. See [Syncing](./commands#syncing) for the refresh workflow.

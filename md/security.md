@@ -141,7 +141,7 @@ When building images locally (`md build-image`), the `GITHUB_TOKEN` is passed as
 
 ### What is NOT shared
 
-- The host git checkout: the container has its own clone
+- The host Git checkout: the container has a separate checkout of the mapped branches
 - Home directory contents other than agent config paths
 - Host `/proc`, `/sys`, and `/dev` other than the device passthrough listed above
 - Docker socket

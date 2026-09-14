@@ -21,7 +21,7 @@ md is supported on **Linux**, **macOS**, and **Windows via WSL2**.
 
 ## The solution
 
-`md` gives each agent a **complete, isolated container** with a full git clone:
+`md` gives each agent a **complete, isolated container** with a separate Git checkout of the branches you map:
 
 - Run agents on multiple branches simultaneously
 - Switch local branches without affecting running agents
