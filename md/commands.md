@@ -312,7 +312,7 @@ md run --apply-patch -- npm run format
 
 ## AI commit messages
 
-`md pull` can generate commit messages using an LLM. It analyzes the diff and recent commit history to produce a conventional commit message. The prompt defaults to a rationale body and permits its omission only for an obviously trivial, self-explanatory change. It asks the model to limit message lines to 120 characters.
+`md pull` can generate commit messages using an LLM. It analyzes the diff and recent commit history to produce a conventional commit message. The prompt defaults to a rationale body and permits its omission only for an obviously trivial, self-explanatory change. It asks the model to wrap body lines at 80 columns.
 
 ### Setup
 

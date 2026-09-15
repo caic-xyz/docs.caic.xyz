@@ -127,7 +127,7 @@ The `--github` flag tries `$GITHUB_TOKEN` first, then falls back to `gh auth tok
 
 When `md pull` generates commit messages, it derives an input budget from the model's context window. Set the default with `GIT_DESC_TOKENS` or override it for one pull with `--tokens`. It defaults to 64000 tokens and must be at least 8000. md conservatively estimates three characters per token and reserves one quarter of the window for instructions, reasoning, and the answer.
 
-The generation prompt defaults to a rationale body. It permits a subject-only message only for an obviously trivial, self-explanatory change. Changes that affect behavior, interfaces, dependencies, data, architecture, or multiple meaningful concerns require a body. The prompt asks the model to limit every message line to 120 characters.
+The generation prompt defaults to a rationale body. It permits a subject-only message only for an obviously trivial, self-explanatory change. Changes that affect behavior, interfaces, dependencies, data, architecture, or multiple meaningful concerns require a body. The prompt asks the model to wrap body lines at 80 columns.
 
 Before contacting the model, md asks Git for a normalized patch with fixed `a/` and `b/` prefixes, path quoting, line indicators, context size, rename detection, and submodule formatting. It disables color, external diff drivers, text conversion, and relative paths so your Git configuration cannot unexpectedly change the model input. md then removes diff metadata that does not help describe the change, omits the contents of deleted and lock files, and truncates unusually long lines. It handles larger diffs through a progressive reduction pipeline:
 
