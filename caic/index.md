@@ -6,10 +6,6 @@
 
 caic lets you run AI coding agents (Claude Code, Codex, OpenCode, Pi) in [md](../md/) containers, orchestrated through a unified web UI and Android app. Each task gets a separate container and repository copy, so agents do not edit one another's workspace or your local checkout. Shared agent and harness state, caches, and custom mounts remain common where configured.
 
-## Platform support
-
-caic is supported on **Linux**, **macOS**, and **Windows via WSL2**.
-
 ## Key features
 
 - **Parallel agents**: run many agents simultaneously on different branches
@@ -17,15 +13,13 @@ caic is supported on **Linux**, **macOS**, and **Windows via WSL2**.
 - **Resilient sessions**: server restarts don't kill running agents; a relay process inside each container keeps agents alive across SSH disconnects
 - **Recoverable workspaces**: fork a running, stopped, or crashed task with an editable handoff, or continue quota-blocked work with another available agent
 - **Task visibility**: inspect usage, cost, resource graphs, compact repository state, task commits, collapsible per-file diffs, and the native subagents a task's agent spawns
-- **Fast task actions**: right-click a task card to push, stop, revive, purge, fork, or compact it without opening the task
-- **Keyboard navigation**: open shortcuts with `?` or `F1`, move through tasks with the arrow keys, use `Tab` to jump from a card to its prompt, select repositories with `F2`, choose a harness with `F3`, toggle voice with `F4`, and purge with `Shift+Delete`
+- **Keyboard navigation**: open shortcuts with `?` or `F1`, move through tasks with the arrow keys, use `Tab` to jump from a card to its prompt, and more.
 - **Forge integration**: automatic PR/MR creation and CI monitoring for [GitHub](./github) and [GitLab](./gitlab)
 - **Lightweight**: single Go binary, low memory and CPU footprint
-- **Web UI**: SolidJS frontend embedded in the binary
-- **Task inspection**: view launch config, runtime image, platform, caches, mounts, and diagnostics for each task
 - **Voice control**: supervise and steer agents hands-free with [voice mode](./voice)
 - **MCP server**: connect Claude or ChatGPT to your tasks through the [MCP endpoint](./mcp)
 - **Android app**: voice-first companion app to manage agents from your phone
+- Runs on **Linux**, **macOS**, and **Windows via WSL2**.
 
 ## Screenshots
 
