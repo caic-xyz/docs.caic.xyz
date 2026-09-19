@@ -2,7 +2,9 @@
 
 ## Prerequisites
 
-- Docker installed and running. The curl installer currently requires Docker.
+- **Docker or Podman** installed and running
+
+caic uses Docker when both runtime commands are installed, and Podman when only Podman is installed. [Configuration](./configuration) covers choosing the runtime for new tasks.
 
 ## Install
 
@@ -79,18 +81,7 @@ The launchd template does not set a working directory, so do not rely on the rel
 
 ## Install from source
 
-### Dependencies
-
-- Go 1.27 or newer
-- Docker or Podman installed and running
-
-### Build and install
-
-```bash
-go install github.com/caic-xyz/caic/backend/cmd/caic@latest
-```
-
-When installing from source, copy [`contrib/config.toml`](https://github.com/caic-xyz/caic/blob/main/contrib/config.toml) and the service file manually. The compiled binary already includes the web app, so Node.js and pnpm are needed only when developing caic itself. See [Configuration](./configuration) for details.
+See the [caic README](https://github.com/caic-xyz/caic#from-source) for building and installing `caic` from source with Go.
 
 ## Next steps
 
