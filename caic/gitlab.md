@@ -1,10 +1,6 @@
----
-# GitLab Integration: PAT and OAuth setup for MRs, CI monitoring, and webhooks
----
-
 # GitLab Integration
 
-caic integrates with GitLab for automatic merge request creation and CI monitoring. The forge is detected automatically from your repository's git remote URL — including self-hosted instances.
+caic integrates with GitLab.com for automatic merge request creation and CI monitoring. Forge API operations currently use GitLab.com. A self-hosted URL can be configured for OAuth login, but repository, merge request, and CI API operations do not yet use that URL.
 
 Config keys are documented in [Configuration](./configuration#gitlab). This page walks through setup for each integration mode.
 
@@ -23,16 +19,16 @@ Config keys are documented in [Configuration](./configuration#gitlab). This page
 
 PAT and OAuth are mutually exclusive.
 
-## Self-hosted GitLab
+## Self-hosted OAuth login
 
-If you use a self-hosted GitLab instance, set the `url` in your config:
+To authenticate dashboard users through a self-hosted GitLab instance, set its `url`:
 
 ```toml
 [gitlab]
 url = "https://gitlab.example.com"
 ```
 
-This works for both PAT and OAuth modes.
+This changes OAuth login only. caic's forge API client still targets GitLab.com, so self-hosted repository, merge request, and CI operations are not supported.
 
 ## PAT setup
 
@@ -45,7 +41,7 @@ For single-user deployments.
    token = "glpat-..."
    ```
 
-For self-hosted, create the token at your instance's settings page and include `url` as shown above.
+The PAT forge integration currently supports GitLab.com only.
 
 ## OAuth setup
 

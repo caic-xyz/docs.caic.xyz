@@ -1,237 +1,122 @@
----
-# caic architecture: system components, container model, relay, task lifecycle, startup/adoption, forge/CI, SSE streaming, WebRTC voice, API design
----
-
 # Architecture
 
-caic is a Go HTTP server with an embedded SolidJS web UI that orchestrates AI coding agents running in isolated [md](../md/) containers. This page explains the system structure: what happens when you create a task, how restarts work, and how the pieces fit together.
+caic is a local server and web app that orchestrates AI coding agents in [md](../md/) containers. This page explains task workspaces, lifecycle, restart recovery, and forge integration.
 
-## System components
+## System overview
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ HOST                                                    │
-│                                                         │
-│  ┌──────────┐  HTTP/SSE   ┌──────────────┐              │
-│  │ Web UI   │◄───────────►│ caic server  │              │
-│  │ (SolidJS)│             │ (Go binary)  │              │
-│  └──────────┘             └──────┬───────┘              │
-│                             │    │                      │
-│  ┌──────────┐               │    │                      │
-│  │ Android  │◄──HTTP/SSE────┘    │                      │
-│  └──────────┘                    │                      │
-│                                  │                      │
-│  ┌───────────────────────────────┼───────────────────┐  │
-│  │ CONTAINER (per task)          │                   │  │
-│  │                 ┌─────────┐   │                   │  │
-│  │  relay daemon ◄─┤ SSH     │◄──┘                   │  │
-│  │       │         └─────────┘                       │  │
-│  │       │ stdout/stdin (NDJSON)                     │  │
-│  │  ┌────▼─────┐                                     │  │
-│  │  │ agent CLI│  (Claude Code, Codex, OpenCode, Pi) │  │
-│  │  └──────────┘                                     │  │
-│  └───────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
+```text
+Web UI or Android app
+          |
+       HTTP/SSE
+          |
+     caic server
+          |
+         SSH
+          |
+ one md container per task
+          |
+   relay and agent CLI
 ```
 
-Each task runs in its own Docker or Podman container. The caic server communicates with the container over SSH. Inside the container, a Python relay daemon manages the agent process and survives SSH disconnects. When both runtimes are available, you can select one for each new task.
+Each task runs in its own Docker or Podman container. caic talks to the task over SSH. A relay inside the container keeps the agent alive across SSH disconnects and lets caic reconnect after a server restart. When both runtimes are available, you can choose one for each new task.
 
-## How tasks work
+## Task lifecycle
 
-A task is a unit of work: a prompt given to an AI coding agent working on a specific repository and branch. Tasks have a defined lifecycle. A task starts in Pending and progresses through setup states (Branching, Provisioning, Starting) to Running. When the agent finishes a turn, it transitions to Waiting, Asking, or HasPlan depending on the output. Sending a new prompt brings it back to Running — this cycle repeats for each turn until you stop or purge the task.
+A task combines a prompt, one or more repositories, a branch choice, and an agent harness. It moves through setup states before the agent runs. After a turn, it waits for another message, asks a structured question, or presents a plan.
 
-Pulling and Pushing are transient states during sync. Stopped preserves the container for later revival; Purged permanently deletes it.
-
-Key states:
-
-| State | What's happening |
+| State | What is happening |
 |---|---|
-| **Pending** | Task created, queued |
-| **Branching** | Creating a dedicated git branch on the host |
-| **Provisioning** | Launching the task container |
-| **Starting** | Connecting the agent backend |
-| **Running** | Agent is actively producing output |
-| **Waiting** | Agent finished a turn, awaiting user input |
-| **Asking** | Agent asked a question |
-| **HasPlan** | Agent finished planning and produced a plan |
-| **Pulling** | Pulling changes from the container |
-| **Pushing** | Pushing changes to the remote |
-| **Stopping** | Graceful shutdown in progress |
-| **Stopped** | Container stopped but preserved (can be revived) |
-| **Crashed** | Agent session crashed; the container is preserved and can be revived |
-| **Purging** | Container being permanently deleted |
-| **Failed** | Unrecoverable error; the container is not revivable |
-| **Purged** | Task is final, log archived |
+| **Pending** | Task is queued |
+| **Branching** | Branches and repository workspaces are prepared |
+| **Provisioning** | The task container is starting |
+| **Starting** | caic is connecting to the agent |
+| **Running** | The agent is producing output |
+| **Waiting** | The turn finished and the agent can receive another message |
+| **Asking** | The agent needs an answer |
+| **HasPlan** | The agent produced a plan for review |
+| **Pulling** | Changes are being read from the task workspace |
+| **Pushing** | Changes are being pushed to the remote |
+| **Stopping** | Graceful shutdown is in progress |
+| **Stopped** | The container is stopped and can be revived |
+| **Crashed** | An active agent session failed or its container ran out of memory; the retained container can be revived |
+| **Purging** | Container deletion is in progress |
+| **Failed** | Setup, branch allocation, fork, revival, or runtime destruction failed; inspect the task error for details |
+| **Purged** | The task is final and its log is archived |
 
-### How tasks are created
+Choosing Purge on an active or crashed task first stops it, then waits for the configured recovery window. Reviving during that window cancels deletion. The default delay is 15 seconds and can be set from 10 seconds to 24 hours in **Settings**. A task that is already Stopped is deleted immediately when purged.
 
-A task is initiated via the web UI or API with a prompt, choosing a repository (or multiple repositories), branch, and agent harness. The server then:
+An ordinary container exit records the task as Stopped. An out-of-memory event while an agent is active records it as Crashed, and unexpected runtime destruction records it as Failed.
 
-1. Creates a dedicated branch (`caic-N`) on the host
-2. Launches an md container with that branch checked out
-3. Deploys the relay daemon and agent-specific files into the container
-4. Starts the agent and captures its session ID for future resumes
-5. Streams all agent output back as SSE events
+## Repository and branch model
 
-Tasks can span multiple repositories, allowing the agent to work across related codebases in a single task. Each task is fully isolated: two tasks on the same repository use different branches and different containers. They cannot interfere with each other.
+caic discovers Git repositories under the configured root. When you create a task, you can select one or more repositories and choose what to do with each branch:
 
-### Git model
+- **Adopt** keeps working on a selected local branch when it has an upstream and no other non-final task is associated with it. Stopped and crashed tasks still retain their branch association.
+- **Branch off** creates a new branch such as `caic-0`. This is used for remote branches, untracked or busy local branches, and normal work from a default or selected base.
 
-Each task gets a dedicated branch like `caic-0`, `caic-1`, etc. The number increments per repository. The task starts from the repository's default branch (or a user-selected base). When the agent commits changes, they land on the task's branch. Only at sync time are those changes pushed to the remote. Until then, everything is local.
+The agent receives a copy of each selected repository inside its container. It does not edit the host checkout. Changes remain local to the task until you push them. A multi-repository task pushes its repository changes together.
 
-For tasks spanning multiple repositories, each repository gets its own dedicated branch. The agent works across all repos within the same task, and changes are pushed together at sync time.
+The task card summarizes each repository's Git operation, conflicts, uncommitted changes, and ahead or behind state. The diff view lists task commits and changed files first. Open a file to load its patch on demand, and retry inline if a patch fails to load. Binary files show their byte-size transition instead of line counts.
 
-You can fork a running, stopped, or crashed task. The fork starts with a separate workspace and fresh branches while retaining the source task's filesystem, including installed tools and agent history.
+<figure class="docs-figure">
+  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-repository-changes.webp" alt="caic repository changes view showing a task branch ahead of upstream, committed and uncommitted files, and an expanded line-by-line patch" width="800" height="720" loading="lazy" decoding="async">
+  <figcaption>Open a task's repository summary to review commits and uncommitted changes file by file.</figcaption>
+</figure>
 
-## The relay: agent persistence
+## Forks and handoffs
 
-The relay is a daemon that runs inside each container and manages the agent subprocess. It is the reason caic can survive server restarts without losing agent sessions.
+Forking creates a separate workspace from a running, stopped, or crashed task. The new task snapshots the source container filesystem and repository workspace, including installed tools, while receiving its own branches. It starts with clean message history and uses the selected prompt or generated handoff as its initial context.
 
-### Why a relay
+Before starting the fork, you can edit its prompt or generate an editable handoff summarizing the original request, recent conversation, and current changes. You can also add repositories, switch the harness, model, or effort, and change task options such as Tailscale, display, USB, sudo, or GitHub token injection.
 
-Without the relay, the agent process would die every time the SSH connection dropped (server restart, network hiccup, laptop sleep). The relay decouples the agent's lifetime from the SSH connection:
+When a task is blocked by provider quota, **Continue in new agent** opens this fork flow with a generated handoff and recommends harnesses with available quota. You can review the handoff and recommendation before starting the replacement task.
 
-- **Relay daemon**: runs as a background process inside the container, owns the agent's stdin/stdout
-- **SSH attach client**: connects the caic server to the relay over a Unix socket
+## Session persistence
 
-When the server restarts, SSH connections are severed, but the relay and agent keep running. On restart, caic discovers the container, reads the relay's output log to restore state, and attaches a new SSH client to the live relay.
+The relay records the conversation inside the task container and owns the agent process independently of the server's SSH connection. If caic restarts or the connection drops, the relay and agent keep running. caic reconnects, restores the missed output, and resumes streaming.
 
-### Output persistence
+When caic starts, it discovers repositories and live task containers first. It adopts healthy live tasks without waiting for archived history. Recent settled tasks then load in the background, so older entries can appear shortly after the live task list becomes available.
 
-All agent output (and user inputs) are written to an append-only `output.jsonl` file inside the container. This log is the source of truth for conversation recovery. On restart, caic reads it from the last byte offset it saw, so no messages are lost.
+If a task container exits normally, caic records it as Stopped. Its filesystem remains available for revival until you purge it.
 
-### Diff tracking
+## Task inspection
 
-The relay periodically checks `git diff` in the container and emits diff stat messages. These show up in the UI as real-time file change counts while the agent works.
+caic streams agent output, state changes, repository changes, and runtime metrics to connected clients. The task view provides:
 
-## Server startup and container adoption
+- token usage, provider quota, cost, and resource charts
+- CPU, memory, network, storage I/O, and disk usage
+- committed changes associated with each completed turn
+- a process tree with resource details and actions to send TERM or KILL
+- launch configuration, image, platform, caches, mounts, and diagnostics
 
-When caic starts, it goes through a phased initialization:
+Tasks also show native subagent activity reported by the harness. This is work the agent delegated to its own subagents, shown inside the task that spawned it rather than as separate tasks. Each card lists the observed status, a duration when the harness reports both start and end, and the prompt and result when the harness exposes them. Claude Code, Codex, OpenCode, and Pi report native subagents, and some harnesses also report orchestration batches. caic shows only what the harness reports and never invents an outcome, so activity whose last observation is still running is shown as last observed running with an unknown outcome. While a native subagent is active, the task itself stays Running, and it returns to Waiting, Asking, or HasPlan when the last card settles.
 
-1. **Parallel I/O**: discovers git repositories under the root directory, loads purged task logs from disk, and lists containers from every available runtime concurrently
-2. **Runner init**: creates a runner per discovered repository, which scans git branches and initializes agent backends
-3. **Log loading**: loads recently-active purged tasks (last 14 days, up to 5 per repo) from JSONL log files so their history appears in the UI
-4. **Container adoption**: for each running caic container, checks whether the relay is alive and auto-reattaches
+Stopped tasks retain a disk-usage summary so you can identify large workspaces before purging them.
 
-Container adoption is the key to zero-loss restarts. It checks:
+## API and clients
 
-- The container's `caic` label (proving caic started it)
-- The `harness` label (which agent is running)
-- Whether the relay daemon is still alive (socket + PID check)
-- Reads the relay's `output.jsonl` to restore message history
+The web app and Android app use a JSON HTTP API plus Server-Sent Events for live updates. VNC display sessions use WebSocket. The MCP endpoint lets approved external clients manage tasks through OAuth.
 
-If the relay is alive, caic spawns a background goroutine to reattach, and the task resumes streaming as if nothing happened. If the relay is dead, the relay log tail is captured for diagnostics and the task is marked waiting so you can restart it.
-
-### Container death detection
-
-caic watches container events for task exits. When a container exits, the corresponding task is archived as Stopped. It can be revived later because its filesystem is preserved.
-
-## Agent backend abstraction
-
-caic supports multiple AI coding agents through a shared backend interface. Each agent is implemented as a separate package:
-
-| Harness | Protocol | Wire format |
-|---|---|---|
-| Claude Code | SSH + relay | NDJSON `stream-json` |
-| Codex | SSH + relay | NDJSON |
-| OpenCode | SSH + relay | ACP (JSON-RPC) |
-| Pi | SSH + relay | NDJSON |
-
-Each backend is responsible for parsing its agent's wire format into normalized message types (text, tool use, results, diffs, etc.) that the server can stream to clients without knowing which agent produced them.
-
-The abstractions are layered:
-
-- **Container layer**: wraps md's Docker operations (launch, stop, fork, revive)
-- **Task layer**: orchestrates a single task's lifecycle (session management, git operations)
-- **Agent layer**: SSH session management, message parsing, relay deployment
-
-## API design
-
-### REST + SSE
-
-The API is JSON-over-HTTP with Server-Sent Events for real-time streaming:
-
-- **REST endpoints** for task creation, input, sync, stop, purge — standard JSON request/response
-- **SSE endpoints** for live task events (agent output, state changes, stats) and task list updates
-- **WebSocket** for VNC display streaming (one connection per task)
-
-### Authentication
-
-When auth is enabled (OAuth configured), protected API routes require a valid JWT session. The JWT is sent as a cookie (`caic_session`) or `Authorization: Bearer` header (for Android and API clients).
-
-API routes are namespaced under `/api/caic/v1/` and `/api/voicegateway/v1/`. Browser login routes are public under `/auth/`, server bootstrap data is public under `/server-info/`, and Go Mode discovery is public at `/.well-known/gomode.json`. The MCP endpoint stays at `/api/caic/v1/mcp` and uses MCP bearer tokens when OAuth is configured. Webhook endpoints (`/webhooks/github`, `/webhooks/gitlab`) have their own HMAC signature verification.
-
-### Response compression
-
-To minimize bandwidth, API responses are compressed. The server supports zstd (preferred), brotli, and gzip. Static frontend assets are precompressed with brotli at build time.
-
-### Code generation
-
-The API types and routes are defined in Go structs with declarative annotations. A code generator produces typed clients for TypeScript, Kotlin (Android), and Swift. The generated SDKs are checked into the repository and never edited manually.
-
-See the full [API reference](https://github.com/caic-xyz/caic/blob/main/sdk/API.md) for endpoint details.
+See the [API reference](https://github.com/caic-xyz/caic/blob/main/sdk/caic/API.md) for endpoint details and [MCP Server](./mcp) for client setup.
 
 ## Forge integration
 
-caic integrates with GitHub and GitLab for automatic pull/merge request creation and CI monitoring.
+caic detects GitHub and GitLab from repository remotes. When you push a task, it can open a pull or merge request with the task title and agent summary, monitor CI, and return failures to the agent. Optional auto-fix can let the agent iterate on failed checks. GitLab forge operations currently support GitLab.com only; a configured self-hosted GitLab URL affects OAuth login, not repository, merge request, or CI API operations.
 
-### PR/MR creation flow
-
-1. Agent finishes work and commits changes to the task branch
-2. User triggers sync (or auto-sync configured)
-3. Changes are pushed to the remote
-4. caic creates a PR/MR with the task title and agent result summary
-5. CI monitoring begins
-
-### CI monitoring
-
-After PR creation, caic monitors CI status:
-
-- **Polling**: every 15-30 seconds, checks check-run/pipeline status
-- **Webhooks**: when configured, receives push events that trigger immediate re-check
-
-When CI passes or fails, the agent is notified with a summary so it can act on feedback. An auto-fix loop allows the agent to iterate on CI failures automatically.
-
-### Auth modes
-
-Different levels of forge integration are available:
-
-| Mode | Config | Capabilities |
+| Mode | Configuration | Capabilities |
 |---|---|---|
-| PAT | `[github.pat] token` or `[gitlab.pat] token` | Single-user, polling only |
-| OAuth | `[github.oauth]` or `[gitlab.oauth]` | Multi-user with login, polling only |
-| GitHub App | `[github.app]` | Webhooks, auto task creation from issues/PRs/comments |
+| Personal access token | `[github.pat]` or `[gitlab.pat]` | Single-user forge access and CI polling |
+| OAuth | `[github.oauth]` or `[gitlab.oauth]` | Per-user login, forge access, and CI polling |
+| GitHub App | `[github.app]` with PAT or OAuth | Webhooks and automatic tasks from supported GitHub events |
 
-See [GitHub Integration](./github) and [GitLab Integration](./gitlab) for setup details.
+A configured GitHub App can react to a labeled issue, a pull request targeting the default branch, or an `@caic` comment. See [GitHub Integration](./github) and [GitLab Integration](./gitlab).
 
-### Bot automation
+## Voice
 
-When a GitHub App is configured, caic can automatically create tasks in response to forge events:
+The web UI and Android app can stream WebRTC audio to embedded Gemini Live, a standalone gateway, or a local model stack. See [Voice](./voice) for usage and [Configuration](./configuration) for gateway options.
 
-- **Issue opened** with `caic` label: agent fixes the issue
-- **PR opened** targeting the default branch: agent reviews the PR
-- **Comment `@caic`**: agent acts on the instruction
+## Updates and image maintenance
 
-The bot's comments include links back to the caic instance so you can follow the agent's work.
+caic watches its executable and configuration. Saving a configuration change or replacing the binary triggers a graceful restart under systemd or launchd. Running agent sessions remain inside their containers and are adopted after restart.
 
-## WebRTC voice
-
-caic supports voice interaction over WebRTC. The web UI or Android app streams audio to a voice gateway, which runs in one of three modes:
-
-- **Embedded**: caic hosts the gateway in-process when a Gemini API key is set. Audio is relayed to Gemini Live.
-- **Standalone**: a separate gateway you host elsewhere, advertised by URL.
-- **Local stack**: a half-duplex, on-device pipeline (managed llama.cpp for speech recognition and the LLM, plus a local text-to-speech engine) instead of Gemini Live.
-
-The gateway authorizes sessions with short-lived, service-signed tokens issued by the caic backend. See the voice gateway settings in [Configuration](./configuration).
-
-## Container stats
-
-While tasks are running, caic streams container resource metrics from the md runtime: CPU percentage, memory usage, network I/O, block I/O, and disk usage. These are sent to the UI as stats events.
-
-## Configuration watching
-
-caic watches its own executable and `config.toml` for changes. When either is modified, it triggers a graceful shutdown. Combined with systemd's `Restart=always` or launchd's `KeepAlive`, this enables seamless restarts after a config change or binary update.
-
-## Auto-update
-
-When enabled (the default), caic checks GitHub Releases on a configurable cron schedule and replaces the binary in place when a new version is found. The binary self-update triggers the watch mechanism, causing a restart onto the new version.
+By default, caic checks for a release daily at 04:50 and removes unused md-built images daily at 05:00. Both schedules are configurable or can be disabled.

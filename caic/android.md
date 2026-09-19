@@ -6,24 +6,35 @@ Go Mode is the Android app for caic. It is a native shell that hosts the caic we
 
 All running agents at a glance. See prompt, branch, status, cost, and CI results for each task.
 
-<img src="/screenshots/android-task-list.avif" alt="Android task list" style="max-width: 300px">
+<figure class="docs-figure docs-figure--phone">
+  <img class="docs-screenshot docs-screenshot--phone" src="/screenshots/android/phone/gomode-task-list.webp" alt="Go Mode task list with repository groups, task states, costs, CI results, and voice controls" width="1080" height="2400" loading="lazy" decoding="async">
+  <figcaption>See every active task and which ones need attention.</figcaption>
+</figure>
 
 ### Task detail
 
 Follow an agent's work in real time: streamed text, tool uses, and results. Send follow-up messages, push branches, or stop the agent.
 
-<img src="/screenshots/android-task-detail.avif" alt="Android task detail" style="max-width: 300px">
+<figure class="docs-figure docs-figure--phone">
+  <img class="docs-screenshot docs-screenshot--phone" src="/screenshots/android/phone/gomode-task-detail.webp" alt="Go Mode task detail showing agent output, tool activity, repository status, and voice attention controls" width="1080" height="2400" loading="lazy" decoding="async">
+  <figcaption>Read results and steer an agent from your phone.</figcaption>
+</figure>
 
 ## First launch
 
 On first launch, Go Mode shows a native settings screen. Enter the service URL of your caic instance, for example `https://caic.example.com`, and the app loads its web frontend. A persistent native header bar stays available so you can reopen settings and switch instances at any time.
+
+<figure class="docs-figure docs-figure--phone">
+  <img class="docs-screenshot docs-screenshot--phone" src="/screenshots/android/phone/gomode-settings.webp" alt="Go Mode settings with fields for the service label and server URL plus Halo device management" width="1080" height="2400" loading="lazy" decoding="async">
+  <figcaption>Connect Go Mode to your caic server and manage native integrations.</figcaption>
+</figure>
 
 Go Mode also fetches `/.well-known/gomode.json` from the service. This manifest tells the app which native bridge version, skills, MCP endpoint, and voice gateway the service supports. If the manifest is unavailable or incompatible, the WebView still loads and native MCP-backed features stay disabled until compatibility passes.
 
 ## Native features
 
 - **Voice**: supervise and control tasks hands-free. See [Voice](./voice) for setup.
-- **Notifications**: receive task notifications when an agent finishes a turn or needs input. The app monitors service resources through MCP subscriptions when available.
+- **Notifications**: receive task notifications when an agent finishes a turn, needs input, or is blocked by quota and can continue with another agent. The app monitors service resources through MCP subscriptions when available.
 - **Screenshot capture**: capture the screen when a task needs a visual.
 - **Passkeys**: WebAuthn passkey sign-in works inside the WebView.
 - **Halo glasses**: manage Brilliant Labs Halo devices over Bluetooth (see below).

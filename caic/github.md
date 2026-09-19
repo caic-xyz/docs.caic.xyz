@@ -1,10 +1,6 @@
----
-# GitHub Integration: PAT, OAuth, and GitHub App setup for PRs, CI monitoring, and webhooks
----
-
 # GitHub Integration
 
-caic integrates with GitHub for automatic pull request creation and CI monitoring. The forge is detected automatically from your repository's git remote URL — no configuration needed for detection.
+caic integrates with GitHub for automatic pull request creation and CI monitoring. The forge is detected automatically from your repository's git remote URL: no configuration needed for detection.
 
 Config keys are documented in [Configuration](./configuration#github). This page walks through setup for each integration mode.
 
@@ -69,7 +65,7 @@ If your repositories are in an organization:
 2. Select your OAuth app
 3. Under "Organization access", click **Grant**
 
-Verify at `https://github.com/organizations/<org>/settings/oauth_application_policy` — the app should appear as Approved.
+Verify at `https://github.com/organizations/<org>/settings/oauth_application_policy`: the app should appear as Approved.
 
 Manage your OAuth apps at [github.com/settings/developers](https://github.com/settings/developers).
 

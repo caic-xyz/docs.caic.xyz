@@ -15,7 +15,7 @@ The container includes [`/home/user/src/AGENTS.md`](https://github.com/caic-xyz/
 | [codex](https://developers.openai.com/codex/guides/agents-md/) | `~/.codex/AGENTS.md` | Yes |
 | [kilo](https://kilo.ai/docs/agent-behavior/custom-rules) | `~/.kilocode/rules/*.md` | Yes |
 | [opencode](https://opencode.ai/docs/rules/) | `~/.config/opencode/AGENTS.md` | Yes |
-| [pi](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/README.md) | `~/.pi/agent/AGENTS.md` | Yes |
+| [pi](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/README.md) | `~/.pi/agent/AGENTS.md` | Yes |
 | [qwen](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/) | `~/.qwen/QWEN.md` | Yes |
 | [goose](https://block.github.io/goose/docs/) | `~/.config/goose/AGENTS.md` | Yes |
 | [kimi](https://github.com/MoonshotAI/kimi-cli) | `~/.kimi/KIMI.md` | Yes |

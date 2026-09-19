@@ -28,7 +28,7 @@ features:
 
 Manage multiple AI coding agents in parallel from a single web UI. Each task runs in its own isolated container — create, monitor, and interact with agents in real time.
 
-![caic web UI showing an agent working on a task](/screenshots/task-detail.webp)
+<img class="docs-screenshot" src="/screenshots/frontend/desktop/task-detail.webp" alt="caic task view with streamed agent output, tool calls, repository changes, CI status, and a message composer" width="1280" height="800" decoding="async">
 
 Learn more about [caic](/caic/)
 

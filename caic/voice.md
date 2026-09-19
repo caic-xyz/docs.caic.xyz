@@ -2,6 +2,12 @@
 
 Voice mode lets you supervise and control tasks hands-free. You ask for status, answer an agent's questions, and steer work by speaking, which is useful when you are away from the keyboard or running several agents at once. Voice is available in the web app and in the [Go Mode Android app](./android).
 
+## Using voice
+
+Press `F4` in the web app to start or stop voice mode, even when the task editor has focus. You can also say "hang up", "end call", or "stop voice mode" to end the session.
+
+Voice presents active tasks before settled tasks when assigning task numbers. This keeps the tasks most likely to need attention easy to reference. Check the visible task list when a number could be ambiguous.
+
 ## Enabling voice
 
 caic derives voice support automatically from your configuration:
@@ -26,12 +32,14 @@ url = "https://voice.example.com"
 
 ## Local stack
 
-The local stack runs voice entirely on your own hardware with no cloud API key. Set the backend to `local-stack` and the gateway uses managed [llama.cpp](https://github.com/ggml-org/llama.cpp) servers for speech recognition and the language model, plus KittenTTS for speech synthesis. It is half-duplex, meaning you speak and listen in turns rather than at the same time.
+The local stack processes voice entirely on your own hardware. Set the backend to `local-stack` and the gateway uses managed [llama.cpp](https://github.com/ggml-org/llama.cpp) servers for speech recognition and the language model, plus KittenTTS for speech synthesis. It is half-duplex, meaning you speak and listen in turns rather than at the same time.
 
 ```toml
 [voice-gateway.config]
 backend = "local-stack"
 ```
+
+The current embedded-gateway activation also requires `GEMINI_API_KEY` to be present. The local-stack backend does not consume that key or send audio to Gemini.
 
 By default caic manages a Qwen3 ASR model, a Gemma LLM, and a KittenTTS worker, so you do not need to run anything yourself. You can point ASR or LLM at servers you run instead. See the [gateway config template](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for the local stack options.
 
