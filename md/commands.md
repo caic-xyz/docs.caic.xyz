@@ -331,7 +331,7 @@ For an OpenAI-compatible endpoint, set `ASK_PROVIDER=openaicompatible`, set `ASK
 
 `GIT_DESC_TOKENS` sets the default model context window used to budget requests. It defaults to 64000 and must be at least 8000. Use `md pull --tokens <count>` for a one-off override. For large diffs, md reports its reduction and summarization progress while keeping every request within this budget. See [Design](./design#ai-commit-message-pipeline) for details.
 
-## Build
+## Building a local container image
 
 ### `md build-image`
 
@@ -343,7 +343,7 @@ md build-image
 
 The first build takes several minutes because it builds the root image and then the user image on top. Subsequent builds are faster thanks to layer caching.
 
-A `GITHUB_TOKEN` is recommended to avoid rate limits when installing tools like Neovim and rust-analyzer:
+A `GITHUB_TOKEN` is recommended to avoid rate limits when installing tools:
 
 ```bash
 export GITHUB_TOKEN=ghp_...
