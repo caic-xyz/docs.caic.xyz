@@ -38,20 +38,9 @@ md version
 md run -- echo "md works"
 ```
 
-## Install from source
+### Install from source
 
-### Dependencies
-
-- Go (recent version)
-- Docker or Podman
-
-### Build and install
-
-```bash
-go install github.com/caic-xyz/md/cmd/md@latest
-```
-
-**Recommended:** Also install [git-maruel](https://github.com/maruel/git-maruel) for the `git squash` and `git rb` helpers.
+See the [md README](https://github.com/caic-xyz/md#from-source) for building and installing `md` from source with Go.
 
 ## Upgrading
 
