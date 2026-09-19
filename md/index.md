@@ -15,10 +15,6 @@ AI coding agents work best in YOLO mode (full command execution). But running th
 - **Environment pollution**: accumulated dependencies cause hidden bugs
 - **Context switching**: switching branches while an agent works loses progress
 
-## Platform support
-
-md is supported on **Linux**, **macOS**, and **Windows via WSL2**.
-
 ## The solution
 
 `md` gives each agent a **complete, isolated container** with a separate Git checkout of the branches you map:
@@ -57,10 +53,12 @@ Every mapped branch must already exist on the host and have an upstream. See [Sy
 curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
+md is supported on **Linux**, **macOS**, and **Windows via WSL2**.
+
 ## Documentation
 
-- [Commands](./commands): full command reference, workflows (fork, multi-repo, CI)
 - [Installation](./installation): prerequisites, platform notes, from-source builds
+- [Commands](./commands): full command reference, workflows (fork, multi-repo, CI)
 - [Configuration](./configuration): caches, environment variables, agent configs
 - [Harnesses](./harnesses): agent-specific setup and persisted configuration
 - [Preinstalled Tools](./preinstalled-tools): what's available inside every container
