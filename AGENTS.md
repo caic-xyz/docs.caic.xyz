@@ -58,7 +58,7 @@ The docs were last reconciled against these upstream commits. When updating, rev
 
 | Repo | Tag | Commit | Date |
 |---|---|---|---|
-| caic | `post-v0.11.6` | `daaf57672c6a91045ef3c6e0999823eb6a8c09e9` | 2026-09-19 |
+| caic | `v0.12.0` | `ec22b39b5cf536ea9a9438c92b0e9951de6edf35` | 2026-09-19 |
 | md | `v0.18.1` | `ca8c174cdc063215339936786a2a2ebbe82b6687` | 2026-09-19 |
 
 ## Source of truth

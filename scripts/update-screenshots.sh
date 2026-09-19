@@ -67,7 +67,7 @@ public_dir="$docs_dir/public"
 publish_dir="$public_dir/screenshots"
 readonly caic_dir public_dir publish_dir
 readonly canonical_origin='https://github.com/caic-xyz/caic'
-readonly source_commit='daaf57672c6a91045ef3c6e0999823eb6a8c09e9'
+readonly source_commit='ec22b39b5cf536ea9a9438c92b0e9951de6edf35'
 
 if [[ -e "$caic_dir" && ! -d "$caic_dir" ]]; then
 	printf 'error: caic path exists but is not a directory: %s\n' "$caic_dir" >&2
