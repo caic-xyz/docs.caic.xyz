@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
+    "prepare": "scripts/install-git-hooks.sh",
     "preview": "vitepress preview",
     "deploy": "pnpm run build && wrangler deploy"
   },
