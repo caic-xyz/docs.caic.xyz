@@ -16,11 +16,11 @@ Without a config file, caic listens on `localhost:2242`, uses the server process
 
 ## CLI flags
 
-| Flag | Default | Description |
-|---|---|---|
-| `-config-dir` | `~/.config/caic` | Override the config directory. |
-| `-print-url` | Not set | Print the server URL and exit. Verifies the port is available. |
-| `-version` | Not set | Print version and exit. |
+| Flag          | Default          | Description                                                    |
+| ------------- | ---------------- | -------------------------------------------------------------- |
+| `-config-dir` | `~/.config/caic` | Override the config directory.                                 |
+| `-print-url`  | Not set          | Print the server URL and exit. Verifies the port is available. |
+| `-version`    | Not set          | Print version and exit.                                        |
 
 ## Directories
 
@@ -36,11 +36,11 @@ Relative paths in the config file (e.g. `geo_db`, `app_private_key_pem`) are res
 
 ### `[core]`
 
-| Key | Default | Description |
-|---|---|---|
-| `root` | `"."` | Parent directory containing git repositories managed by caic. Tilde (`~`) is expanded to your home directory; relative paths resolve from the server process working directory |
-| `auto_update` | `"50 4 * * *"` | Cron schedule for auto-update (checks GitHub Releases). Supports cron step syntax (`*/N`, `start/N`, e.g. `*/15 * * * *`). Set to `""` to disable |
-| `prune` | `"0 5 * * *"` | Cron schedule for removing unused md-built images from every available container runtime. Set to `""` to disable |
+| Key           | Default        | Description                                                                                                                                                                    |
+| ------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `root`        | `"."`          | Parent directory containing git repositories managed by caic. Tilde (`~`) is expanded to your home directory; relative paths resolve from the server process working directory |
+| `auto_update` | `"50 4 * * *"` | Cron schedule for auto-update (checks GitHub Releases). Supports cron step syntax (`*/N`, `start/N`, e.g. `*/15 * * * *`). Set to `""` to disable                              |
+| `prune`       | `"0 5 * * *"`  | Cron schedule for removing unused md-built images from every available container runtime. Set to `""` to disable                                                               |
 
 **`[core.env]`**
 
@@ -84,13 +84,13 @@ caic detects every available container runtime at startup. When more than one is
 
 ### `[server]`
 
-| Key | Default | Description |
-|---|---|---|
-| `http` | `":2242"` | HTTP listen address. Port-only addresses (`:2242`) bind to localhost. Use `"0.0.0.0:2242"` to listen on all interfaces |
-| `external_url` | `"auto"` | Public base URL. `"auto"` locks from the first fully qualified hostname and supports browser login plus same-origin MCP. Set an explicit stable URL for remote MCP OAuth and webhooks |
-| `trusted_proxies` | `[]` | CIDR ranges for direct reverse-proxy peers whose forwarded protocol, host, and client address caic may trust. Never include client networks |
-| `geo_db` | Not set | Path to a [MaxMind GeoLite2](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data) MMDB file for country-code resolution. If unset and `GeoLite2-Country.mmdb` exists in the config directory, it is used automatically |
-| `allow_origins` | `["local", "tailscale", "github"]` | Allowlist for incoming HTTP requests. Unmatched IPs get HTTP 403 |
+| Key               | Default                            | Description                                                                                                                                                                                                                     |
+| ----------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `http`            | `":2242"`                          | HTTP listen address. Port-only addresses (`:2242`) bind to localhost. Use `"0.0.0.0:2242"` to listen on all interfaces                                                                                                          |
+| `external_url`    | `"auto"`                           | Public base URL. `"auto"` locks from the first fully qualified hostname and supports browser login plus same-origin MCP. Set an explicit stable URL for remote MCP OAuth and webhooks                                           |
+| `trusted_proxies` | `[]`                               | CIDR ranges for direct reverse-proxy peers whose forwarded protocol, host, and client address caic may trust. Never include client networks                                                                                     |
+| `geo_db`          | Not set                            | Path to a [MaxMind GeoLite2](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data) MMDB file for country-code resolution. If unset and `GeoLite2-Country.mmdb` exists in the config directory, it is used automatically |
+| `allow_origins`   | `["local", "tailscale", "github"]` | Allowlist for incoming HTTP requests. Unmatched IPs get HTTP 403                                                                                                                                                                |
 
 **`external_url` rules**
 
@@ -102,15 +102,15 @@ When a reverse proxy terminates HTTPS, list only the proxy addresses that connec
 
 **`allow_origins` values**
 
-| Value | Matches |
-|---|---|
-| `"local"` | Unspecified, IPv4 link-local, RFC 1918, IPv6 ULA and link-local, and IPv4 or IPv6 loopback addresses |
-| `"tailscale"` | Tailscale CGNAT range (`100.64.0.0/10`) |
-| `"github"` | GitHub webhook IPs (fetched live from `api.github.com/meta`). Needed for the GitHub App |
-| `"anthropic"` | Published Anthropic outbound IPs. Needed for Claude MCP clients |
-| `"openai"` | Published ChatGPT integration and Codex cloud IPs. Needed for ChatGPT MCP clients |
-| CIDR range | e.g. `"203.0.113.0/24"` |
-| Country code | ISO 3166-1 alpha-2 (e.g. `"CA"`, `"US"`); requires `geo_db` |
+| Value         | Matches                                                                                              |
+| ------------- | ---------------------------------------------------------------------------------------------------- |
+| `"local"`     | Unspecified, IPv4 link-local, RFC 1918, IPv6 ULA and link-local, and IPv4 or IPv6 loopback addresses |
+| `"tailscale"` | Tailscale CGNAT range (`100.64.0.0/10`)                                                              |
+| `"github"`    | GitHub webhook IPs (fetched live from `api.github.com/meta`). Needed for the GitHub App              |
+| `"anthropic"` | Published Anthropic outbound IPs. Needed for Claude MCP clients                                      |
+| `"openai"`    | Published ChatGPT integration and Codex cloud IPs. Needed for ChatGPT MCP clients                    |
+| CIDR range    | e.g. `"203.0.113.0/24"`                                                                              |
+| Country code  | ISO 3166-1 alpha-2 (e.g. `"CA"`, `"US"`); requires `geo_db`                                          |
 
 Named origins (`local`, `tailscale`, `github`, `anthropic`, `openai`) resolve before country lookups.
 
@@ -128,8 +128,8 @@ Voice availability is derived automatically from your configuration:
 - **Embedded**: leave `url` empty and set `GEMINI_API_KEY` (in `[core.env]`). caic hosts the gateway in-process.
 - **Disabled**: leave `url` empty and `GEMINI_API_KEY` unset.
 
-| Key | Default | Description |
-|---|---|---|
+| Key   | Default | Description                                                                            |
+| ----- | ------- | -------------------------------------------------------------------------------------- |
 | `url` | Not set | URL of a standalone voice gateway. When set, caic advertises it instead of hosting one |
 
 **`[voice-gateway.config]`**
@@ -140,9 +140,9 @@ The default backend is `"gemini-live"` and its default model is `"gemini-3.1-fla
 
 **`[voice-gateway.config.server]`**
 
-| Key | Default | Description |
-|---|---|---|
-| `webrtc_udp_port` | `0` | UDP port for WebRTC ICE. `0` = OS-assigned ephemeral port. A value `>0` pins a static port; open it for UDP traffic in your firewall. Requires `GEMINI_API_KEY` |
+| Key               | Default | Description                                                                                                                                                     |
+| ----------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `webrtc_udp_port` | `0`     | UDP port for WebRTC ICE. `0` = OS-assigned ephemeral port. A value `>0` pins a static port; open it for UDP traffic in your firewall. Requires `GEMINI_API_KEY` |
 
 With `backend = "local-stack"`, voice runs half-duplex with managed llama.cpp servers for speech recognition and the LLM plus KittenTTS for speech synthesis. Omit the local-stack tables to let caic manage the default Qwen3 ASR model and Gemma LLM, or point them at servers you run yourself. See [`contrib/voice-gateway-config.toml`](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for the full template.
 
@@ -158,10 +158,10 @@ webrtc_udp_port = 3479
 
 LLM provider for title generation and commit descriptions.
 
-| Key | Default | Description |
-|---|---|---|
+| Key        | Default     | Description                                                                                                           |
+| ---------- | ----------- | --------------------------------------------------------------------------------------------------------------------- |
 | `provider` | auto-detect | Provider name. When unset, probes in this order: `codex`, `opencode`, `claudecode`, then any other available provider |
-| `model` | cheapest | Model name or alias. Uses the provider's cheapest model when unset |
+| `model`    | cheapest    | Model name or alias. Uses the provider's cheapest model when unset                                                    |
 
 Available providers: see the [genai providers](https://pkg.go.dev/github.com/maruel/genai/providers) package.
 
@@ -202,26 +202,26 @@ GitHub settings live in three subsections by authentication method. See [GitHub 
 
 `[github.pat]`:
 
-| Key | Default | Description |
-|---|---|---|
+| Key     | Default | Description                                                                                 |
+| ------- | ------- | ------------------------------------------------------------------------------------------- |
 | `token` | Not set | Personal access token. Falls back to `gh auth token` when unset and OAuth is not configured |
 
 `[github.oauth]`:
 
-| Key | Default | Description |
-|---|---|---|
-| `client_id` | Not set | OAuth app client ID. Mutually exclusive with a PAT |
-| `client_secret` | Not set | OAuth app client secret. Required when `client_id` is set |
+| Key             | Default | Description                                                                                      |
+| --------------- | ------- | ------------------------------------------------------------------------------------------------ |
+| `client_id`     | Not set | OAuth app client ID. Mutually exclusive with a PAT                                               |
+| `client_secret` | Not set | OAuth app client secret. Required when `client_id` is set                                        |
 | `allowed_users` | Not set | GitHub usernames permitted to log in. When unset, any GitHub user who completes OAuth can log in |
 
 `[github.app]` (layered on top of PAT or OAuth, not mutually exclusive):
 
-| Key | Default | Description |
-|---|---|---|
-| `id` | Not set | GitHub App ID |
-| `private_key_pem` | Not set | Path to GitHub App PEM private key file. Relative to the config directory |
-| `allowed_owners` | Not set | GitHub orgs/users allowed to install the app. Installs from other accounts are rejected |
-| `webhook_secret` | Not set | HMAC-SHA256 secret for webhook verification. Generate with `openssl rand -hex 32` |
+| Key               | Default | Description                                                                             |
+| ----------------- | ------- | --------------------------------------------------------------------------------------- |
+| `id`              | Not set | GitHub App ID                                                                           |
+| `private_key_pem` | Not set | Path to GitHub App PEM private key file. Relative to the config directory               |
+| `allowed_owners`  | Not set | GitHub orgs/users allowed to install the app. Installs from other accounts are rejected |
+| `webhook_secret`  | Not set | HMAC-SHA256 secret for webhook verification. Generate with `openssl rand -hex 32`       |
 
 ### `[gitlab.*]`
 
@@ -229,47 +229,47 @@ The top-level `[gitlab]` table holds the OAuth login URL and webhook secret. Cre
 
 `[gitlab]`:
 
-| Key | Default | Description |
-|---|---|---|
-| `url` | Not set | Self-hosted GitLab URL for OAuth login only. Forge API operations currently use gitlab.com |
-| `webhook_secret` | Not set | Shared secret for webhook verification. Generate with `openssl rand -hex 32` |
+| Key              | Default | Description                                                                                |
+| ---------------- | ------- | ------------------------------------------------------------------------------------------ |
+| `url`            | Not set | Self-hosted GitLab URL for OAuth login only. Forge API operations currently use gitlab.com |
+| `webhook_secret` | Not set | Shared secret for webhook verification. Generate with `openssl rand -hex 32`               |
 
 `[gitlab.pat]`:
 
-| Key | Default | Description |
-|---|---|---|
+| Key     | Default | Description                                                         |
+| ------- | ------- | ------------------------------------------------------------------- |
 | `token` | Not set | Personal access token (scope: `api`). Mutually exclusive with OAuth |
 
 `[gitlab.oauth]`:
 
-| Key | Default | Description |
-|---|---|---|
-| `client_id` | Not set | OAuth app client ID. Mutually exclusive with a PAT |
-| `client_secret` | Not set | OAuth app client secret. Required when `client_id` is set |
+| Key             | Default | Description                                                                                      |
+| --------------- | ------- | ------------------------------------------------------------------------------------------------ |
+| `client_id`     | Not set | OAuth app client ID. Mutually exclusive with a PAT                                               |
+| `client_secret` | Not set | OAuth app client secret. Required when `client_id` is set                                        |
 | `allowed_users` | Not set | GitLab usernames permitted to log in. When unset, any GitLab user who completes OAuth can log in |
 
 ### `[google.oauth]`
 
 Google Sign-In authenticates dashboard users only. It does not provide forge access for repositories, CI, PRs, or MRs. Configure GitHub or GitLab for forge operations.
 
-| Key | Default | Description |
-|---|---|---|
-| `client_id` | Not set | Google OAuth client ID |
-| `client_secret` | Not set | Google OAuth client secret. Required when `client_id` is set |
+| Key             | Default | Description                                                                                           |
+| --------------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| `client_id`     | Not set | Google OAuth client ID                                                                                |
+| `client_secret` | Not set | Google OAuth client secret. Required when `client_id` is set                                          |
 | `allowed_users` | Not set | Google account emails permitted to log in. When unset, any Google user who completes OAuth can log in |
 
 Use `https://<your-domain>/auth/google/callback` as the authorized redirect URI in Google Cloud Console.
 
 ### `[debug]`
 
-| Key | Default | Description |
-|---|---|---|
-| `log_level` | `"info"` | Log verbosity: `debug`, `info`, `warn`, `error` |
-| `no_log_time` | `false` | Omit timestamps from log output. Useful under systemd |
-| `pprof` | `false` | Expose `/debug/pprof/*` profiling endpoints |
-| `cpuprofile` | Not set | Write CPU profile to this file path |
-| `memprofile` | Not set | Write heap profile on shutdown |
-| `trace` | Not set | Write execution trace to this file path |
+| Key           | Default  | Description                                           |
+| ------------- | -------- | ----------------------------------------------------- |
+| `log_level`   | `"info"` | Log verbosity: `debug`, `info`, `warn`, `error`       |
+| `no_log_time` | `false`  | Omit timestamps from log output. Useful under systemd |
+| `pprof`       | `false`  | Expose `/debug/pprof/*` profiling endpoints           |
+| `cpuprofile`  | Not set  | Write CPU profile to this file path                   |
+| `memprofile`  | Not set  | Write heap profile on shutdown                        |
+| `trace`       | Not set  | Write execution trace to this file path               |
 
 ## Environment variables
 

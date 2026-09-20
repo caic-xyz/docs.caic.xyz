@@ -2,19 +2,27 @@
   "name": "caic-docs",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.6.0",
+  "packageManager": "pnpm@12.4.2",
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=26 <27",
+    "pnpm": ">=12.4.2"
   },
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
+    "format": "prettier --write . && ruff format scripts/ && pnpm format:shell",
+    "format:shell": "files=$(git ls-files '*.sh' 'scripts/hooks/*'); [ -z \"$files\" ] || shfmt -w $files",
+    "format:check": "prettier --check --cache --cache-location node_modules/.cache/prettier/.prettier-cache --cache-strategy content . && ruff format --check scripts/ && pnpm format:check:shell",
+    "format:check:shell": "files=$(git ls-files '*.sh' 'scripts/hooks/*'); [ -z \"$files\" ] || { out=$(shfmt -l $files); [ -z \"$out\" ] || { echo 'Shell files need shfmt:' >&2; echo \"$out\" >&2; exit 1; }; }",
+    "lint": "ruff check scripts/ && python3 scripts/update_agents_file_index.py --check",
+    "lint:fix": "ruff check scripts/ --fix && python3 scripts/update_agents_file_index.py",
     "prepare": "scripts/install-git-hooks.sh",
     "preview": "vitepress preview",
     "deploy": "pnpm run build && wrangler deploy"
   },
   "devDependencies": {
     "medium-zoom": "^1.1.0",
+    "prettier": "3.9.6",
     "vitepress": "^1.6.4",
     "vitepress-plugin-llms": "^1.13.1",
     "wrangler": "^4.100.0"

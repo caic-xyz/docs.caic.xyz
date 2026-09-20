@@ -53,20 +53,20 @@ The `--github` flag tries `$GITHUB_TOKEN` first, then falls back to `gh auth tok
 
 These host directories are automatically bind-mounted into each container. The XDG entries use `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, and `XDG_STATE_HOME` when you have set them. The table shows their default paths.
 
-| Purpose | Host paths | Access |
-|---|---|---|
-| Shared agent instructions and skills | `~/.agents` | Read-write |
-| Amp | `~/.amp`, `~/.config/amp`, `~/.local/share/amp` | Read-write |
-| Android and ADB | `~/.android` | Read-write |
-| Claude Code | `~/.claude` | Read-write |
-| Codex | `~/.codex` | Read-write |
-| Goose | `~/.config/goose`, `~/.local/share/goose` | Read-write |
-| Kilo Code | `~/.kilocode` | Read-write |
-| Kimi | `~/.kimi` | Read-write |
-| OpenCode | `~/.config/opencode`, `~/.local/share/opencode`, `~/.local/state/opencode` | Read-write |
-| Pi | `~/.pi` | Read-write |
-| Qwen Code | `~/.qwen` | Read-write |
-| md configuration | `~/.config/md` | Read-only |
+| Purpose                              | Host paths                                                                 | Access     |
+| ------------------------------------ | -------------------------------------------------------------------------- | ---------- |
+| Shared agent instructions and skills | `~/.agents`                                                                | Read-write |
+| Amp                                  | `~/.amp`, `~/.config/amp`, `~/.local/share/amp`                            | Read-write |
+| Android and ADB                      | `~/.android`                                                               | Read-write |
+| Claude Code                          | `~/.claude`                                                                | Read-write |
+| Codex                                | `~/.codex`                                                                 | Read-write |
+| Goose                                | `~/.config/goose`, `~/.local/share/goose`                                  | Read-write |
+| Kilo Code                            | `~/.kilocode`                                                              | Read-write |
+| Kimi                                 | `~/.kimi`                                                                  | Read-write |
+| OpenCode                             | `~/.config/opencode`, `~/.local/share/opencode`, `~/.local/state/opencode` | Read-write |
+| Pi                                   | `~/.pi`                                                                    | Read-write |
+| Qwen Code                            | `~/.qwen`                                                                  | Read-write |
+| md configuration                     | `~/.config/md`                                                             | Read-only  |
 
 If one of these directories contains a symlink to another directory, md also mounts the resolved target so the link continues to work in the container.
 
@@ -112,18 +112,18 @@ Caches are included only when the host directory exists; missing directories are
 
 ### Default caches
 
-| Cache name | Host path | Container path |
-|---|---|---|
-| `bun` | `~/.bun/install/cache` | `/home/user/.bun/install/cache` |
-| `cargo` | `~/.cargo/registry`, `~/.cargo/git` | `/home/user/.cargo/{registry,git}` |
-| `go-mod` | `~/go/pkg/mod` | `/home/user/go/pkg/mod` |
-| `gradle` | `~/.gradle/caches`, `~/.gradle/wrapper/dists` | `/home/user/.gradle/{caches,wrapper/dists}` |
-| `maven` | `~/.m2/repository` | `/home/user/.m2/repository` |
-| `npm` | `~/.npm` | `/home/user/.npm` |
-| `pip` | `~/.cache/pip` | `/home/user/.cache/pip` |
-| `pnpm` | `~/.local/share/pnpm/store` | `/home/user/.local/share/pnpm/store` |
-| `uv` | `~/.cache/uv` | `/home/user/.cache/uv` |
-| `android-keys` | `~/.android` (top-level files only) | `/home/user/.android` |
+| Cache name     | Host path                                     | Container path                              |
+| -------------- | --------------------------------------------- | ------------------------------------------- |
+| `bun`          | `~/.bun/install/cache`                        | `/home/user/.bun/install/cache`             |
+| `cargo`        | `~/.cargo/registry`, `~/.cargo/git`           | `/home/user/.cargo/{registry,git}`          |
+| `go-mod`       | `~/go/pkg/mod`                                | `/home/user/go/pkg/mod`                     |
+| `gradle`       | `~/.gradle/caches`, `~/.gradle/wrapper/dists` | `/home/user/.gradle/{caches,wrapper/dists}` |
+| `maven`        | `~/.m2/repository`                            | `/home/user/.m2/repository`                 |
+| `npm`          | `~/.npm`                                      | `/home/user/.npm`                           |
+| `pip`          | `~/.cache/pip`                                | `/home/user/.cache/pip`                     |
+| `pnpm`         | `~/.local/share/pnpm/store`                   | `/home/user/.local/share/pnpm/store`        |
+| `uv`           | `~/.cache/uv`                                 | `/home/user/.cache/uv`                      |
+| `android-keys` | `~/.android` (top-level files only)           | `/home/user/.android`                       |
 
 ```bash
 md start -no-cache go-mod -no-cache cargo   # skip specific caches
@@ -139,12 +139,12 @@ For custom caches, append `:ro` to make the directory read-only inside the conta
 
 `--cache` and `--mount` both bring a host directory into the container, but they behave differently:
 
-| | `--cache host:container[:ro]` | `--mount host:container[:ro]` |
-|---|---|---|
-| When applied | Build time | Runtime |
-| Relationship to host | One-way copy baked into the image | Live bind-mount |
-| Host changes after start | Not reflected (frozen at build) | Reflected immediately |
-| Triggers an image rebuild | Yes, when the cache set changes | No |
+|                           | `--cache host:container[:ro]`     | `--mount host:container[:ro]` |
+| ------------------------- | --------------------------------- | ----------------------------- |
+| When applied              | Build time                        | Runtime                       |
+| Relationship to host      | One-way copy baked into the image | Live bind-mount               |
+| Host changes after start  | Not reflected (frozen at build)   | Reflected immediately         |
+| Triggers an image rebuild | Yes, when the cache set changes   | No                            |
 
 Use `--cache` for warm package-manager caches that you don't need to stay in sync with the host. Use `--mount` when you want the container to see host changes live, for example a shared dataset or a directory you edit on the host while an agent works. Append `:ro` to either for a read-only directory, and use `~` or `~/` in the container path to mean `/home/user`.
 

@@ -4,24 +4,24 @@ caic exposes a Model Context Protocol (MCP) endpoint at `/api/caic/v1/mcp`. Clie
 
 ## Tools and resources
 
-| Tool | Scope | What it does |
-|---|---|---|
-| `repos_list` | `caic:mcp.read` | List managed repositories |
-| `get_usage` | `caic:mcp.read` | Read local and provider usage |
-| `tasks_list` | `caic:tasks.read` | List tasks |
-| `task_get_detail` | `caic:tasks.read` | Read one task's detail and recent output |
-| `agent_last_message` | `caic:tasks.read` | Read an agent's most recent message |
-| `task_create` | `caic:tasks.create` | Create a coding task |
-| `task_send_message` | `caic:tasks.write` | Send a message to a task |
-| `task_answer_question` | `caic:tasks.write` | Answer a task's structured question |
-| `task_fork` | `caic:tasks.write` | Fork a task |
-| `task_stop` | `caic:tasks.write` | Stop a task |
-| `task_revive` | `caic:tasks.write` | Revive a stopped task |
-| `task_purge` | `caic:tasks.admin` | Purge a task |
-| `clone_repo` | `caic:repos.write` | Clone a repository |
-| `task_push_branch_to_remote` | `caic:repos.write` | Push a task branch, or squash-push its changes to the default branch |
-| `task_fix_pr` | `caic:repos.write` | Repair CI for an existing task's pull request |
-| `bot_fix_ci` | `caic:repos.write` | Create a task to repair CI on a repository's default branch |
+| Tool                         | Scope               | What it does                                                         |
+| ---------------------------- | ------------------- | -------------------------------------------------------------------- |
+| `repos_list`                 | `caic:mcp.read`     | List managed repositories                                            |
+| `get_usage`                  | `caic:mcp.read`     | Read local and provider usage                                        |
+| `tasks_list`                 | `caic:tasks.read`   | List tasks                                                           |
+| `task_get_detail`            | `caic:tasks.read`   | Read one task's detail and recent output                             |
+| `agent_last_message`         | `caic:tasks.read`   | Read an agent's most recent message                                  |
+| `task_create`                | `caic:tasks.create` | Create a coding task                                                 |
+| `task_send_message`          | `caic:tasks.write`  | Send a message to a task                                             |
+| `task_answer_question`       | `caic:tasks.write`  | Answer a task's structured question                                  |
+| `task_fork`                  | `caic:tasks.write`  | Fork a task                                                          |
+| `task_stop`                  | `caic:tasks.write`  | Stop a task                                                          |
+| `task_revive`                | `caic:tasks.write`  | Revive a stopped task                                                |
+| `task_purge`                 | `caic:tasks.admin`  | Purge a task                                                         |
+| `clone_repo`                 | `caic:repos.write`  | Clone a repository                                                   |
+| `task_push_branch_to_remote` | `caic:repos.write`  | Push a task branch, or squash-push its changes to the default branch |
+| `task_fix_pr`                | `caic:repos.write`  | Repair CI for an existing task's pull request                        |
+| `bot_fix_ci`                 | `caic:repos.write`  | Create a task to repair CI on a repository's default branch          |
 
 Repository and task list tools are paginated. The MCP `resources/list` response is paginated too. A response can contain fewer results than requested to stay within response-size limits. Continue with `nextCursor` until it is absent.
 
@@ -51,14 +51,14 @@ Point the client at the full endpoint URL, for example `https://caic.example.com
 
 The consent screen lists the requested permissions. Read-only permissions are selected by default. Tools and resources that the approved scopes do not allow are omitted from discovery results.
 
-| Scope | Grants |
-|---|---|
-| `caic:mcp.read` | Use basic MCP tools, usage, and non-task resources |
-| `caic:tasks.read` | Read task information |
-| `caic:tasks.create` | Create coding tasks |
-| `caic:tasks.write` | Send and answer messages, fork tasks, and stop or revive existing tasks |
-| `caic:tasks.admin` | Purge tasks |
-| `caic:repos.write` | Clone repositories, push task branches or squash-push directly to default branches, repair pull request CI, and create default-branch CI repair tasks |
+| Scope               | Grants                                                                                                                                                |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `caic:mcp.read`     | Use basic MCP tools, usage, and non-task resources                                                                                                    |
+| `caic:tasks.read`   | Read task information                                                                                                                                 |
+| `caic:tasks.create` | Create coding tasks                                                                                                                                   |
+| `caic:tasks.write`  | Send and answer messages, fork tasks, and stop or revive existing tasks                                                                               |
+| `caic:tasks.admin`  | Purge tasks                                                                                                                                           |
+| `caic:repos.write`  | Clone repositories, push task branches or squash-push directly to default branches, repair pull request CI, and create default-branch CI repair tasks |
 
 Grants created before the task-creation scope was introduced do not gain it automatically. Reapprove the client if it needs to create tasks.
 

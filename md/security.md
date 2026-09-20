@@ -46,10 +46,10 @@ This blocks outbound routing at the runtime level. SSH access still works from t
 
 md manages two SSH key pairs, automatically generated on first use:
 
-| Key | Location | Purpose |
-|---|---|---|
-| **User key** | `~/.ssh/md` | Client identity: authenticates from host to container |
-| **Host key** | `~/.config/md/ssh_host_ed25519_key` | Server identity: the container's SSH host key |
+| Key          | Location                            | Purpose                                               |
+| ------------ | ----------------------------------- | ----------------------------------------------------- |
+| **User key** | `~/.ssh/md`                         | Client identity: authenticates from host to container |
+| **Host key** | `~/.config/md/ssh_host_ed25519_key` | Server identity: the container's SSH host key         |
 
 Both are ed25519 keys. The user public key is baked into the container image as `authorized_keys`. The host key is baked in so the container always presents the same identity.
 
@@ -79,15 +79,16 @@ Each container gets its own `known_hosts` file with the host key pinned to `[127
 
 Containers run with restricted capabilities by default. md adds only the minimum needed:
 
-| Capability | Why | Risk |
-|---|---|---|
-| `SYS_PTRACE` | strace, gdb, delve, lldb | Scoped to container PID namespace: cannot attach to host processes |
-| `seccomp=unconfined` | Chrome sandbox, strace, bpf | Does **not** grant capabilities: only removes syscall allowlist |
-| `apparmor=unconfined` (Docker only) | Chrome namespace creation | Container-scoped |
-| `NET_ADMIN`, `NET_RAW` | Network interface administration and packet capture | Scoped to the container network namespace, but permits changing its routes and firewall rules and capturing its traffic |
-| `SYS_ADMIN` (with `--sudo`) | Nested containers; md also passes through `/dev/fuse` and `/dev/net/tun` | Grants broad administration rights within the container |
+| Capability                          | Why                                                                      | Risk                                                                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `SYS_PTRACE`                        | strace, gdb, delve, lldb                                                 | Scoped to container PID namespace: cannot attach to host processes                                                      |
+| `seccomp=unconfined`                | Chrome sandbox, strace, bpf                                              | Does **not** grant capabilities: only removes syscall allowlist                                                         |
+| `apparmor=unconfined` (Docker only) | Chrome namespace creation                                                | Container-scoped                                                                                                        |
+| `NET_ADMIN`, `NET_RAW`              | Network interface administration and packet capture                      | Scoped to the container network namespace, but permits changing its routes and firewall rules and capturing its traffic |
+| `SYS_ADMIN` (with `--sudo`)         | Nested containers; md also passes through `/dev/fuse` and `/dev/net/tun` | Grants broad administration rights within the container                                                                 |
 
 What is **not** added:
+
 - `--privileged` is never used
 - No host network mode (`--network host`)
 - No host PID or IPC namespace sharing

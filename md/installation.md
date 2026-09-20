@@ -13,10 +13,10 @@ md uses Docker when both runtime commands are installed. It selects Podman autom
 
 ### Platform-specific notes
 
-| Platform | Recommendation |
-|---|---|
-| **Linux** | Docker Engine or Podman. Rootless Podman is supported. |
-| **macOS** | [Docker Desktop](https://docs.docker.com/desktop/setup/install/mac-install/). |
+| Platform    | Recommendation                                                                      |
+| ----------- | ----------------------------------------------------------------------------------- |
+| **Linux**   | Docker Engine or Podman. Rootless Podman is supported.                              |
+| **macOS**   | [Docker Desktop](https://docs.docker.com/desktop/setup/install/mac-install/).       |
 | **Windows** | Docker Desktop with WSL2 backend. Run `md` from inside the WSL2 Linux distribution. |
 
 Docker Desktop alternatives haven't been tested. Please let us know if you run into issues.

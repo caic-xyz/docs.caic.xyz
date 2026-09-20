@@ -12,9 +12,9 @@ Config keys are documented in [Configuration](./configuration#gitlab). This page
 
 ## Choosing a mode
 
-| Mode | Best for | Auth |
-|---|---|---|
-| PAT | Single user, headless | Token in config |
+| Mode  | Best for                  | Auth             |
+| ----- | ------------------------- | ---------------- |
+| PAT   | Single user, headless     | Token in config  |
 | OAuth | Multiple users with login | Login via GitLab |
 
 PAT and OAuth are mutually exclusive.

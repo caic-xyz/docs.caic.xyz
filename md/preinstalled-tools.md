@@ -20,15 +20,15 @@ google-chrome (amd64), chromium (arm64 fallback), chrome-devtools-mcp
 
 ## Languages & runtimes
 
-| Language | Toolchain |
-|---|---|
-| Go | `go`, `gofmt` (latest stable) |
-| Node.js | `node` (v24 via nvm), `npm`, `npx` |
-| TypeScript | `tsc`, `tsx`, `eslint` |
-| Rust | `rustc`, `cargo`, `rustup`, `cargo-binstall` |
-| Python | `python3`, `uv`, `pylint`, `ruff` |
-| Java | `java` (JDK 21, headless) |
-| R | `R` |
+| Language   | Toolchain                                    |
+| ---------- | -------------------------------------------- |
+| Go         | `go`, `gofmt` (latest stable)                |
+| Node.js    | `node` (v24 via nvm), `npm`, `npx`           |
+| TypeScript | `tsc`, `tsx`, `eslint`                       |
+| Rust       | `rustc`, `cargo`, `rustup`, `cargo-binstall` |
+| Python     | `python3`, `uv`, `pylint`, `ruff`            |
+| Java       | `java` (JDK 21, headless)                    |
+| R          | `R`                                          |
 
 ## Package managers
 
@@ -40,16 +40,16 @@ build-essential, cmake, ninja-build, ccache, make, gcc, g++, arm-linux-gnueabi-g
 
 ## AI coding agents
 
-| Agent | Binary |
-|---|---|
-| Claude Code | `claude` |
-| Codex | `codex` |
-| Kilo Code | `kilo` |
-| OpenCode | `opencode` |
-| Amp CLI | `amp` |
-| Pi | `pi` |
-| Qwen Code | `qwen` |
-| Kimi | `kimi` |
+| Agent         | Binary          |
+| ------------- | --------------- |
+| Claude Code   | `claude`        |
+| Codex         | `codex`         |
+| Kilo Code     | `kilo`          |
+| OpenCode      | `opencode`      |
+| Amp CLI       | `amp`           |
+| Pi            | `pi`            |
+| Qwen Code     | `qwen`          |
+| Kimi          | `kimi`          |
 | Agent Browser | `agent-browser` |
 
 ## Containers

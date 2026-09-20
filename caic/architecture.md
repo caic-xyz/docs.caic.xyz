@@ -24,24 +24,24 @@ Each task runs in its own Docker or Podman container. caic talks to the task ove
 
 A task combines a prompt, one or more repositories, a branch choice, and an agent harness. It moves through setup states before the agent runs. After a turn, it waits for another message, asks a structured question, or presents a plan.
 
-| State | What is happening |
-|---|---|
-| **Pending** | Task is queued |
-| **Branching** | Branches and repository workspaces are prepared |
-| **Provisioning** | The task container is starting |
-| **Starting** | caic is connecting to the agent |
-| **Running** | The agent is producing output |
-| **Waiting** | The turn finished and the agent can receive another message |
-| **Asking** | The agent needs an answer |
-| **HasPlan** | The agent produced a plan for review |
-| **Pulling** | Changes are being read from the task workspace |
-| **Pushing** | Changes are being pushed to the remote |
-| **Stopping** | Graceful shutdown is in progress |
-| **Stopped** | The container is stopped and can be revived |
-| **Crashed** | An active agent session failed or its container ran out of memory; the retained container can be revived |
-| **Purging** | Container deletion is in progress |
-| **Failed** | Setup, branch allocation, fork, revival, or runtime destruction failed; inspect the task error for details |
-| **Purged** | The task is final and its log is archived |
+| State            | What is happening                                                                                          |
+| ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Pending**      | Task is queued                                                                                             |
+| **Branching**    | Branches and repository workspaces are prepared                                                            |
+| **Provisioning** | The task container is starting                                                                             |
+| **Starting**     | caic is connecting to the agent                                                                            |
+| **Running**      | The agent is producing output                                                                              |
+| **Waiting**      | The turn finished and the agent can receive another message                                                |
+| **Asking**       | The agent needs an answer                                                                                  |
+| **HasPlan**      | The agent produced a plan for review                                                                       |
+| **Pulling**      | Changes are being read from the task workspace                                                             |
+| **Pushing**      | Changes are being pushed to the remote                                                                     |
+| **Stopping**     | Graceful shutdown is in progress                                                                           |
+| **Stopped**      | The container is stopped and can be revived                                                                |
+| **Crashed**      | An active agent session failed or its container ran out of memory; the retained container can be revived   |
+| **Purging**      | Container deletion is in progress                                                                          |
+| **Failed**       | Setup, branch allocation, fork, revival, or runtime destruction failed; inspect the task error for details |
+| **Purged**       | The task is final and its log is archived                                                                  |
 
 Choosing Purge on an active or crashed task first stops it, then waits for the configured recovery window. Reviving during that window cancels deletion. The default delay is 15 seconds and can be set from 10 seconds to 24 hours in **Settings**. A task that is already Stopped is deleted immediately when purged.
 
@@ -108,11 +108,11 @@ See the [API reference](https://github.com/caic-xyz/caic/blob/main/sdk/caic/API.
 
 caic detects GitHub and GitLab from repository remotes. When you push a task, it can open a pull or merge request with the task title and agent summary, monitor CI, and return failures to the agent. Optional auto-fix can let the agent iterate on failed checks. GitLab forge operations currently support GitLab.com only; a configured self-hosted GitLab URL affects OAuth login, not repository, merge request, or CI API operations.
 
-| Mode | Configuration | Capabilities |
-|---|---|---|
-| Personal access token | `[github.pat]` or `[gitlab.pat]` | Single-user forge access and CI polling |
-| OAuth | `[github.oauth]` or `[gitlab.oauth]` | Per-user login, forge access, and CI polling |
-| GitHub App | `[github.app]` with PAT or OAuth | Webhooks and automatic tasks from supported GitHub events |
+| Mode                  | Configuration                        | Capabilities                                              |
+| --------------------- | ------------------------------------ | --------------------------------------------------------- |
+| Personal access token | `[github.pat]` or `[gitlab.pat]`     | Single-user forge access and CI polling                   |
+| OAuth                 | `[github.oauth]` or `[gitlab.oauth]` | Per-user login, forge access, and CI polling              |
+| GitHub App            | `[github.app]` with PAT or OAuth     | Webhooks and automatic tasks from supported GitHub events |
 
 A configured GitHub App can react to a labeled issue, a pull request targeting the default branch, or an `@caic` comment. See [GitHub Integration](./github) and [GitLab Integration](./gitlab).
 

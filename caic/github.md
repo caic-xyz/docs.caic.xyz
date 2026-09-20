@@ -13,11 +13,11 @@ Config keys are documented in [Configuration](./configuration#github). This page
 
 ## Choosing a mode
 
-| Mode | Best for | Auth | Webhooks | Bot |
-|---|---|---|---|---|
-| PAT | Single user, headless | Token in config | No | No |
-| OAuth | Multiple users with login | Login via GitHub | No | No |
-| GitHub App | Org-wide automation | App installation | Yes | Yes |
+| Mode       | Best for                  | Auth             | Webhooks | Bot |
+| ---------- | ------------------------- | ---------------- | -------- | --- |
+| PAT        | Single user, headless     | Token in config  | No       | No  |
+| OAuth      | Multiple users with login | Login via GitHub | No       | No  |
+| GitHub App | Org-wide automation       | App installation | Yes      | Yes |
 
 GitHub App can be layered on top of PAT, OAuth, or both. A PAT can also provide server-level GitHub credentials when no user token is available.
 
@@ -94,11 +94,11 @@ Generate a webhook secret: `openssl rand -hex 32`.
 
 When installed, the bot automatically creates tasks from forge events:
 
-| Event | Condition | Action |
-|---|---|---|
-| Issue opened | Issue has `caic` label | Agent fixes the issue |
-| PR opened | Targets the default branch | Agent reviews the PR |
-| Comment created | Body contains `@caic` | Agent acts on the instruction |
+| Event           | Condition                  | Action                        |
+| --------------- | -------------------------- | ----------------------------- |
+| Issue opened    | Issue has `caic` label     | Agent fixes the issue         |
+| PR opened       | Targets the default branch | Agent reviews the PR          |
+| Comment created | Body contains `@caic`      | Agent acts on the instruction |
 
 The bot posts comments with links back to your caic instance.
 

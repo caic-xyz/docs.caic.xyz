@@ -115,9 +115,7 @@ def demo(repo_dir: str, cols: int, rows: int) -> None:
     child.logfile_read = sys.stdout
 
     # --- Inside the container ---
-    simulate_typing(
-        child, f"cd {src_dir}", CONTAINER_MARKER, "Navigate to the repo inside the container"
-    )
+    simulate_typing(child, f"cd {src_dir}", CONTAINER_MARKER, "Navigate to the repo inside the container")
     simulate_typing(
         child,
         "claude 'Add a one liner joke to README.md'",
@@ -129,9 +127,7 @@ def demo(repo_dir: str, cols: int, rows: int) -> None:
     simulate_typing(child, "exit", HOST_MARKER, "Exit the ssh session to the container")
 
     # --- Back on host ---
-    simulate_typing(
-        child, "md pull", HOST_MARKER, "Pull changes from the container (wraps git pull)"
-    )
+    simulate_typing(child, "md pull", HOST_MARKER, "Pull changes from the container (wraps git pull)")
     simulate_typing(
         child,
         "git --no-pager log --oneline -3",
@@ -168,10 +164,7 @@ def preflight(repo_dir: str, *, record: bool) -> int:
         check=False,
     )
     if result.returncode == 0:
-        errors.append(
-            "Branch 'demo-wip' already exists. Clean up first:\n"
-            "  md purge && git branch -D demo-wip"
-        )
+        errors.append("Branch 'demo-wip' already exists. Clean up first:\n  md purge && git branch -D demo-wip")
 
     if record:
         if not shutil.which("asciinema"):

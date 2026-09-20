@@ -1,8 +1,8 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "caic-xyz-docs",
-	"compatibility_date": "2026-03-15",
-	"assets": {
-		"directory": "./.vitepress/dist"
-	}
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "caic-xyz-docs",
+  "compatibility_date": "2026-03-15",
+  "assets": {
+    "directory": "./.vitepress/dist",
+  },
 }

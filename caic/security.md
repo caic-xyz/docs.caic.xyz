@@ -24,15 +24,15 @@ By default, port-only addresses such as `:2242` bind to localhost. You must expl
 
 Every request is checked against `allow_origins`. The complete accepted value types are:
 
-| Value | Matches |
-|---|---|
-| `local` | Unspecified, IPv4 link-local, RFC 1918, IPv6 ULA and link-local, and IPv4 or IPv6 loopback addresses |
-| `tailscale` | Tailscale CGNAT range (`100.64.0.0/10`) |
-| `github` | GitHub webhook addresses fetched from GitHub |
-| `anthropic` | Published Anthropic outbound addresses for Claude MCP clients |
-| `openai` | Published ChatGPT integration and Codex cloud addresses |
-| ISO country code | Requests geolocated to that country; requires a configured GeoLite2 database |
-| CIDR range | Requests whose client address belongs to the range |
+| Value            | Matches                                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------------------------- |
+| `local`          | Unspecified, IPv4 link-local, RFC 1918, IPv6 ULA and link-local, and IPv4 or IPv6 loopback addresses |
+| `tailscale`      | Tailscale CGNAT range (`100.64.0.0/10`)                                                              |
+| `github`         | GitHub webhook addresses fetched from GitHub                                                         |
+| `anthropic`      | Published Anthropic outbound addresses for Claude MCP clients                                        |
+| `openai`         | Published ChatGPT integration and Codex cloud addresses                                              |
+| ISO country code | Requests geolocated to that country; requires a configured GeoLite2 database                         |
+| CIDR range       | Requests whose client address belongs to the range                                                   |
 
 The default is `['local', 'tailscale', 'github']`. Unmatched requests receive HTTP 403.
 
@@ -52,19 +52,19 @@ GitHub and GitLab webhooks require a configured secret and are verified before t
 
 ### Server-side storage
 
-| Credential | Storage | Notes |
-|---|---|---|
-| Forge personal access tokens | `config.toml` in plaintext | Restrict file permissions |
-| OAuth client secrets | `config.toml` in plaintext | Restrict file permissions |
-| GitHub App private key | PEM file in the config directory | The config stores its path |
-| Gemini API key | `config.toml` or server environment | Used for title generation and embedded voice |
-| Tailscale API key | `config.toml` or server environment | Used for ephemeral task nodes |
-| Provider API keys | `[core.env]`, a harness environment table, or server environment | Used for supported usage cards; `[core.env]` and server values can also support titles and commit descriptions |
-| Harness environment credentials | `[harness.<name>.env]` in `config.toml` | Written into matching task containers and used for that harness's model refresh |
-| Webhook secrets | `config.toml` in plaintext | Used to verify webhooks |
-| Dashboard session secret and MCP issuer signing key | `settings.json` in plaintext | Generated on first launch |
-| User profiles and forge OAuth tokens | `users.json` | Used for login and per-user forge access |
-| MCP clients, grants, hashed refresh-token family state, and private access-token signing keys | `oauth_refresh_tokens.json` | Persists MCP authorization and revocation across restarts |
+| Credential                                                                                    | Storage                                                          | Notes                                                                                                          |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Forge personal access tokens                                                                  | `config.toml` in plaintext                                       | Restrict file permissions                                                                                      |
+| OAuth client secrets                                                                          | `config.toml` in plaintext                                       | Restrict file permissions                                                                                      |
+| GitHub App private key                                                                        | PEM file in the config directory                                 | The config stores its path                                                                                     |
+| Gemini API key                                                                                | `config.toml` or server environment                              | Used for title generation and embedded voice                                                                   |
+| Tailscale API key                                                                             | `config.toml` or server environment                              | Used for ephemeral task nodes                                                                                  |
+| Provider API keys                                                                             | `[core.env]`, a harness environment table, or server environment | Used for supported usage cards; `[core.env]` and server values can also support titles and commit descriptions |
+| Harness environment credentials                                                               | `[harness.<name>.env]` in `config.toml`                          | Written into matching task containers and used for that harness's model refresh                                |
+| Webhook secrets                                                                               | `config.toml` in plaintext                                       | Used to verify webhooks                                                                                        |
+| Dashboard session secret and MCP issuer signing key                                           | `settings.json` in plaintext                                     | Generated on first launch                                                                                      |
+| User profiles and forge OAuth tokens                                                          | `users.json`                                                     | Used for login and per-user forge access                                                                       |
+| MCP clients, grants, hashed refresh-token family state, and private access-token signing keys | `oauth_refresh_tokens.json`                                      | Persists MCP authorization and revocation across restarts                                                      |
 
 These files live under `~/.config/caic/`. Restrict that directory to your user, for example with `chmod 700 ~/.config/caic`.
 
@@ -112,14 +112,14 @@ On a non-loopback listener, caic disables MCP when OAuth login is not configured
 
 Consent grants only selected scopes:
 
-| Scope | Grants |
-|---|---|
-| `caic:mcp.read` | Basic MCP tools, usage, and non-task resources |
-| `caic:tasks.read` | Read task information |
-| `caic:tasks.create` | Create coding tasks |
-| `caic:tasks.write` | Send and answer messages, fork tasks, and stop or revive existing tasks |
-| `caic:tasks.admin` | Purge tasks |
-| `caic:repos.write` | Clone repositories, push task branches or squash-push directly to default branches, repair pull request CI, and create default-branch CI repair tasks |
+| Scope               | Grants                                                                                                                                                |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `caic:mcp.read`     | Basic MCP tools, usage, and non-task resources                                                                                                        |
+| `caic:tasks.read`   | Read task information                                                                                                                                 |
+| `caic:tasks.create` | Create coding tasks                                                                                                                                   |
+| `caic:tasks.write`  | Send and answer messages, fork tasks, and stop or revive existing tasks                                                                               |
+| `caic:tasks.admin`  | Purge tasks                                                                                                                                           |
+| `caic:repos.write`  | Clone repositories, push task branches or squash-push directly to default branches, repair pull request CI, and create default-branch CI repair tasks |
 
 Tools and resources outside the approved scopes are not exposed to the client. Authorization Code consent lets you approve a subset of requested scopes. In the device flow, the client starts at `/oauth/device_authorization`, you approve its code at `/oauth/device`, and it polls `/oauth/token`; approval grants every requested scope. Review those scopes before approving. Revoke a grant from **Settings** at any time. Add `anthropic` or `openai` to `allow_origins` only when the corresponding hosted client must reach caic. See [MCP Server](./mcp) for connection steps.
 

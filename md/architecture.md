@@ -105,9 +105,9 @@ You can add your own runtime labels with `md start --label key=value` (repeatabl
 
 All ports are bound to `127.0.0.1`. No external network exposure from the host:
 
-| Port | Purpose | When |
-|---|---|---|
-| Random → 22 | SSH access | Always |
+| Port          | Purpose     | When             |
+| ------------- | ----------- | ---------------- |
+| Random → 22   | SSH access  | Always           |
 | Random → 5901 | VNC desktop | With `--display` |
 
 SSH uses key-based authentication only. md generates two key pairs on first use: a user key (`~/.ssh/md`) for client authentication and a host key (`~/.config/md/ssh_host_ed25519_key`) for server identity. Each container gets its own `known_hosts` entry with the host key pinned.

@@ -8,17 +8,17 @@ The container includes [`/home/user/src/AGENTS.md`](https://github.com/caic-xyz/
 
 ## Supported agents
 
-| Agent | Instruction file | Host config mounted automatically |
-|---|---|---|
-| [amp](https://ampcode.com/manual#AGENTS.md) | `~/.config/amp/AGENTS.md` | Yes |
-| [claude](https://www.anthropic.com/engineering/claude-code-best-practices) | `~/.claude/CLAUDE.md` | Yes |
-| [codex](https://developers.openai.com/codex/guides/agents-md/) | `~/.codex/AGENTS.md` | Yes |
-| [kilo](https://kilo.ai/docs/agent-behavior/custom-rules) | `~/.kilocode/rules/*.md` | Yes |
-| [opencode](https://opencode.ai/docs/rules/) | `~/.config/opencode/AGENTS.md` | Yes |
-| [pi](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/README.md) | `~/.pi/agent/AGENTS.md` | Yes |
-| [qwen](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/) | `~/.qwen/QWEN.md` | Yes |
-| [goose](https://block.github.io/goose/docs/) | `~/.config/goose/AGENTS.md` | Yes |
-| [kimi](https://github.com/MoonshotAI/kimi-cli) | `~/.kimi/KIMI.md` | Yes |
+| Agent                                                                                | Instruction file               | Host config mounted automatically |
+| ------------------------------------------------------------------------------------ | ------------------------------ | --------------------------------- |
+| [amp](https://ampcode.com/manual#AGENTS.md)                                          | `~/.config/amp/AGENTS.md`      | Yes                               |
+| [claude](https://www.anthropic.com/engineering/claude-code-best-practices)           | `~/.claude/CLAUDE.md`          | Yes                               |
+| [codex](https://developers.openai.com/codex/guides/agents-md/)                       | `~/.codex/AGENTS.md`           | Yes                               |
+| [kilo](https://kilo.ai/docs/agent-behavior/custom-rules)                             | `~/.kilocode/rules/*.md`       | Yes                               |
+| [opencode](https://opencode.ai/docs/rules/)                                          | `~/.config/opencode/AGENTS.md` | Yes                               |
+| [pi](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/README.md) | `~/.pi/agent/AGENTS.md`        | Yes                               |
+| [qwen](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/)     | `~/.qwen/QWEN.md`              | Yes                               |
+| [goose](https://block.github.io/goose/docs/)                                         | `~/.config/goose/AGENTS.md`    | Yes                               |
+| [kimi](https://github.com/MoonshotAI/kimi-cli)                                       | `~/.kimi/KIMI.md`              | Yes                               |
 
 ## Sharing the same AGENTS.md across harnesses
 
@@ -61,14 +61,14 @@ Again, none of this is required. Each harness looks in its own directory by defa
 
 Skills locations by harness:
 
-| Agent | Skills path |
-|---|---|
-| amp | `~/.agents/skills/**/SKILL.md` |
-| claude | `~/.claude/skills/<name>/SKILL.md` |
-| codex | `~/.codex/skills/**/SKILL.md` |
-| kilo | `~/.kilocode/skills/<name>/SKILL.md` |
+| Agent    | Skills path                                |
+| -------- | ------------------------------------------ |
+| amp      | `~/.agents/skills/**/SKILL.md`             |
+| claude   | `~/.claude/skills/<name>/SKILL.md`         |
+| codex    | `~/.codex/skills/**/SKILL.md`              |
+| kilo     | `~/.kilocode/skills/<name>/SKILL.md`       |
 | opencode | `~/.config/opencode/skill/<name>/SKILL.md` |
-| pi | `~/.pi/agent/skills/**/SKILL.md` |
-| qwen | `~/.qwen/skills/<name>/SKILL.md` |
-| goose | `~/.config/goose/skills/**/SKILL.md` |
-| kimi | `~/.kimi/skills/<name>/SKILL.md` |
+| pi       | `~/.pi/agent/skills/**/SKILL.md`           |
+| qwen     | `~/.qwen/skills/<name>/SKILL.md`           |
+| goose    | `~/.config/goose/skills/**/SKILL.md`       |
+| kimi     | `~/.kimi/skills/<name>/SKILL.md`           |
