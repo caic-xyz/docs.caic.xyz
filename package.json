@@ -16,6 +16,7 @@
     "format:check:shell": "files=$(git ls-files '*.sh' 'scripts/hooks/*'); [ -z \"$files\" ] || { out=$(shfmt -l $files); [ -z \"$out\" ] || { echo 'Shell files need shfmt:' >&2; echo \"$out\" >&2; exit 1; }; }",
     "lint": "ruff check --quiet scripts/ && python3 scripts/lint_binaries.py && python3 scripts/update_agents_file_index.py --check",
     "lint:fix": "ruff check --quiet scripts/ --fix && python3 scripts/update_agents_file_index.py",
+    "verify": "pnpm --silent format:check && pnpm --silent lint",
     "prepare": "scripts/install-git-hooks.sh",
     "preview": "vitepress preview",
     "deploy": "pnpm --silent run build && wrangler deploy"

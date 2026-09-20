@@ -62,8 +62,7 @@ if [[ -n "$(git status --porcelain)" ]]; then
 fi
 
 # Repository-specific verification.
-pnpm --silent format:check
-pnpm --silent lint
+pnpm --silent verify
 
 if [[ -n "$(git status --porcelain)" ]]; then
   printf '%s\n' 'Verification modified the worktree; commit or remove those changes before pushing.' >&2

@@ -134,10 +134,10 @@ The sidebar is defined in `.vitepress/config.ts`. When adding a page, add an ent
 
 ## Formatting
 
-Run `pnpm run lint:fix`, then `pnpm run format`; confirm with `pnpm run format:check` and
-`pnpm run lint`. `pnpm run format` applies Prettier, ruff format, and shfmt; `pnpm run lint` runs ruff
-check and re-checks the AGENTS.md file index. `.editorconfig` is the source of truth for indentation
-and width; Prettier has no separate config.
+Run `pnpm run lint:fix`, then `pnpm run format`; confirm with `pnpm run verify`, which runs
+`pnpm run format:check` and `pnpm run lint`. `pnpm run format` applies Prettier, ruff format, and shfmt;
+`pnpm run lint` runs ruff check and re-checks the AGENTS.md file index. `.editorconfig` is the source of
+truth for indentation and width; Prettier has no separate config.
 
 ## Build
 
