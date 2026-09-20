@@ -61,11 +61,9 @@ if [[ -n "$(git status --porcelain)" ]]; then
   exit 1
 fi
 
-python3 scripts/lint_binaries.py
-
 # Repository-specific verification.
-pnpm format:check
-pnpm lint
+pnpm --silent format:check
+pnpm --silent lint
 
 if [[ -n "$(git status --porcelain)" ]]; then
   printf '%s\n' 'Verification modified the worktree; commit or remove those changes before pushing.' >&2

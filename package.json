@@ -10,15 +10,15 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
-    "format": "prettier --write . && ruff format scripts/ && pnpm format:shell",
+    "format": "prettier --write --log-level warn . && ruff format --quiet scripts/ && pnpm --silent format:shell",
     "format:shell": "files=$(git ls-files '*.sh' 'scripts/hooks/*'); [ -z \"$files\" ] || shfmt -w $files",
-    "format:check": "prettier --check --cache --cache-location node_modules/.cache/prettier/.prettier-cache --cache-strategy content . && ruff format --check scripts/ && pnpm format:check:shell",
+    "format:check": "prettier --check --log-level warn --cache --cache-location node_modules/.cache/prettier/.prettier-cache --cache-strategy content . && ruff format --check --quiet scripts/ && pnpm --silent format:check:shell",
     "format:check:shell": "files=$(git ls-files '*.sh' 'scripts/hooks/*'); [ -z \"$files\" ] || { out=$(shfmt -l $files); [ -z \"$out\" ] || { echo 'Shell files need shfmt:' >&2; echo \"$out\" >&2; exit 1; }; }",
-    "lint": "ruff check scripts/ && python3 scripts/update_agents_file_index.py --check",
-    "lint:fix": "ruff check scripts/ --fix && python3 scripts/update_agents_file_index.py",
+    "lint": "ruff check --quiet scripts/ && python3 scripts/lint_binaries.py && python3 scripts/update_agents_file_index.py --check",
+    "lint:fix": "ruff check --quiet scripts/ --fix && python3 scripts/update_agents_file_index.py",
     "prepare": "scripts/install-git-hooks.sh",
     "preview": "vitepress preview",
-    "deploy": "pnpm run build && wrangler deploy"
+    "deploy": "pnpm --silent run build && wrangler deploy"
   },
   "devDependencies": {
     "medium-zoom": "^1.1.0",
