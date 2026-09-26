@@ -1,3 +1,8 @@
 node_modules/
 .vitepress/dist/
 .vitepress/cache/
+
+# python tooling
+.ruff_cache/
+.venv/
+uv.lock

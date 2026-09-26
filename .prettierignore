@@ -4,6 +4,8 @@ node_modules
 .vscode
 .vitepress/dist
 .vitepress/cache
+.venv
+.ruff_cache
 pnpm-lock.yaml
 # AGENTS.md indexes are written by scripts/update_agents_file_index.py.
 AGENTS.md
