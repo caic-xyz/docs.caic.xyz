@@ -1,5 +1,7 @@
 # Tool-owned locks, generated artifacts, and testdata.
 node_modules
+# Local editor settings; Prettier does not respect .gitignore.
+.vscode
 .vitepress/dist
 .vitepress/cache
 pnpm-lock.yaml
