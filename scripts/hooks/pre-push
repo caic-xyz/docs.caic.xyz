@@ -1,5 +1,5 @@
 #!/bin/bash
-# Rejects non-checked-out, dirty, WIP, binary, and multi-commit main pushes; checks formatting and lint.
+# Validates the checked-out, clean commit before pushing.
 
 set -euo pipefail
 
@@ -62,6 +62,7 @@ if [[ -n "$(git status --porcelain)" ]]; then
 fi
 
 # Repository-specific verification.
+pnpm install --frozen-lockfile --silent
 pnpm --silent verify
 
 if [[ -n "$(git status --porcelain)" ]]; then
