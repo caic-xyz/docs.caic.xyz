@@ -1,6 +1,6 @@
 # AGENTS.md — Documentation generation guide
 
-The documentation website at [docs.caic.xyz](https://docs.caic.xyz) serves **end users** of [caic](https://github.com/caic-xyz/caic) and [md](https://github.com/caic-xyz/md). It is built with [VitePress](https://vitepress.dev/) and deployed to Cloudflare Pages.
+The documentation website at [docs.caic.xyz](https://docs.caic.xyz) serves **end users** of [caic](https://github.com/caic-xyz/caic) and [md](https://github.com/caic-xyz/md). It is built with [VitePress](https://vitepress.dev/) and deployed as a Cloudflare Worker.
 
 ## Audience and scope
 
@@ -148,11 +148,11 @@ pnpm run dev      # local dev server
 
 ## Deploy
 
-Deployed automatically to Cloudflare Pages on push. To deploy manually:
+Deployed automatically through Workers Builds on push. To deploy manually:
 
 ```bash
 pnpm run build
-wrangler pages deploy
+pnpm exec wrangler deploy
 ```
 
 ## Pre-publish checklist

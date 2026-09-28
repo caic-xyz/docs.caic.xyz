@@ -10,7 +10,7 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "^26.0.0",
+      "version": "26.9.0",
       "onFail": "download"
     }
   },
@@ -30,12 +30,12 @@
   },
   "devDependencies": {
     "medium-zoom": "^1.1.0",
-    "prettier": "3.9.6",
+    "prettier": "3.9.8",
     "vitepress": "^1.6.4",
-    "vitepress-plugin-llms": "^1.13.1",
-    "wrangler": "^4.100.0"
+    "vitepress-plugin-llms": "^1.14.0",
+    "wrangler": "4.135.0"
   },
   "dependencies": {
-    "asciinema-player": "^3.15.1"
+    "asciinema-player": "^3.17.0"
   }
 }
