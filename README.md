@@ -11,9 +11,10 @@ pnpm run dev --host 0.0.0.0
 Connect `main` to the `caic-xyz-docs` Worker in Cloudflare Workers →
 Settings → Build. Set:
 
-- Build command: `pnpm run build`.
-- Deploy command: `pnpm exec wrangler deploy`.
-- Version command: `pnpm exec wrangler versions upload`.
+- Build command: `pnpm run build`
+- Deploy command: `pnpm exec wrangler deploy`
+- Version command: `pnpm exec wrangler versions upload`
+- Variables: `SKIP_DEPENDENCY_INSTALL` = `1`
 
 Workers Builds settings live in Cloudflare. `wrangler.jsonc` configures
 the Worker itself.
