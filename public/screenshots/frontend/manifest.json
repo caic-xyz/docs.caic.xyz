@@ -4,7 +4,7 @@
   "platform": "web",
   "source": {
     "revision": "d3067acfb0f37f424bb9bab5cba9dc4724f040f3",
-    "inputsSha256": "80393744298d563e125961c5a6636c5242b765ca03fb6ec99f0358feeb862467"
+    "inputsSha256": "dec78c88ff5080bccafd1c87fd58893cca346bce9bb291e1130e13a7caf750a1"
   },
   "scenarios": [
     {
@@ -12,7 +12,7 @@
       "file": "desktop/overview.webp",
       "width": 1280,
       "height": 800,
-      "sha256": "bb1389b0dd51195f230661b267a3eeb04bbf313915a5867f62903e3d6bbffb57",
+      "sha256": "9f6662e177bc462c4b6f9516a1e81c480b7b974954cc239336cd73168e5d3415",
       "description": "overview"
     },
     {
@@ -36,7 +36,7 @@
       "file": "desktop/task-ask.webp",
       "width": 1280,
       "height": 800,
-      "sha256": "4810b0768a220e74e4b12809f498c941d68abca9fdc66ec333855c589d7429e9",
+      "sha256": "bf6a347543bb84f6a5e62b5bbefc3a5a2a8b423f5cf634242450cd380b273106",
       "description": "task ask"
     },
     {
@@ -44,7 +44,7 @@
       "file": "desktop/task-detail.webp",
       "width": 1280,
       "height": 800,
-      "sha256": "8e0c4a3012effa7e04b8ede1c3ad00f42c9c6b8b29a0115edb5e81f24ff82739",
+      "sha256": "b29f7534009843492efdd811dc74fdaa31454ed8a848129a4e0776799400234a",
       "description": "task detail"
     },
     {
@@ -52,7 +52,7 @@
       "file": "desktop/task-native-subagents.webp",
       "width": 1280,
       "height": 800,
-      "sha256": "a9d9480cfebca07bcd15e3329f74bac295a343f3952c0b078aa32e0f3a9f4116",
+      "sha256": "34ce511e71552b3bb62983e27171253742ad0e360aacb098b284f3db915206a0",
       "description": "task native subagents"
     },
     {
@@ -60,7 +60,7 @@
       "file": "desktop/task-plan.webp",
       "width": 1280,
       "height": 800,
-      "sha256": "e69d84275e83120a5c81beebfad2e316c4fe2784df427f3880b1b3812ed689d5",
+      "sha256": "14f7662b62877edecd2c8946d1815fa976b6bd2b08c9ee42af8bb5f3dc91e3b5",
       "description": "task plan"
     },
     {
@@ -76,7 +76,7 @@
       "file": "desktop/task-resources.webp",
       "width": 1280,
       "height": 800,
-      "sha256": "0835af22a3a4bd7abb83719ab593e1df588fbde0d637303c8c895f7a1fcb29ac",
+      "sha256": "6aa29f2b65cadb848661cbe69101360499906d8984fa3959d9854665258d2a90",
       "description": "task resources"
     },
     {
@@ -84,7 +84,7 @@
       "file": "desktop/task-stats.webp",
       "width": 1280,
       "height": 800,
-      "sha256": "6e00ed56e93585d2ca7312ab31d254d400d2cfbf90f100a9e5bf852b6060e8fb",
+      "sha256": "3066309bdda99b5052aa11d9c448a97edd4daaa6177a1a360d477bc6a040dee2",
       "description": "task stats"
     },
     {
@@ -92,7 +92,7 @@
       "file": "desktop/usage.webp",
       "width": 1280,
       "height": 800,
-      "sha256": "17cf09acb702177f9723c73b5034e271f23bea6d4031009eb5bc816518f0d416",
+      "sha256": "89b17be8a27cae1485f90829cc9f3f877b3c68f50a0af8047d9d8b6b71860ec9",
       "description": "usage"
     },
     {
@@ -100,7 +100,7 @@
       "file": "mobile/overview.webp",
       "width": 390,
       "height": 844,
-      "sha256": "98575bd2a02cc46fc34c326d9f5f1549b50b6cfd81ce0f3e85b33f0dd6ab9abc",
+      "sha256": "c2e3952755cd0cb801f49b0b5e8144bf9d503fc1e247c2f346c846edbf0fe8f3",
       "description": "overview"
     },
     {
@@ -108,7 +108,7 @@
       "file": "mobile/task-detail.webp",
       "width": 390,
       "height": 844,
-      "sha256": "e137f9296f93db94f99cff0af35acd017d7e9526bd1a42814a5a3ac19126370b",
+      "sha256": "8a951a5b5d73df4f0058b4ba7b2908aa76381838ae1c1f54efa0923ef2a4eef2",
       "description": "task detail"
     },
     {
