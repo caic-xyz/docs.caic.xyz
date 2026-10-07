@@ -52,7 +52,7 @@ ssh user@<host>.<tailnet>.ts.net
 
 Add to `~/.ssh/config` to avoid typing `user@`:
 
-```
+```text
 Host md-*.*.ts.net
     User user
 ```

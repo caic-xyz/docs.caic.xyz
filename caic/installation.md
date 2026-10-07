@@ -23,13 +23,14 @@ After installation, caic is running on `http://localhost:2242`. The default `roo
 Set `NO_SERVICE=1` to skip service installation:
 
 ```bash
-NO_SERVICE=1 curl -fsSL https://caic.xyz/install.sh | bash
+curl -fsSL https://caic.xyz/install.sh | NO_SERVICE=1 bash
 ```
 
 If the GitHub release API is rate-limited, set `GITHUB_TOKEN` for authentication:
 
 ```bash
-GITHUB_TOKEN=ghp_... curl -fsSL https://caic.xyz/install.sh | bash
+export GITHUB_TOKEN="ghp_..."
+curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
 ## systemd user service (Linux)
@@ -88,4 +89,4 @@ See the [caic README](https://github.com/caic-xyz/caic#from-source) for building
 - [Configure caic](./configuration): config file, auth modes, service management
 - [GitHub integration](./github): connect GitHub for automatic PR creation
 - [GitLab integration](./gitlab): connect GitLab for automatic MR creation
-- [Android app](./android): build and install the companion app
+- [Go Mode on Android](./android): connect the separate Android shell

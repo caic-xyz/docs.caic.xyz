@@ -32,6 +32,11 @@ The cache directory defaults to `~/.cache/caic/`. It contains task logs, CI resu
 
 Relative paths in the config file (e.g. `geo_db`, `app_private_key_pem`) are resolved against the config directory.
 
+<figure class="docs-figure">
+  <img class="docs-screenshot" src="/screenshots/frontend/desktop/settings-general.webp" alt="caic General Settings with container defaults and task automation controls" width="1600" height="900" loading="lazy" decoding="async">
+  <figcaption>Set container defaults and task automation preferences.</figcaption>
+</figure>
+
 ## Config reference
 
 ### `[core]`
@@ -40,13 +45,14 @@ Relative paths in the config file (e.g. `geo_db`, `app_private_key_pem`) are res
 | ------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `root`        | `"."`          | Parent directory containing git repositories managed by caic. Tilde (`~`) is expanded to your home directory; relative paths resolve from the server process working directory |
 | `auto_update` | `"50 4 * * *"` | Cron schedule for auto-update (checks GitHub Releases). Supports cron step syntax (`*/N`, `start/N`, e.g. `*/15 * * * *`). Set to `""` to disable                              |
+| `repo_repack` | `"0 2 * * *"`  | Repack large host repositories on a cron schedule. Set to `""` to disable                                                                                                      |
 | `prune`       | `"0 5 * * *"`  | Cron schedule for removing unused md-built images from every available container runtime. Set to `""` to disable                                                               |
 
 **`[core.env]`**
 
 Feature and provider credentials that caic looks up by name. Depending on the feature, an omitted key can fall back to a harness environment table or the caic server process environment. Common values include `TAILSCALE_API_KEY` for ephemeral container nodes, `GEMINI_API_KEY` for embedded voice, and provider keys used for generated titles and commit descriptions. This table does not add arbitrary variables to the server process or task containers. Put service-wide variables such as `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, or `PATH` in the process environment. A systemd installation can set them in `~/.config/caic/caic.env`.
 
-For supported provider usage cards, caic looks for the recognized API key first in `[core.env]`, then in any `[harness.<name>.env]` table, and finally in the server process environment. API-key usage cards are available for DeepSeek, OpenRouter, and Xiaomi. Claude Code and Codex usage cards use their authenticated sessions instead. Title and commit-description generation reads provider keys from `[core.env]` and then the server process environment.
+For supported provider usage cards, caic looks for the recognized API key first in `[core.env]`, then in any `[harness.<name>.env]` table, and finally in the server process environment. API-key usage cards are available for DeepSeek, OpenRouter, and Xiaomi. Claude Code and Codex usage cards use their authenticated sessions instead. Experimental Antigravity quota reporting uses the authenticated `agy` CLI. Title and commit-description generation reads provider keys from `[core.env]` and then the server process environment.
 
 ```toml
 [core]
@@ -71,7 +77,7 @@ Image pruning uses the same cron syntax. It removes md-built images that no cont
 
 ### Preferences
 
-`~/.config/caic/preferences.json` stores per-user settings independent of `config.toml`. Edit it directly or through the Settings UI, which exposes the container image, CPU architecture and platform, CPU cores, the preferred runtime when both Docker and Podman are available, well-known caches, custom cache mappings, custom host mounts, purge delay, auto-fix CI and PR toggles, per-model thinking effort, per-harness model refresh, and version information with manual update.
+`~/.config/caic/preferences.json` stores per-user settings independent of `config.toml`. Edit it directly or through the Settings UI, which exposes the container image, CPU architecture and platform, CPU cores, the preferred runtime when both Docker and Podman are available, well-known caches, custom cache mappings, custom host mounts, purge delay, auto-fix CI and PR toggles, per-model thinking effort, per-harness model refresh, and version information with manual update checks.
 
 The purge delay is the recovery window for an active or crashed task after you choose Purge. The default is 15 seconds and the allowed range is 10 seconds to 24 hours. Reviving the task during this window cancels deletion. Purging a task that is already stopped deletes it immediately.
 
@@ -122,29 +128,20 @@ allow_origins = ["local", "tailscale", "github", "CA"]
 
 ### `[voice-gateway]`
 
-Voice availability is derived automatically from your configuration:
+caic embeds the [Go Mode voice gateway](https://docs.gomode.dev/guide/voice) when `GEMINI_API_KEY` is available and `url` is empty. Set `url` to use a separate gateway, or leave both unset to disable voice.
 
-- **Standalone gateway**: set `url` to advertise a separate voice gateway you run elsewhere.
-- **Embedded**: leave `url` empty and set `GEMINI_API_KEY` (in `[core.env]`). caic hosts the gateway in-process.
-- **Disabled**: leave `url` empty and `GEMINI_API_KEY` unset.
+| Key                       | Default    | Description                                                          |
+| ------------------------- | ---------- | -------------------------------------------------------------------- |
+| `url`                     | Not set    | HTTPS URL of a standalone gateway                                    |
+| `token_mode`              | `"scoped"` | Standalone session credential mode: `"scoped"` or `"oauth"`          |
+| `instance_id`             | Not set    | Required unique identifier for this caic instance in standalone mode |
+| `signing_private_key_pem` | Not set    | PKCS#8 Ed25519 private key file for standalone `"scoped"` tokens     |
 
-| Key   | Default | Description                                                                            |
-| ----- | ------- | -------------------------------------------------------------------------------------- |
-| `url` | Not set | URL of a standalone voice gateway. When set, caic advertises it instead of hosting one |
+Standalone mode requires an explicit HTTPS `[server] external_url`, except for loopback development. Scoped tokens require a signing key; OAuth tokens use caic's authorization-server key instead and require a configured dashboard login provider. The gateway must trust the same service, issuer, and token mode. See [Voice](./voice#standalone-gateway) for a complete example.
 
-**`[voice-gateway.config]`**
+**`[voice-gateway.config]`** configures the embedded gateway. Its settings follow the [gateway configuration template](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml). `backend = "gemini-live"` uses Gemini Live; `backend = "local-stack"` uses managed or external local models. The embedded activation rule still requires `GEMINI_API_KEY` even with the local stack, although that backend does not use the key.
 
-Runtime config for the embedded gateway, used only when caic hosts it in-process. The API key is always read from `GEMINI_API_KEY`.
-
-The default backend is `"gemini-live"` and its default model is `"gemini-3.1-flash-live-preview"`. Set `backend = "local-stack"` to run the half-duplex local stack instead. Embedded-gateway activation currently still requires `GEMINI_API_KEY` to be present, but the local-stack backend does not consume it. See the [gateway config template](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for all embedded gateway and local-stack settings.
-
-**`[voice-gateway.config.server]`**
-
-| Key               | Default | Description                                                                                                                                                     |
-| ----------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `webrtc_udp_port` | `0`     | UDP port for WebRTC ICE. `0` = OS-assigned ephemeral port. A value `>0` pins a static port; open it for UDP traffic in your firewall. Requires `GEMINI_API_KEY` |
-
-With `backend = "local-stack"`, voice runs half-duplex with managed llama.cpp servers for speech recognition and the LLM plus KittenTTS for speech synthesis. Omit the local-stack tables to let caic manage the default Qwen3 ASR model and Gemma LLM, or point them at servers you run yourself. See [`contrib/voice-gateway-config.toml`](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for the full template.
+Set `webrtc_udp_port` under `[voice-gateway.config.server]` to use a fixed UDP port. Its default `0` selects an ephemeral port. Open the selected port in your firewall for remote WebRTC clients. Configure HTTP through `[server] http`; embedded gateway HTTP cannot be configured separately.
 
 ```toml
 [voice-gateway.config]
@@ -153,6 +150,8 @@ backend = "gemini-live"
 [voice-gateway.config.server]
 webrtc_udp_port = 3479
 ```
+
+See the [Go Mode voice guide](https://docs.gomode.dev/guide/voice) for gateway backends, speech modes, and standalone operation.
 
 ### `[ai]`
 
@@ -192,7 +191,7 @@ GEMINI_API_KEY = "AIza..."
 OPENROUTER_API_KEY = "sk-or-..."
 ```
 
-Available harness names: `claude`, `codex`, `opencode`, `pi`.
+Available harness names: `antigravity` (experimental), `claude`, `codex`, `opencode`, `pi`.
 
 Setting `ANTHROPIC_API_KEY` can make Claude Code use API billing instead of your subscription. When caic detects a Claude Code OAuth session, it avoids forwarding this key so the subscription remains in use.
 

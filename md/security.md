@@ -57,7 +57,7 @@ Both are ed25519 keys. The user public key is baked into the container image as 
 
 Each container gets a dedicated SSH configuration at `~/.ssh/config.d/<container-name>.conf`:
 
-```
+```text
 Host md-myrepo-main
   HostName 127.0.0.1
   Port 54321

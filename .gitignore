@@ -1,8 +1,9 @@
-node_modules/
-.vitepress/dist/
-.vitepress/cache/
-
-# python tooling
 .ruff_cache/
 .venv/
+.vitepress/cache/
+.vitepress/dist/
+.wrangler/
+/.screenshots-*/
+/.screenshots-import.lock
+node_modules/
 uv.lock

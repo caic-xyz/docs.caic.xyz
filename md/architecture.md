@@ -8,7 +8,7 @@ md uses a three-layer container image hierarchy with Docker or Podman. Understan
 
 ## Image hierarchy
 
-```
+```text
 ghcr.io/caic-xyz/md-root:latest     ← system packages (Debian, sshd, XFCE, Chrome, etc.)
   └── ghcr.io/caic-xyz/md-user:latest   ← language toolchains (Go, Node, Rust, Python, etc.)
         └── md-specialized-<hash>       ← host-specific layer (SSH host key, build caches, agent dir stubs)
@@ -48,7 +48,7 @@ If a registry pull fails but md already has a local copy of the remote base imag
 
 ## What happens during `md start`
 
-```
+```text
 1. Pull base image `md-user` (if updated on registry, or use the local copy if the pull fails and one exists)
 2. Build specialized image `md-specialized-*` (if SSH keys or caches changed)
 3. Start container with the selected runtime
@@ -87,7 +87,7 @@ Each repo is mounted under `~/src/` using its directory name. When two mapped re
 
 Containers follow the pattern `md-<repo>-<branch>`:
 
-```
+```text
 md-myrepo-main
 md-myrepo-feature-x
 md-otherproject-fix-bug
@@ -146,3 +146,7 @@ Environment variables are loaded through modular scripts in `~/.config/bash.d/`,
 This preserves installed packages, build artifacts, agent history, commits, and uncommitted changes while letting you explore a different approach. md creates the new primary branches on the host and treats inherited committed work as already integrated. Inherited uncommitted work remains visible in `md diff`. The source container is unchanged, and deleting it has no effect on the fork.
 
 Display, Tailscale, USB, and sudo settings are inherited from the source. Override any of them with `--display`, `--tailscale`, `--usb`, or `--sudo`. Add `=false` to disable an inherited setting, for example `md fork --usb=false`.
+
+## Shallow repositories and submodules
+
+md supports shallow host repositories and preserves the Git history needed for task synchronization. Submodules can be shallow or detached; md prepares their mapped state so work can proceed in the container. Before starting, initialize the submodules your task needs in the host checkout.

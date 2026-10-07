@@ -26,7 +26,7 @@ Graceful server shutdown closes client connections but does not stop task relays
 
 The caic binary contains the web app and the components needed to connect to task agents. This makes installation and updates simple, while task execution remains inside md containers.
 
-The web UI handles dense task management on desktop and mobile browsers. The Android app hosts the same web UI and adds native voice, notifications, screenshot capture, passkeys, and device integration.
+The web UI handles dense task management on desktop and mobile browsers. The separate [Go Mode Android shell](./android) hosts the same web UI and adds native capabilities. Go Mode also owns the shared browser voice components and voice gateway. caic supplies task-specific controls and semantics.
 
 ## Authentication choices
 

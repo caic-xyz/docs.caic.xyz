@@ -1,0 +1,94 @@
+# Task workflow
+
+A task is a conversation with a coding agent in its own container. You choose the repositories and starting branches, then follow the work until you are ready to push the result.
+
+## Create a task
+
+1. Select one or more repositories from your configured root.
+2. Choose a starting branch for each repository. caic adopts an available local branch with an upstream, or creates a task branch from your selection.
+3. Choose a harness and model. Available models depend on the installed harness and its credentials.
+4. Enter a concrete prompt and send it.
+
+Use **Settings** to choose the default runtime, image, CPU settings, caches, and host mounts. Each task keeps the runtime it was created with. Sudo needs Docker; rootless Podman does not support it.
+
+The agent edits repository copies inside the container. Your host checkout stays separate. Multi-repository tasks share one conversation and container.
+
+## Follow and steer the work
+
+The transcript streams agent text and tool calls. Expand a tool call to inspect its arguments and result. Native subagent and background-command cards show the activity the harness reports, including outcomes when available.
+
+<figure class="docs-figure">
+  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-detail.webp" alt="Task transcript with streamed agent output, tool calls, repository state, and a message composer" width="1280" height="800" loading="lazy" decoding="async">
+  <figcaption>Send a follow-up when the agent finishes a turn.</figcaption>
+</figure>
+
+A task can wait for another message, ask a structured question, or present a plan. Answer the question or review the plan before continuing. Agents can also render interactive widgets in the conversation.
+
+<figure class="docs-figure">
+  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-plan.webp" alt="Agent implementation plan with a control to clear context and execute the plan" width="1280" height="800" loading="lazy" decoding="async">
+  <figcaption>Review the intended work before executing a plan.</figcaption>
+</figure>
+
+<figure class="docs-figure">
+  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-ask.webp" alt="A task asking a structured question with selectable answers" width="1280" height="800" loading="lazy" decoding="async">
+  <figcaption>Choose an answer or add your own response.</figcaption>
+</figure>
+
+<figure class="docs-figure">
+  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-native-subagents.webp" alt="Delegated agent activity rendered within the task conversation" width="1280" height="800" loading="lazy" decoding="async">
+  <figcaption>Delegated work stays inside the task that owns it.</figcaption>
+</figure>
+
+Agent links to generated images and files open from the task container. Markdown files have an in-app viewer with relative links and images. These files depend on the task's retained runtime, so save artifacts you need before purging it.
+
+## Review and push
+
+Open a repository's changes from the task card or task view. Check commit history, missing upstream commits, and file diffs. Expand individual files to read their changes.
+
+<figure class="docs-figure">
+  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-repository-changes.webp" alt="Repository changes view with commit history and an expanded code diff" width="800" height="720" loading="lazy" decoding="async">
+  <figcaption>Review the work in each repository before pushing.</figcaption>
+</figure>
+
+Choose the appropriate push action to send a task branch to its remote, or squash-push the changes to the default branch. caic scans for common secrets before pushing; treat this as a safety net, not a guarantee. A multi-repository push can succeed for some repositories and fail for others. Inspect the result before retrying.
+
+[GitHub](./github) and [GitLab](./gitlab) integration provide pull request or merge request creation and CI monitoring. Check your forge setup before enabling automatic CI repair or PR creation in **Settings**.
+
+## Inspect usage and resources
+
+Open task statistics to see token usage, cost, tool timing, and sampled container resources. The process view shows running processes in a continuous tree. The cross-task **Usage** page shows daily trends across tasks.
+
+<figure class="docs-figure">
+  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-stats.webp" alt="Task statistics showing token usage, reported cost, and tool timing" width="1280" height="800" loading="lazy" decoding="async">
+  <figcaption>Compare token composition and time spent in tools.</figcaption>
+</figure>
+
+<figure class="docs-figure">
+  <picture>
+    <source media="(max-width: 600px)" srcset="/screenshots/frontend/mobile/task-resources.webp" width="390" height="844">
+    <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-resources.webp" alt="Task resource history with CPU, memory, network throughput, and writable disk usage charts" width="1280" height="800" loading="lazy" decoding="async">
+  </picture>
+  <figcaption>Inspect sampled container resources. Network charts show receive and send rates. <a href="/screenshots/frontend/desktop/task-resources.webp">Open the desktop charts at full size.</a></figcaption>
+</figure>
+
+<figure class="docs-figure">
+  <img class="docs-screenshot" src="/screenshots/frontend/desktop/usage.webp" alt="Cross-task usage dashboard with daily token and cost trends" width="1280" height="800" loading="lazy" decoding="async">
+  <figcaption>Compare usage across tasks and days.</figcaption>
+</figure>
+
+Provider cards show available quota information. Support and freshness vary by provider; an unknown balance does not mean unlimited capacity.
+
+## Work from your phone
+
+The web app adapts to mobile browsers. Open a task to read results, send a message, or review changes. Connect the separate [Go Mode app](./android) for native capabilities.
+
+<figure class="docs-figure docs-figure--phone">
+  <img class="docs-screenshot" src="/screenshots/frontend/mobile/task-detail.webp" alt="Mobile caic task conversation and follow-up controls" width="390" height="844" loading="lazy" decoding="async">
+  <figcaption>The same task conversation in a mobile browser.</figcaption>
+</figure>
+
+## Keyboard navigation
+
+Press `?` or `F1` to open the shortcut reference. Arrow keys navigate task cards, `Page Up` and `Page Down` switch tasks, and `Tab` moves between task controls and the composer. Press `F4` to toggle [voice mode](./voice).
+
+When work stops unexpectedly or reaches a quota limit, use [Recovery and handoffs](./recovery).

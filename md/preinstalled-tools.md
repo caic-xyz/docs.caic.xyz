@@ -42,6 +42,7 @@ build-essential, cmake, ninja-build, ccache, make, gcc, g++, arm-linux-gnueabi-g
 
 | Agent         | Binary          |
 | ------------- | --------------- |
+| Antigravity   | `agy`           |
 | Claude Code   | `claude`        |
 | Codex         | `codex`         |
 | Kilo Code     | `kilo`          |

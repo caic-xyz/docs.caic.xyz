@@ -1,11 +1,11 @@
 # Architecture
 
-caic is a local server and web app that orchestrates AI coding agents in [md](../md/) containers. This page explains task workspaces, lifecycle, restart recovery, and forge integration.
+caic is a local server and web app that orchestrates AI coding agents in [md](../md/) containers. This page explains task workspaces, lifecycle, restart recovery, and forge integration. The separate [Go Mode](https://docs.gomode.dev/guide/architecture) project owns the Android shell, reusable browser voice components, MCP/OAuth transport, and voice gateway. caic owns its product UI, task APIs, login policy, and task-specific tools.
 
 ## System overview
 
 ```text
-Web UI or Android app
+caic web UI / Go Mode shell
           |
        HTTP/SSE
           |

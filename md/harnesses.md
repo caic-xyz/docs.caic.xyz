@@ -1,5 +1,5 @@
 ---
-# AI coding agent harnesses: Claude Code, Codex, Pi, Qwen, Kilo, OpenCode, Goose, Kimi, Amp
+# AI coding agent harnesses: Claude Code, Codex, Pi, Qwen, Kilo, OpenCode, Goose, Kimi, Amp, Antigravity
 ---
 
 # Harnesses
@@ -19,6 +19,8 @@ The container includes [`/home/user/src/AGENTS.md`](https://github.com/caic-xyz/
 | [qwen](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/)     | `~/.qwen/QWEN.md`              | Yes                               |
 | [goose](https://block.github.io/goose/docs/)                                         | `~/.config/goose/AGENTS.md`    | Yes                               |
 | [kimi](https://github.com/MoonshotAI/kimi-cli)                                       | `~/.kimi/KIMI.md`              | Yes                               |
+
+Antigravity is also available in specialized images through `agy`. md shares its host Gemini state at `~/.gemini`, which can contain credentials. This state is writable and shared with other applicable tasks. Antigravity integration in caic is experimental.
 
 ## Sharing the same AGENTS.md across harnesses
 

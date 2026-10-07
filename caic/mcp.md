@@ -6,6 +6,7 @@ caic exposes a Model Context Protocol (MCP) endpoint at `/api/caic/v1/mcp`. Clie
 
 | Tool                         | Scope               | What it does                                                         |
 | ---------------------------- | ------------------- | -------------------------------------------------------------------- |
+| `harnesses_list`             | `caic:mcp.read`     | List available harnesses, models, and reasoning effort options       |
 | `repos_list`                 | `caic:mcp.read`     | List managed repositories                                            |
 | `get_usage`                  | `caic:mcp.read`     | Read local and provider usage                                        |
 | `tasks_list`                 | `caic:tasks.read`   | List tasks                                                           |

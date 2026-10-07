@@ -58,6 +58,7 @@ These host directories are automatically bind-mounted into each container. The X
 | Shared agent instructions and skills | `~/.agents`                                                                | Read-write |
 | Amp                                  | `~/.amp`, `~/.config/amp`, `~/.local/share/amp`                            | Read-write |
 | Android and ADB                      | `~/.android`                                                               | Read-write |
+| Antigravity                          | `~/.gemini`                                                                | Read-write |
 | Claude Code                          | `~/.claude`                                                                | Read-write |
 | Codex                                | `~/.codex`                                                                 | Read-write |
 | Goose                                | `~/.config/goose`, `~/.local/share/goose`                                  | Read-write |
@@ -72,7 +73,7 @@ If one of these directories contains a symlink to another directory, md also mou
 
 The `~/.config/md` directory is mounted **read-only** to prevent accidental modification of SSH keys from inside the container.
 
-`~/.agents` is always mounted, regardless of which harnesses you use. This is the recommended place for a centralized AGENTS.md and skills directory. See [Harnesses](./harnesses#sharing-the-same-agentsmd-across-harnesses) for setup instructions.
+`~/.agents` is always mounted, regardless of which harnesses you use. This is the recommended place for a centralized AGENTS.md and skills directory. See [Harnesses](./harnesses#sharing-the-same-agents-md-across-harnesses) for setup instructions.
 
 ## Self-hosted models
 

@@ -1,57 +1,70 @@
 # Voice
 
-Voice mode lets you supervise and control tasks hands-free. You ask for status, answer an agent's questions, and steer work by speaking, which is useful when you are away from the keyboard or running several agents at once. Voice is available in the web app and in the [Go Mode Android app](./android).
+Use voice to ask about tasks, answer an agent's question, and steer work away from the keyboard. caic supplies task-specific tools and context; [Go Mode](https://docs.gomode.dev/guide/voice) supplies the shared voice interface and gateway. Voice is available in the web app and the [Go Mode Android shell](./android).
 
-## Using voice
+## Start a session
 
-Press `F4` in the web app to start or stop voice mode, even when the task editor has focus. You can also say "hang up", "end call", or "stop voice mode" to end the session.
+Press `F4` in the web app to start or stop voice mode, including while the composer has focus. Say “hang up”, “end call”, or “stop voice mode” to end the session.
 
-Voice presents active tasks before settled tasks when assigning task numbers. This keeps the tasks most likely to need attention easy to reference. Check the visible task list when a number could be ambiguous.
+Voice numbers active tasks before settled tasks. Check the visible list when a number could be ambiguous. The voice interface's supported speech modes and language settings depend on the client platform; see the [Go Mode voice guide](https://docs.gomode.dev/guide/voice).
 
-## Enabling voice
+## Embedded gateway
 
-caic derives voice support automatically from your configuration:
-
-- **Embedded gateway**: set `GEMINI_API_KEY` and leave the gateway URL empty. caic hosts the voice gateway in-process using Gemini Live.
-- **Standalone gateway**: set `[voice-gateway] url` to point at a gateway you run separately. caic advertises that gateway to clients.
-- **Disabled**: with no URL and no `GEMINI_API_KEY`, voice is off.
-
-Set `GEMINI_API_KEY` under `[core.env]` in `~/.config/caic/config.toml`:
+Set `GEMINI_API_KEY` and leave the gateway URL empty to host the gateway inside caic:
 
 ```toml
 [core.env]
 GEMINI_API_KEY = "AIza..."
 ```
 
-To point at a standalone gateway instead:
+Without a key or gateway URL, voice is disabled. The key can also come from the server process environment. The gateway's default backend uses Gemini Live, so audio is sent to that provider.
+
+## Standalone gateway
+
+A standalone gateway lets you run voice separately from caic. Configure a fixed service URL and instance ID, and choose its session credential mode. Before using OAuth credentials, configure a supported [dashboard login provider](./configuration#github) so caic can issue and verify authenticated sessions. Then add:
 
 ```toml
+[server]
+external_url = "https://caic.example.com"
+
 [voice-gateway]
 url = "https://voice.example.com"
+instance_id = "caic-main"
+token_mode = "oauth"
 ```
 
-## Local stack
+Configure the gateway to trust service `caic` with issuer `https://caic.example.com` and `oauth = true`. The gateway discovers caic's verification keys through authorization-server metadata. caic issues short-lived voice-only credentials rather than sharing provider or forge tokens.
 
-The local stack processes voice entirely on your own hardware. Set the backend to `local-stack` and the gateway uses managed [llama.cpp](https://github.com/ggml-org/llama.cpp) servers for speech recognition and the language model, plus KittenTTS for speech synthesis. It is half-duplex, meaning you speak and listen in turns rather than at the same time.
+The default `token_mode = "scoped"` uses a separate Ed25519 signing key instead. Generate it with:
+
+```bash
+openssl genpkey -algorithm Ed25519 -out ~/.config/caic/voice-signing-key.pem
+```
+
+Change `token_mode` to `"scoped"` and set `signing_private_key_pem = "voice-signing-key.pem"` alongside `instance_id`, and configure the gateway's trusted issuer with the public key printed by caic at startup. See [Go Mode voice](https://docs.gomode.dev/guide/voice) for gateway installation and trust configuration.
+
+## Local models
+
+To use local speech recognition, an LLM, and speech synthesis, choose the local stack:
 
 ```toml
 [voice-gateway.config]
 backend = "local-stack"
 ```
 
-The current embedded-gateway activation also requires `GEMINI_API_KEY` to be present. The local-stack backend does not consume that key or send audio to Gemini.
+The local stack runs half-duplex: you speak and listen in turns. It can manage models or connect to local model servers. Embedded activation currently still requires `GEMINI_API_KEY` to be present, but this backend does not consume that key or send audio to Gemini.
 
-By default caic manages a Qwen3 ASR model, a Gemma LLM, and a KittenTTS worker, so you do not need to run anything yourself. You can point ASR or LLM at servers you run instead. See the [gateway config template](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for the local stack options.
+Use the [caic gateway config template](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml) for embedded settings, and the [Go Mode voice guide](https://docs.gomode.dev/guide/voice) for local runtime requirements. Avoid copying standalone gateway settings into caic's embedded HTTP configuration.
 
-## WebRTC and firewalls
+## Network access
 
-Voice streams over WebRTC, which needs a reachable UDP port. By default caic uses an OS-assigned ephemeral port, which works for local use. When a browser connects from outside your LAN, caic automatically asks a compatible UPnP router to map the selected UDP port and advertises that external address. The mapping is removed when the gateway stops.
-
-For a firewall rule that stays the same across restarts, set a static port with `webrtc_udp_port` and open that UDP port in your firewall:
+WebRTC audio needs a reachable UDP port. The default chooses an ephemeral port; the gateway can request a temporary UPnP mapping on a compatible router. To create a stable firewall rule, set a fixed port:
 
 ```toml
 [voice-gateway.config.server]
 webrtc_udp_port = 3479
 ```
 
-See [Configuration](./configuration) for the full set of voice keys.
+Allow that UDP port through your firewall. Signaling also needs access to the gateway's HTTP endpoint. A working HTTPS page does not prove that WebRTC UDP traffic can reach the gateway.
+
+See [Configuration](./configuration#voice-gateway) for caic's gateway fields and [Security](./security#voice-security) for the trust boundary.

@@ -81,30 +81,30 @@ Re-running `md start` from a repo whose container is stopped or exited is the su
 
 ## Start flags
 
-| Flag                                             | Description                                                                        |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| `-b, -branch <name>`                             | Branch to use (default: current branch)                                            |
-| `-r, -repo <path>`                               | Path to git repository (default: current directory)                                |
-| `--image <ref>`                                  | Full base Docker image (e.g. `ghcr.io/caic-xyz/md-user:2026-05-09`)                |
-| `--tag <tag>`                                    | Tag for the default base image (`ghcr.io/caic-xyz/md-user:<tag>`)                  |
-| `--platform <platform>`                          | Build and run for `linux/amd64` or `linux/arm64` (default: host architecture)      |
-| `--display`, `-d`                                | Enable X11/VNC virtual desktop (port 5901)                                         |
-| `--tailscale`                                    | Enable [Tailscale](./tailscale) networking                                         |
-| `--usb`                                          | Pass through raw USB devices and attached USB serial adapters (Linux only)         |
-| `--github`                                       | Inject `GITHUB_TOKEN` into the container                                           |
-| `--no-ssh`                                       | Don't SSH into the container after starting                                        |
-| `--cpus <n>`                                     | Max CPU cores (default: `NumCPU - 2`, minimum 2; 0 = no limit)                     |
-| `--label key=value`, `-l`                        | Add a container label (repeatable)                                                 |
-| `--extra-repo path[:branch1[,branch2...]]`, `-e` | Map an additional git repository and optionally one or more branches (repeatable)  |
-| `--extra-branch <name>`                          | Map an additional branch from the primary repository (repeatable)                  |
-| `--tags <regexp>`                                | Select tags to map (default: all tags); use `--tags ''` to map none                |
-| `--docker-flag "arg1 arg2"`                      | Extra flags passed verbatim to `docker` or `podman run` (shell-quoted, repeatable) |
-| `--cache <name>`                                 | Add a well-known cache or a custom `host:container[:ro]` directory (repeatable)    |
-| `--no-cache <name>`                              | Exclude a default well-known cache (repeatable)                                    |
-| `--no-caches`                                    | Disable all default caches                                                         |
-| `--mount host:container[:ro]`                    | Bind-mount a host directory into the running container (repeatable)                |
-| `--sudo`                                         | Enable root access with a random password; grants `SYS_ADMIN` and `/dev/fuse`      |
-| `-q`                                             | Suppress informational output                                                      |
+| Flag                                             | Description                                                                                                |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `-b, -branch <name>`                             | Branch to use (default: current branch)                                                                    |
+| `-r, -repo <path>`                               | Path to git repository (default: current directory)                                                        |
+| `--image <ref>`                                  | Full base Docker image (e.g. `ghcr.io/caic-xyz/md-user:2026-05-09`)                                        |
+| `--tag <tag>`                                    | Tag for the default base image (`ghcr.io/caic-xyz/md-user:<tag>`)                                          |
+| `--platform <platform>`                          | Build and run for `linux/amd64` or `linux/arm64` (default: host architecture)                              |
+| `--display`, `-d`                                | Enable X11/VNC virtual desktop (port 5901)                                                                 |
+| `--tailscale`                                    | Enable [Tailscale](./tailscale) networking                                                                 |
+| `--usb`                                          | Pass through raw USB devices and attached USB serial adapters (Linux only)                                 |
+| `--github`                                       | Inject `GITHUB_TOKEN` into the container                                                                   |
+| `--no-ssh`                                       | Don't SSH into the container after starting                                                                |
+| `--cpus <n>`                                     | Max CPU cores (default: runtime CPUs minus 2, at least 2 when available; `-1` = automatic, `0` = no limit) |
+| `--label key=value`, `-l`                        | Add a container label (repeatable)                                                                         |
+| `--extra-repo path[:branch1[,branch2...]]`, `-e` | Map an additional git repository and optionally one or more branches (repeatable)                          |
+| `--extra-branch <name>`                          | Map an additional branch from the primary repository (repeatable)                                          |
+| `--tags <regexp>`                                | Select tags to map (default: all tags); use `--tags ''` to map none                                        |
+| `--docker-flag "arg1 arg2"`                      | Extra flags passed verbatim to `docker` or `podman run` (shell-quoted, repeatable)                         |
+| `--cache <name>`                                 | Add a well-known cache or a custom `host:container[:ro]` directory (repeatable)                            |
+| `--no-cache <name>`                              | Exclude a default well-known cache (repeatable)                                                            |
+| `--no-caches`                                    | Disable all default caches                                                                                 |
+| `--mount host:container[:ro]`                    | Bind-mount a host directory into the running container (repeatable)                                        |
+| `--sudo`                                         | Enable root access with a random password; grants `SYS_ADMIN` and `/dev/fuse`                              |
+| `-q`                                             | Suppress informational output                                                                              |
 
 Every mapped branch must exist on the host and have an upstream. This remains required when you revive, synchronize, diff, or fork a container. If a branch or upstream is missing, md stops and explains how to repair it. `md start` transfers mapped branches, selected tags, and all remote-tracking refs cached by the host. Other local branches do not become container branches unless a mapped branch tracks one as its upstream. md preserves each mapped branch's upstream and effective push remote. The refs in the container are only as current as the host checkout. Run `git fetch` on the host first when current remote state matters, then run `md diff`, `md pull`, or `md push` to refresh the cached remote refs in the container.
 
