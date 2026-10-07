@@ -22,17 +22,19 @@ The transcript streams agent text and tool calls. Expand a tool call to inspect 
   <figcaption>Send a follow-up when the agent finishes a turn.</figcaption>
 </figure>
 
-A task can wait for another message, ask a structured question, or present a plan. Answer the question or review the plan before continuing. Agents can also render interactive widgets in the conversation.
+Follow the agent while it runs. When a task waits for another message or asks a structured question, respond to continue. Agents can also render interactive widgets in the conversation.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-plan.webp" alt="Agent implementation plan with a control to clear context and execute the plan" width="1280" height="800" loading="lazy" decoding="async">
-  <figcaption>Review the intended work before executing a plan.</figcaption>
+  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-running.webp" alt="Running agent task with streamed output and tool activity" width="1280" height="800" loading="lazy" decoding="async">
+  <figcaption>Watch tool activity and output as the agent works.</figcaption>
 </figure>
 
 <figure class="docs-figure">
   <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-ask.webp" alt="A task asking a structured question with selectable answers" width="1280" height="800" loading="lazy" decoding="async">
   <figcaption>Choose an answer or add your own response.</figcaption>
 </figure>
+
+When an agent presents a plan, review it before continuing.
 
 <figure class="docs-figure">
   <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-native-subagents.webp" alt="Delegated agent activity rendered within the task conversation" width="1280" height="800" loading="lazy" decoding="async">
