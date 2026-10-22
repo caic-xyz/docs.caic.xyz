@@ -15,7 +15,7 @@ The agent edits repository copies inside the container. Your host checkout stays
 
 ## Follow and steer the work
 
-The transcript streams agent text and tool calls. Expand a tool call to inspect its arguments and result. Native subagent and background-command cards show the activity the harness reports, including outcomes when available. The task header lists **Loaded skills** for the current context. The list resets after context compaction or a clear, while earlier loads stay linked in the transcript.
+The transcript streams agent text and tool calls. Expand a tool call to inspect its arguments and result. Native subagent and background-command cards show the activity the harness reports, including outcomes when available. The task header lists **Loaded skills** for the current context. The list resets after context compaction or a clear, while earlier loads stay linked in the transcript. Expand a past session to review its previous skills. Its info dialog reports the session's context compaction.
 
 <figure class="docs-figure">
   <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-detail.webp" alt="Task transcript with streamed agent output, tool calls, repository state, and a message composer" width="1280" height="800" loading="lazy" decoding="async">
@@ -41,7 +41,7 @@ When an agent presents a plan, review it before continuing.
   <figcaption>Delegated work stays inside the task that owns it.</figcaption>
 </figure>
 
-Agent links to generated images and files open in a document pane beside the conversation. The conversation stays mounted while you read, and app-viewport full screen hides the surrounding chrome. caic previews Markdown with relative links and images, PDFs, audio, video, bounded text, and CAD models: STL, STEP or STP, compressed STEP, and 3MF with filament colors and printing plates where the file provides them. Mermaid diagrams render inline in Markdown. Other files offer a raw download. On mobile, the task and document use separate views. These files depend on the task's retained runtime, so save artifacts you need before purging it.
+Agent links to generated images and files open in a document pane beside the conversation. Prompt images appear as thumbnails and open in the same pane. caic serves them from the task log, so they survive reloads. The conversation stays mounted while you read, and app-viewport full screen hides the surrounding chrome. caic previews Markdown with relative links and images, PDFs, audio, video, bounded text, and CAD models: STL, STEP or STP, compressed STEP, and 3MF with filament colors and printing plates where the file provides them. Mermaid diagrams render inline in Markdown. Other files offer a raw download. On mobile, the task and document use separate views. These files depend on the task's retained runtime, so save artifacts you need before purging it.
 
 ## Review and push
 
@@ -60,7 +60,7 @@ Choose the appropriate push action to send a task branch to its remote, or squas
 
 Open task statistics to see token usage, cost, tool timing, sampled container resources, and the task's configured CPU ceiling when the runtime reports it. Task CPU usage stays aggregate because the runtime stream has no per-CPU breakdown, and an explicit ceiling excludes inherited cgroup limits and process affinity. The process view shows running processes in a continuous tree.
 
-The account menu's **Monitoring** page groups three sections. **Usage** shows cross-task daily trends with range and subject filters. **System** shows live whole-machine CPU, memory, network, and filesystem history, including per-CPU meters and any sampling error. **Metrics** lists server operation measurements with counts, percentiles, and observed ranges. Whole-machine health also appears in the header: at 80% CPU or memory utilization, caic shows a warning that opens **Monitoring > System**. Warnings clear below 75% and remain visible across reconnects and sampling gaps.
+The account menu's **Monitoring** page groups three sections. **Usage** shows cross-task daily trends with range and subject filters. **System** shows live whole-machine CPU, memory, network, and filesystem history, including per-CPU meters and any sampling error. **Metrics** lists server operation measurements with counts, percentiles, and observed ranges. Whole-machine health also appears in the header as always-visible CPU and memory icons. Green means below 80%, orange means 80% or more, red means 90% or more, and gray means a sampling error or disconnected updates. The icons open **Monitoring > System**.
 
 <figure class="docs-figure">
   <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-stats.webp" alt="Task statistics showing token usage, reported cost, and tool timing" width="1280" height="800" loading="lazy" decoding="async">

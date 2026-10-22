@@ -1,8 +1,6 @@
 # Go Mode on Android
 
-[Go Mode](https://gomode.dev/) is a separate Android shell for backend-hosted applications. Connect it to your caic server to use the same caic web frontend with native voice, notifications, screenshot capture, passkeys, and supported device integrations.
-
-caic owns the task list, conversation, diffs, and widgets. Go Mode owns the native shell and its settings. See the [Go Mode Android guide](https://docs.gomode.dev/guide/android) for installation and native controls.
+[Go Mode](https://gomode.dev/) is a separate Android shell for backend-hosted applications. Use it to open the caic web frontend on your phone with native voice, notifications, and device integrations. caic owns the task list, conversation, diffs, and widgets. Go Mode owns the shell and its settings. The [Go Mode Android guide](https://docs.gomode.dev/guide/android) covers installation, permissions, voice modes, saved services, and notifications.
 
 ## Connect to caic
 
@@ -19,7 +17,7 @@ Native MCP-backed features depend on compatible service discovery and authentica
   <figcaption>caic provides the task UI in mobile browsers and the Go Mode shell.</figcaption>
 </figure>
 
-Create, follow, and review tasks as described in [Task workflow](./tasks). Native notifications report tasks that need attention: waiting, asking, plan-ready, and failed states. Each alert shows the current task number, uses the task title as its body, and opens the task when tapped. An alert is withdrawn when the task resumes or changes state. For hands-free task control, configure [caic voice](./voice) and follow the [Go Mode voice guide](https://docs.gomode.dev/guide/voice).
+Create, follow, and review tasks as described in [Task workflow](./tasks). Native alerts identify caic tasks by number and open the task. For hands-free control, configure [caic voice](./voice) and follow the [Go Mode voice guide](https://docs.gomode.dev/guide/voice).
 
 ## Troubleshooting
 

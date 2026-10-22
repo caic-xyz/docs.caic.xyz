@@ -2,8 +2,6 @@
 """Process-level coverage for screenshot import integrity, curation, and failed-import preservation."""
 
 import base64
-import hashlib
-import json
 import shutil
 import subprocess
 import sys
@@ -29,26 +27,7 @@ class ImportTests(unittest.TestCase):
         shutil.copyfile(Path(__file__).with_name("import-screenshots.py"), self.script)
         (self.site / "public/index.html").write_text('<img src="/screenshots/frontend/desktop/example.webp">')
         (self.source / "desktop/example.webp").write_bytes(PIXEL)
-        self.manifest = {
-            "schemaVersion": 1,
-            "producer": "caic",
-            "platform": "web",
-            "source": {"revision": "0" * 40, "inputsSha256": "1" * 64},
-            "scenarios": [
-                {
-                    "name": "example",
-                    "file": "desktop/example.webp",
-                    "width": 1,
-                    "height": 1,
-                    "sha256": hashlib.sha256(PIXEL).hexdigest(),
-                    "description": "A one-pixel test fixture",
-                }
-            ],
-        }
-        self.write_manifest()
-
-    def write_manifest(self):
-        (self.source / "manifest.json").write_text(json.dumps(self.manifest))
+        self.destination = self.site / "public/screenshots/frontend"
 
     def run_import(self, *arguments):
         return subprocess.run(
@@ -98,7 +77,7 @@ runpy.run_path(script, run_name="__main__")
         self.assertEqual(check.returncode, 0, check.stderr)
         self.assertFalse((self.site / ".screenshots-previous").exists())
 
-    def test_forced_termination_retains_recoverable_catalog(self):
+    def test_forced_termination_retains_recoverable_images(self):
         self.import_successfully()
         result = self.interrupt_publication("forced")
         self.assertEqual(result.returncode, 91)
@@ -117,7 +96,7 @@ runpy.run_path(script, run_name="__main__")
         result = self.interrupt_publication("published")
         self.assertEqual(result.returncode, 92)
         self.assertTrue((self.site / ".screenshots-previous").is_dir())
-        self.assertTrue((self.site / "public/screenshots/frontend").is_dir())
+        self.assertTrue(self.destination.is_dir())
         shutil.rmtree(self.source)
         # Source failure is still reported, but cleanup restores standalone builds.
         self.assertNotEqual(self.run_import("--source", str(self.source)).returncode, 0)
@@ -130,49 +109,46 @@ runpy.run_path(script, run_name="__main__")
         shutil.rmtree(self.source)
         result = self.run_import("--check")
         self.assertEqual(result.returncode, 0, result.stderr)
-        published = self.site / "public/screenshots/frontend/desktop/example.webp"
+        published = self.destination / "desktop/example.webp"
         self.assertEqual(published.read_bytes(), PIXEL)
+        self.assertEqual(
+            sorted(
+                path.relative_to(self.destination).as_posix() for path in self.destination.rglob("*") if path.is_file()
+            ),
+            ["desktop/example.webp"],
+        )
 
-    def test_corrupted_source_preserves_previous_catalog(self):
+    def test_missing_page_reference_rejects_import(self):
+        (self.site / "guide.md").write_text('<img src="/screenshots/frontend/mobile/missing.webp">')
+        result = self.run_import("--source", str(self.source))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("missing or symlinked: mobile/missing.webp", result.stderr)
+        self.assertFalse(self.destination.exists())
+
+    def test_unused_committed_image_fails_check(self):
         self.import_successfully()
-        catalog = self.site / "public/screenshots/frontend/manifest.json"
-        previous = catalog.read_bytes()
+        (self.destination / "desktop/unused.webp").write_bytes(PIXEL)
+        result = self.run_import("--check")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("do not match page references", result.stderr)
+        self.assertIn("unused: desktop/unused.webp", result.stderr)
+
+    def test_corrupted_source_preserves_previous_publish(self):
+        self.import_successfully()
+        published = self.destination / "desktop/example.webp"
+        previous = published.read_bytes()
         (self.source / "desktop/example.webp").write_bytes(b"corrupt")
         result = self.run_import("--source", str(self.source))
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("does not match catalog", result.stderr)
-        self.assertEqual(catalog.read_bytes(), previous)
-
-    def test_oversized_catalog_preserves_previous_publish(self):
-        self.import_successfully()
-        published = self.site / "public/screenshots/frontend/manifest.json"
-        previous = published.read_bytes()
-        (self.source / "manifest.json").write_bytes(b" " * (1024 * 1024 + 1))
-        result = self.run_import("--source", str(self.source))
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("exceeds one MiB", result.stderr)
+        self.assertIn("invalid WebP header", result.stderr)
         self.assertEqual(published.read_bytes(), previous)
 
-    def test_wrong_dimensions_rejected(self):
-        self.manifest["scenarios"][0]["width"] = 20
-        self.write_manifest()
-        result = self.run_import("--source", str(self.source))
-        self.assertNotEqual(result.returncode, 0)
-        self.assertFalse((self.site / "public/screenshots/frontend").exists())
-
-    def test_path_escape_rejected(self):
-        self.manifest["scenarios"][0]["file"] = "desktop/../../outside.webp"
-        self.write_manifest()
+    def test_path_escape_reference_rejected(self):
+        (self.site / "guide.md").write_text('<img src="/screenshots/frontend/desktop/../../outside.webp">')
         result = self.run_import("--source", str(self.source))
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("invalid screenshot path", result.stderr)
-
-    def test_new_reference_requires_new_catalog(self):
-        self.import_successfully()
-        (self.site / "guide.md").write_text('<img src="/screenshots/frontend/mobile/missing.webp">')
-        result = self.run_import("--check")
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("missing referenced screenshots", result.stderr)
+        self.assertFalse(self.destination.exists())
 
     def test_symlinked_public_ancestor_cannot_replace_outside_assets(self):
         outside = self.root / "outside-public"
@@ -194,7 +170,7 @@ runpy.run_path(script, run_name="__main__")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("symlinked", result.stderr)
         self.assertFalse(outside.exists())
-        self.assertFalse((self.site / "public/screenshots/frontend").exists())
+        self.assertFalse(self.destination.exists())
 
     def test_symlinked_capture_rejected(self):
         picture = self.source / "desktop/example.webp"

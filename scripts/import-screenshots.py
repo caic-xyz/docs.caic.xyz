@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-"""Import referenced caic screenshots with recoverable publication and verify catalog provenance."""
+"""Import referenced caic screenshots with recoverable publication and WebP validation."""
 
 import argparse
 import fcntl
-import hashlib
-import json
 import re
 import shutil
 import struct
 import sys
 import tempfile
 import time
-from dataclasses import asdict, dataclass
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -22,33 +19,8 @@ PREFIX = "/screenshots/frontend/"
 MAX_TEXT_BYTES = 1024 * 1024
 
 
-@dataclass(frozen=True)
-class Source:
-    revision: str
-    inputsSha256: str
-
-
-@dataclass(frozen=True)
-class Scenario:
-    name: str
-    file: str
-    width: int
-    height: int
-    sha256: str
-    description: str
-
-
-@dataclass(frozen=True)
-class Catalog:
-    schemaVersion: int
-    producer: str
-    platform: str
-    source: Source
-    scenarios: list[Scenario]
-
-
 def read_text(path: Path) -> str:
-    """Bound catalogs and page sources to one MiB before decoding."""
+    """Bound page sources to one MiB before decoding."""
     with path.open("rb") as stream:
         content = stream.read(MAX_TEXT_BYTES + 1)
     if len(content) > MAX_TEXT_BYTES:
@@ -56,61 +28,31 @@ def read_text(path: Path) -> str:
     return content.decode("utf-8")
 
 
-def read_catalog(directory: Path) -> Catalog:
-    raw = json.loads(read_text(directory / "manifest.json"))
-    catalog = Catalog(
-        schemaVersion=raw["schemaVersion"],
-        producer=raw["producer"],
-        platform=raw["platform"],
-        source=Source(**raw["source"]),
-        scenarios=[Scenario(**item) for item in raw["scenarios"]],
-    )
-    if catalog.schemaVersion != 1 or catalog.producer != "caic" or catalog.platform != "web":
-        raise ValueError("expected a version 1 caic web screenshot catalog")
-    if not re.fullmatch(r"[0-9a-f]{40}", catalog.source.revision):
-        raise ValueError("catalog source revision must be a Git SHA")
-    if not re.fullmatch(r"[0-9a-f]{64}", catalog.source.inputsSha256):
-        raise ValueError("catalog must include a capture-input SHA-256")
-    files: set[str] = set()
-    for item in catalog.scenarios:
-        path = PurePosixPath(item.file)
-        if (
-            path.is_absolute()
-            or ".." in path.parts
-            or len(path.parts) != 2
-            or path.parts[0] not in {"desktop", "mobile"}
-        ):
-            raise ValueError(f"invalid screenshot path: {item.file}")
-        if path.suffix not in {".avif", ".webp"}:
-            raise ValueError(f"expected a WebP still or AVIF animation: {item.file}")
-        if item.file in files:
-            raise ValueError(f"duplicate catalog scenario: {item.file}")
-        files.add(item.file)
-        if (
-            item.width <= 0
-            or item.height <= 0
-            or not re.fullmatch(r"[0-9a-f]{64}", item.sha256)
-            or not item.description
-        ):
-            raise ValueError(f"invalid screenshot metadata: {item.file}")
-    return catalog
+def validate_reference(name: str) -> str:
+    """Reject references that escape a managed desktop or mobile image."""
+    path = PurePosixPath(name)
+    if (
+        path.is_absolute()
+        or ".." in path.parts
+        or len(path.parts) != 2
+        or path.parts[0] not in {"desktop", "mobile"}
+        or path.suffix != ".webp"
+        or "\\" in name
+    ):
+        raise ValueError(f"invalid screenshot path: {name}")
+    return name
 
 
 def referenced_files() -> set[str]:
-    """Use page references as the curated catalog's single source of truth."""
+    """Use page references as the curated set of screenshots."""
     result: set[str] = set()
     paths = [*ROOT.glob("*.md"), *ROOT.glob("caic/*.md"), *ROOT.glob("md/*.md"), *ROOT.glob("public/*.html")]
     pattern = re.compile(re.escape(PREFIX) + r'([^\s"<>\)]+\.webp)')
     for path in paths:
-        result.update(pattern.findall(read_text(path)))
+        result.update(validate_reference(name) for name in pattern.findall(read_text(path)))
     if not result:
         raise ValueError("site does not reference any caic screenshots")
     return result
-
-
-def digest(path: Path) -> str:
-    with path.open("rb") as stream:
-        return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
 def dimensions(path: Path) -> tuple[int, int]:
@@ -131,15 +73,38 @@ def dimensions(path: Path) -> tuple[int, int]:
     raise ValueError(f"unsupported WebP geometry header: {path.name}")
 
 
-def validate(directory: Path, scenarios: list[Scenario]) -> None:
-    for item in scenarios:
-        path = directory / item.file
+def validate(directory: Path, files: set[str]) -> None:
+    """Verify that every named image is a real, nonempty WebP inside the directory."""
+    resolved = directory.resolve()
+    for name in sorted(files):
+        validate_reference(name)
+        path = directory / name
         if path.is_symlink() or not path.is_file() or path.stat().st_size == 0:
-            raise ValueError(f"screenshot missing or symlinked: {item.file}")
-        if path.resolve().parent.parent != directory.resolve():
-            raise ValueError(f"screenshot resolves outside catalog: {item.file}")
-        if digest(path) != item.sha256 or dimensions(path) != (item.width, item.height):
-            raise ValueError(f"screenshot content does not match catalog: {item.file}")
+            raise ValueError(f"screenshot missing or symlinked: {name}")
+        if path.resolve().parent.parent != resolved:
+            raise ValueError(f"screenshot resolves outside its directory: {name}")
+        width, height = dimensions(path)
+        if width <= 0 or height <= 0:
+            raise ValueError(f"screenshot has invalid dimensions: {name}")
+
+
+def directory_files(directory: Path) -> set[str]:
+    """Return every file in a directory, rejecting symlinks."""
+    result: set[str] = set()
+    for path in directory.rglob("*"):
+        if path.is_symlink():
+            raise ValueError(f"symlinked screenshot: {path.relative_to(directory).as_posix()}")
+        if path.is_file():
+            result.add(path.relative_to(directory).as_posix())
+    return result
+
+
+def validate_published(directory: Path) -> None:
+    """Verify that a published directory contains only valid WebP images."""
+    files = directory_files(directory)
+    if not files:
+        raise ValueError("published screenshot directory is empty")
+    validate(directory, files)
 
 
 def validate_managed_path(path: Path) -> None:
@@ -158,63 +123,62 @@ def validate_managed_path(path: Path) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="check committed assets without a source checkout")
-    parser.add_argument("--source", type=Path, help="caic frontend catalog directory (default: sibling caic checkout)")
+    parser.add_argument("--source", type=Path, help="caic frontend screenshot directory (default: sibling checkout)")
     args = parser.parse_args()
     if args.check and args.source:
         parser.error("--check cannot be combined with --source")
     if args.check:
-        return process_catalog(True, None)
+        return process_images(True, None)
     # POSIX advisory locking serializes refreshes without writing during --check.
     try:
         validate_managed_path(LOCK)
         with LOCK.open("a") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX)
-            return process_catalog(False, args.source)
+            return process_images(False, args.source)
     except (OSError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
 
 
-def process_catalog(check: bool, source: Path | None) -> int:
+def process_images(check: bool, source: Path | None) -> int:
     started = time.perf_counter()
     directory = DEST if check else source or ROOT.parent / "caic/e2e/screenshots/frontend"
     try:
         validate_managed_path(DEST)
         validate_managed_path(BACKUP)
         if BACKUP.exists() and check:
-            raise ValueError("interrupted publication has a recovery catalog; run screenshots:import")
+            raise ValueError("interrupted publication has a recovery copy; run screenshots:import")
         if BACKUP.exists():
             if not DEST.exists():
                 BACKUP.rename(DEST)
             else:
                 # Resolve a completed publication before consulting the producer;
                 # standalone validity must not depend on an available source repo.
-                published = read_catalog(DEST)
-                validate(DEST, published.scenarios)
+                validate_published(DEST)
                 shutil.rmtree(BACKUP)
-        catalog = read_catalog(directory)
         required = referenced_files()
-        available = {item.file for item in catalog.scenarios}
-        if missing := required - available:
-            raise ValueError(f"catalog is missing referenced screenshots: {', '.join(sorted(missing))}")
-        selected = sorted((item for item in catalog.scenarios if item.file in required), key=lambda item: item.file)
-        validate(directory, selected)
+        validate(directory, required)
         if check:
-            actual = {path.relative_to(DEST).as_posix() for path in DEST.rglob("*.webp")}
-            if actual != required or available != required:
-                raise ValueError("committed catalog contains unused or uncatalogued screenshots; import again")
+            actual = directory_files(DEST)
+            if actual != required:
+                unused = sorted(actual - required)
+                missing = sorted(required - actual)
+                details = []
+                if unused:
+                    details.append(f"unused: {', '.join(unused)}")
+                if missing:
+                    details.append(f"missing: {', '.join(missing)}")
+                raise ValueError(f"committed screenshots do not match page references ({'; '.join(details)})")
         else:
             DEST.parent.mkdir(parents=True, exist_ok=True)
             with tempfile.TemporaryDirectory(prefix=".screenshots-stage-", dir=ROOT) as temporary:
                 stage = Path(temporary) / "frontend"
                 stage.mkdir()
-                for item in selected:
-                    target = stage / item.file
+                for name in sorted(required):
+                    target = stage / name
                     target.parent.mkdir(exist_ok=True)
-                    shutil.copyfile(directory / item.file, target)
-                subset = Catalog(catalog.schemaVersion, catalog.producer, catalog.platform, catalog.source, selected)
-                (stage / "manifest.json").write_text(json.dumps(asdict(subset), indent=2) + "\n")
-                validate(stage, selected)
+                    shutil.copyfile(directory / name, target)
+                validate(stage, required)
                 try:
                     if DEST.exists():
                         DEST.rename(BACKUP)
@@ -228,12 +192,9 @@ def process_catalog(check: bool, source: Path | None) -> int:
                 if BACKUP.exists():
                     shutil.rmtree(BACKUP)
         action = "Checked" if check else "Imported"
-        print(
-            f"{action} {len(selected)} screenshots from {catalog.source.revision[:12]} "
-            f"in {time.perf_counter() - started:.3f}s"
-        )
+        print(f"{action} {len(required)} screenshots in {time.perf_counter() - started:.3f}s")
         return 0
-    except (OSError, ValueError, KeyError, TypeError) as error:
+    except (OSError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
 
