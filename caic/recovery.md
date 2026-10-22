@@ -10,7 +10,7 @@ Host sleep pauses local containers. Sessions can resume after the machine wakes,
 
 ## Revive a retained task
 
-A **Stopped** task retains its container filesystem. A **Crashed** task may also retain a recoverable runtime. Use **Revive** to reconnect or restart the agent in that workspace. If revival fails, read the displayed error and retry after fixing its cause.
+A **Stopped** task retains its container filesystem. A **Crashed** task may also retain a recoverable runtime. Use **Revive** to reconnect or restart the agent in that workspace. Before revival, caic recreates a mapped host branch that was deleted and configures an existing branch that lost its upstream to track the repository's default remote branch again. Existing branch commits are preserved. If revival fails, read the displayed error and retry after fixing its cause.
 
 Do not purge the task while you are diagnosing a failure. A task whose container has been destroyed cannot recover files from that container.
 

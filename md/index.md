@@ -45,7 +45,7 @@ md diff
 md pull
 ```
 
-Every mapped branch must already exist on the host and have an upstream. See [Syncing](./commands#syncing) for `md diff`, `md pull`, and remote-state behavior.
+Every mapped branch needs an upstream. `md start` creates a missing host branch from the repository's cached default remote branch and sets its upstream. See [Syncing](./commands#syncing) for `md diff`, `md pull`, and remote-state behavior.
 
 ## Install
 

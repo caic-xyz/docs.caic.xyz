@@ -44,9 +44,23 @@ Relative paths in the config file (e.g. `geo_db`, `app_private_key_pem`) are res
 | Key           | Default        | Description                                                                                                                                                                    |
 | ------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `root`        | `"."`          | Parent directory containing git repositories managed by caic. Tilde (`~`) is expanded to your home directory; relative paths resolve from the server process working directory |
+| `shell_env`   | `true`         | Load exported values from your interactive login shell at startup on macOS and Linux. Shell exports replace inherited values such as `PATH` and `SSH_AUTH_SOCK`                |
 | `auto_update` | `"50 4 * * *"` | Cron schedule for auto-update (checks GitHub Releases). Supports cron step syntax (`*/N`, `start/N`, e.g. `*/15 * * * *`). Set to `""` to disable                              |
 | `repo_repack` | `"0 2 * * *"`  | Repack large host repositories on a cron schedule. Set to `""` to disable                                                                                                      |
 | `prune`       | `"0 5 * * *"`  | Cron schedule for removing unused md-built images from every available container runtime. Set to `""` to disable                                                               |
+
+**Shell environment**
+
+Before starting the server, caic runs your interactive login shell once, without a terminal, and imports its exported values. This finds tools such as Git and npm when your startup scripts export their paths. `SHELL` selects the shell; otherwise caic reads the account database. The probe waits at most six seconds. On failure, caic logs a warning and keeps its inherited environment.
+
+Shell exports replace inherited values, including `PATH` and `SSH_AUTH_SOCK`. Explicit `[core.env]` values still take precedence for caic's configured credentials. Process and session bookkeeping is unchanged. caic does not import aliases or functions, refresh version-manager settings per repository, unlock SSH keys, or repair a dead agent socket. Keep shell startup scripts responsive when no terminal is present.
+
+Set `shell_env = false` to use only the service or terminal environment. On systemd, put service-only overrides in `~/.config/caic/caic.env` in that mode. Commands inside task containers still use the container environment.
+
+```toml
+[core]
+shell_env = false
+```
 
 **`[core.env]`**
 
@@ -272,7 +286,7 @@ Use `https://<your-domain>/auth/google/callback` as the authorized redirect URI 
 
 ## Environment variables
 
-`GEMINI_API_KEY` and `TAILSCALE_API_KEY` fall back to the server process environment when absent from `[core.env]`. Provider usage lookup also checks harness environment tables before the process environment, as described above. `XDG_CONFIG_HOME` and `XDG_CACHE_HOME` change the base directories described above. Set proxy variables and other service-wide values in the process environment rather than `[core.env]`.
+`GEMINI_API_KEY` and `TAILSCALE_API_KEY` fall back to the server process environment when absent from `[core.env]`. That environment includes values imported from your login shell, unless `shell_env` is false. Provider usage lookup also checks harness environment tables before the process environment, as described above. `XDG_CONFIG_HOME` and `XDG_CACHE_HOME` change the base directories described above. Set proxy variables and other service-wide values in the process environment rather than `[core.env]`.
 
 ## HTTPS exposure
 

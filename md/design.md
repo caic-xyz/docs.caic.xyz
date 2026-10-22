@@ -21,7 +21,7 @@ Each container is locked to a single repository-branch pair. You can:
 
 ### Explicit Git synchronization
 
-The host and container have separate Git repositories. Changes made inside the container stay there until you explicitly run `md pull`. Starting a container adds a container-specific remote to the host checkout, but does not move your host branches. `md push` moves host state into the container. `md pull` is the only regular synchronization command that integrates container work into existing host branches, while `md fork` creates new host branches for the fork.
+The host and container have separate Git repositories. Changes made inside the container stay there until you explicitly run `md pull`. Starting a container adds a container-specific remote to the host checkout, but does not move your host branches. If a mapped host branch is missing, `md start` creates it from the repository's cached default remote branch and sets its upstream. `md push` moves host state into the container. `md pull` is the only regular synchronization command that integrates container work into existing host branches, while `md fork` creates new host branches for the fork.
 
 ### Stable integration points
 

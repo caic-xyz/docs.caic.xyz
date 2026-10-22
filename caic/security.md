@@ -120,6 +120,7 @@ Consent grants only selected scopes:
 | `caic:tasks.write`  | Send and answer messages, fork tasks, and stop or revive existing tasks                                                                               |
 | `caic:tasks.admin`  | Purge tasks                                                                                                                                           |
 | `caic:repos.write`  | Clone repositories, push task branches or squash-push directly to default branches, repair pull request CI, and create default-branch CI repair tasks |
+| `caic:server.admin` | Read whole-machine CPU, memory, network, and filesystem statistics, and server health                                                                 |
 
 Tools and resources outside the approved scopes are not exposed to the client. Authorization Code consent lets you approve a subset of requested scopes. In the device flow, the client starts at `/oauth/device_authorization`, you approve its code at `/oauth/device`, and it polls `/oauth/token`; approval grants every requested scope. Review those scopes before approving. Revoke a grant from **Settings** at any time. Add `anthropic` or `openai` to `allow_origins` only when the corresponding hosted client must reach caic. See [MCP Server](./mcp) for connection steps.
 

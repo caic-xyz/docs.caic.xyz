@@ -55,28 +55,38 @@ journalctl --user -o cat -f -u caic
 
 caic watches its own executable and `config.toml` for changes and restarts automatically when either is modified.
 
-The unit optionally reads `~/.config/caic/caic.env`. Use this file for service-only environment overrides, such as adding `~/.local/bin` to `PATH`. The service starts normally when the file is absent.
+caic imports `PATH`, `SSH_AUTH_SOCK`, and other exported values from your interactive login shell at startup. The unit starts without requiring a keyring socket. To use only the service environment instead, set `[core] shell_env = false` in `config.toml`.
+
+The unit optionally reads `~/.config/caic/caic.env`. With `shell_env = false`, use this file for service-only environment overrides, such as adding `~/.local/bin` to `PATH`. The service starts normally when the file is absent.
 
 ## launchd user agent (macOS)
 
-The install script sets up the launchd agent automatically. To install manually:
+The install script sets up the launchd agent automatically. To install manually, publish the plist with your own absolute paths:
 
 ```bash
-mkdir -p ~/.config/caic
+mkdir -p ~/.config/caic "$HOME/Library/LaunchAgents"
 cp contrib/config.toml ~/.config/caic/config.toml
 # Edit ~/.config/caic/config.toml
 
-cp contrib/com.caic.caic.plist ~/Library/LaunchAgents/
-# Edit ~/Library/LaunchAgents/com.caic.caic.plist to set the binary path.
+plist="$HOME/Library/LaunchAgents/com.caic.caic.plist"
+logs="$HOME/Library/Logs/caic"
+mkdir -p "$logs"
+cp contrib/com.caic.caic.plist "$plist"
+plutil -replace ProgramArguments.0 -string "$HOME/.local/bin/caic" -- "$plist"
+plutil -replace StandardOutPath -string "$logs/stdout.log" -- "$plist"
+plutil -replace StandardErrorPath -string "$logs/stderr.log" -- "$plist"
+plutil -lint -- "$plist"
 
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.caic.caic.plist
+launchctl bootstrap gui/$(id -u) "$plist"
 ```
 
 View logs:
 
 ```bash
-tail -f /tmp/caic.log
+tail -f "$HOME/Library/Logs/caic/stdout.log" "$HOME/Library/Logs/caic/stderr.log"
 ```
+
+launchd starts caic directly, without a shell wrapper. To update an existing agent, replace its plist and run `launchctl bootout` then `launchctl bootstrap`. Log rotation needs separate configuration.
 
 The launchd template does not set a working directory, so do not rely on the relative default `root = "."`. Set `[core] root` to an absolute repository parent directory.
 

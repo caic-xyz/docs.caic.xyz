@@ -20,23 +20,23 @@ google-chrome (amd64), chromium (arm64 fallback), chrome-devtools-mcp
 
 ## Languages & runtimes
 
-| Language   | Toolchain                                    |
-| ---------- | -------------------------------------------- |
-| Go         | `go`, `gofmt` (latest stable)                |
-| Node.js    | `node` (v24 via nvm), `npm`, `npx`           |
-| TypeScript | `tsc`, `tsx`, `eslint`                       |
-| Rust       | `rustc`, `cargo`, `rustup`, `cargo-binstall` |
-| Python     | `python3`, `uv`, `pylint`, `ruff`            |
-| Java       | `java` (JDK 21, headless)                    |
-| R          | `R`                                          |
+| Language   | Toolchain                                                                          |
+| ---------- | ---------------------------------------------------------------------------------- |
+| Go         | `go`, `gofmt` (latest stable)                                                      |
+| Node.js    | `node` (v26 via nvm), `npm`, `npx`, standalone `pnpm` in `~/.local/share/pnpm/bin` |
+| TypeScript | `tsc`, `tsx`, `eslint`                                                             |
+| Rust       | `rustc`, `cargo`, `rustup`, `cargo-binstall`                                       |
+| Python     | `python3`, `uv`, `pylint`, `ruff`                                                  |
+| Java       | `java` (JDK 21, headless)                                                          |
+| R          | `R`                                                                                |
 
 ## Package managers
 
-`npm`, `pnpm`, `bun`, `pip` (via uv), `cargo`
+`npm`, `pnpm` (standalone), `bun`, `pip` (via uv), `cargo`
 
 ## Build tools
 
-build-essential, cmake, ninja-build, ccache, make, gcc, g++, arm-linux-gnueabi-gcc, gradle, golangci-lint, actionlint, shellcheck, shfmt, libsodium-dev, protobuf-compiler, cargo-binstall, pylint, ruff, uv, asciinema
+build-essential, cmake, ninja-build, ccache, make, gcc, g++, arm-linux-gnueabi-gcc, gettext (`msgfmt`), gradle, golangci-lint, actionlint, shellcheck, shfmt, libsodium-dev, protobuf-compiler, cargo-binstall, pylint, ruff, uv, asciinema
 
 ## AI coding agents
 
@@ -83,7 +83,11 @@ curl, wget, net-tools, iproute2, ping, fping, traceroute, tcptraceroute, nmap, t
 
 ## Compression & media
 
-brotli, zstd, unzip, ffmpeg, imagemagick
+brotli, zstd, unzip, ffmpeg, imagemagick, GStreamer and WebKitGTK runtime libraries
+
+## 3D libraries
+
+3MF, CGAL, Eigen, Boost, TBB, MPFR, double-conversion, and libzip
 
 ## Embedded
 

@@ -9,10 +9,11 @@ caic exposes a Model Context Protocol (MCP) endpoint at `/api/caic/v1/mcp`. Clie
 | `harnesses_list`             | `caic:mcp.read`     | List available harnesses, models, and reasoning effort options       |
 | `repos_list`                 | `caic:mcp.read`     | List managed repositories                                            |
 | `get_usage`                  | `caic:mcp.read`     | Read local and provider usage                                        |
+| `get_system_stats`           | `caic:server.admin` | Read whole-machine CPU, memory, network, and filesystem utilization  |
 | `tasks_list`                 | `caic:tasks.read`   | List tasks                                                           |
-| `task_get_detail`            | `caic:tasks.read`   | Read one task's detail and recent output                             |
+| `task_get_detail`            | `caic:tasks.read`   | Read one task's detail, recent output, and optional file diffstats   |
 | `agent_last_message`         | `caic:tasks.read`   | Read an agent's most recent message                                  |
-| `task_create`                | `caic:tasks.create` | Create a coding task                                                 |
+| `task_create`                | `caic:tasks.create` | Create a coding task with zero or more repositories                  |
 | `task_send_message`          | `caic:tasks.write`  | Send a message to a task                                             |
 | `task_answer_question`       | `caic:tasks.write`  | Answer a task's structured question                                  |
 | `task_fork`                  | `caic:tasks.write`  | Fork a task                                                          |
@@ -26,15 +27,20 @@ caic exposes a Model Context Protocol (MCP) endpoint at `/api/caic/v1/mcp`. Clie
 
 Repository and task list tools are paginated. The MCP `resources/list` response is paginated too. A response can contain fewer results than requested to stay within response-size limits. Continue with `nextCursor` until it is absent.
 
+`task_get_detail` accepts `include_diffstat` to add each repository's committed and uncommitted file counts, branch, upstream, and ahead or behind counts. Its output is bounded to 32 KiB with an explicit truncation notice.
+
+caic also publishes one static MCP Skill, `tasks`, at `skill://tasks/SKILL.md`. It documents the task workflow for clients that load skills.
+
 The current read-only resources are:
 
 - `caic://repos/{path}` for one managed repository
 - `caic://tasks/{id}` for one task
+- `caic://system/health` for the last observed machine CPU and memory usage, pressure warnings, and sampling errors
 - `caic://usage` for local and provider usage
 - `gomode://items` for native-client task summaries
 - `gomode://notifications` for native-client notifications
 
-The `caic:mcp.read` scope exposes repository and usage resources. The `caic:tasks.read` scope exposes task resources plus the two `gomode://` resources. Resource instances outside the approved scopes are omitted from `resources/list`.
+The `caic:mcp.read` scope exposes repository and usage resources. The `caic:tasks.read` scope exposes task resources plus the two `gomode://` resources. The `caic:server.admin` scope exposes machine health. Resource instances outside the approved scopes are omitted from `resources/list`.
 
 Clients that support subscriptions can listen for task or repository changes. When a client subscribes, caic delivers the current state of each subscribed resource. A later notification invalidates the resource, so read it again to get the latest state.
 
@@ -60,6 +66,9 @@ The consent screen lists the requested permissions. Read-only permissions are se
 | `caic:tasks.write`  | Send and answer messages, fork tasks, and stop or revive existing tasks                                                                               |
 | `caic:tasks.admin`  | Purge tasks                                                                                                                                           |
 | `caic:repos.write`  | Clone repositories, push task branches or squash-push directly to default branches, repair pull request CI, and create default-branch CI repair tasks |
+| `caic:server.admin` | Read whole-machine CPU, memory, network, and filesystem statistics, and server health                                                                 |
+
+Task-scoped agents do not receive `caic:server.admin` through their task scope. A client must request the scope explicitly during consent.
 
 Grants created before the task-creation scope was introduced do not gain it automatically. Reapprove the client if it needs to create tasks.
 

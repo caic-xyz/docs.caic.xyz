@@ -19,7 +19,7 @@ Native MCP-backed features depend on compatible service discovery and authentica
   <figcaption>caic provides the task UI in mobile browsers and the Go Mode shell.</figcaption>
 </figure>
 
-Create, follow, and review tasks as described in [Task workflow](./tasks). Native notifications can report tasks that finish, need input, or become blocked. For hands-free task control, configure [caic voice](./voice) and follow the [Go Mode voice guide](https://docs.gomode.dev/guide/voice).
+Create, follow, and review tasks as described in [Task workflow](./tasks). Native notifications report tasks that need attention: waiting, asking, plan-ready, and failed states. Each alert shows the current task number, uses the task title as its body, and opens the task when tapped. An alert is withdrawn when the task resumes or changes state. For hands-free task control, configure [caic voice](./voice) and follow the [Go Mode voice guide](https://docs.gomode.dev/guide/voice).
 
 ## Troubleshooting
 

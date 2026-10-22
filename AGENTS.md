@@ -62,8 +62,8 @@ The docs were last reconciled against these upstream commits. When updating, rev
 
 | Repo | Tag | Commit | Date |
 |---|---|---|---|
-| caic | checkout | `d3067acfb0f37f424bb9bab5cba9dc4724f040f3` | 2026-10-06 |
-| md | checkout | `a828ae505b1988ae80cc2ddfe36e7bdb2e4476d1` | 2026-10-06 |
+| caic | checkout | `c926ed3740410bbf52e53b2d7277ee42f6d4d0c3` | 2026-10-21 |
+| md | checkout | `98615114d684e24c29b07ca0f90c7b86b6cdf0ca` | 2026-10-21 |
 
 ## Source of truth
 

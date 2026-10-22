@@ -38,33 +38,37 @@ Built on your machine when you run `md start`. It adds three things on top of th
 
 The image name includes a hash of the base image and active cache configuration, so different cache setups produce distinct images.
 
-This image is rebuilt automatically when:
+The image is rebuilt automatically when:
 
 - The base image has been updated on the registry
 - Your SSH keys have changed (new key pair generated)
 - The set of active caches has changed (you added or removed a cache directory)
+- The reusable image is missing, for example after `md prune`
+
+md verifies the runtime image before reusing a cached build decision, so pruning or replacing an image cannot make the next launch reuse a missing or stale image.
 
 If a registry pull fails but md already has a local copy of the remote base image, md warns and keeps using the local copy. A first run with no local base image still fails.
 
 ## What happens during `md start`
 
 ```text
-1. Pull base image `md-user` (if updated on registry, or use the local copy if the pull fails and one exists)
-2. Build specialized image `md-specialized-*` (if SSH keys or caches changed)
-3. Start container with the selected runtime
+1. Create any missing mapped host branch from the repository's cached default remote branch, and configure a mapped branch without an upstream to track it
+2. Pull base image `md-user` (if updated on registry, or use the local copy if the pull fails and one exists)
+3. Build specialized image `md-specialized-*` (if SSH keys or caches changed)
+4. Start container with the selected runtime
    - Bind SSH port to 127.0.0.1 (random port)
    - Bind VNC port if --display (random port, 127.0.0.1 only)
    - Mount agent config directories from host
    - Grant the standard debugging and container-network capabilities
    - Pass through the TUN device if --tailscale or --sudo
    - Pass through raw USB and attached USB serial adapters if --usb
-4. Wait for SSH to become ready
-5. Send .env files into the container
-6. Transfer mapped branches, cached remote refs, and selected tags into the container (parallel per repository)
-7. Configure branch upstreams and remotes in the container, and copy the host's global and repository-specific Git names and emails
-8. Add a container remote to each host checkout
-9. Record the initial Git integration point for each mapped branch
-10. Open SSH session (unless --no-ssh)
+5. Wait for SSH to become ready
+6. Send .env files into the container
+7. Transfer mapped branches, cached remote refs, and selected tags into the container (parallel per repository)
+8. Configure branch upstreams and remotes in the container, and copy the host's global and repository-specific Git names and emails
+9. Add a container remote to each host checkout
+10. Record the initial Git integration point for each mapped branch
+11. Open SSH session (unless --no-ssh)
 ```
 
 The first mapped branch is checked out in the container. Each mapped branch keeps the same upstream and effective push remote as its host branch, and the host's remotes are configured in the container. The container also receives every remote-tracking ref already cached in the host checkout, so commands such as `git rebase origin/main` work without network access. Network operations from the container still require credentials. See [Syncing](./commands#syncing) for how to refresh the container's view of remote state.
