@@ -18,26 +18,26 @@ The agent edits repository copies inside the container. Your host checkout stays
 The transcript streams agent text and tool calls. Expand a tool call to inspect its arguments and result. Native subagent and background-command cards show the activity the harness reports, including outcomes when available. The task header lists **Loaded skills** for the current context. The list resets after context compaction or a clear, while earlier loads stay linked in the transcript. Expand a past session to review its previous skills. Its info dialog reports the session's context compaction.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-detail.webp" alt="Task transcript with streamed agent output, tool calls, repository state, and a message composer" width="1280" height="800" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-detail.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/task-detail.webp" alt="Task transcript with streamed agent output, tool calls, repository state, and a message composer" width="1280" height="800" loading="lazy" decoding="async"></a>
   <figcaption>Send a follow-up when the agent finishes a turn.</figcaption>
 </figure>
 
 Follow the agent while it runs. When a task waits for another message or asks a structured question, respond to continue. Agents can also render interactive widgets in the conversation.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-running.webp" alt="Running agent task with streamed output and tool activity" width="1280" height="800" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-running.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/task-running.webp" alt="Running agent task with streamed output and tool activity" width="1280" height="800" loading="lazy" decoding="async"></a>
   <figcaption>Watch tool activity and output as the agent works.</figcaption>
 </figure>
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-ask.webp" alt="A task asking a structured question with selectable answers" width="1280" height="800" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-ask.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/task-ask.webp" alt="A task asking a structured question with selectable answers" width="1280" height="800" loading="lazy" decoding="async"></a>
   <figcaption>Choose an answer or add your own response.</figcaption>
 </figure>
 
 When an agent presents a plan, review it before continuing.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-native-subagents.webp" alt="Delegated agent activity rendered within the task conversation" width="1280" height="800" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-native-subagents.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/task-native-subagents.webp" alt="Delegated agent activity rendered within the task conversation" width="1280" height="800" loading="lazy" decoding="async"></a>
   <figcaption>Delegated work stays inside the task that owns it.</figcaption>
 </figure>
 
@@ -48,7 +48,7 @@ Agent links to generated images and files open in a document pane beside the con
 Open a repository's changes from the task card or task view. Check commit history, missing upstream commits, and file diffs. Expand individual files to read their changes.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-repository-changes.webp" alt="Repository changes view with commit history and an expanded code diff" width="800" height="720" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-repository-changes.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/task-repository-changes.webp" alt="Repository changes view with commit history and an expanded code diff" width="800" height="720" loading="lazy" decoding="async"></a>
   <figcaption>Review the work in each repository before pushing.</figcaption>
 </figure>
 
@@ -63,20 +63,20 @@ Open task statistics to see token usage, cost, tool timing, sampled container re
 The account menu's **Monitoring** page groups three sections. **Usage** shows cross-task daily trends with range and subject filters. **System** shows live whole-machine CPU, memory, network, and filesystem history, including per-CPU meters and any sampling error. **Metrics** lists server operation measurements with counts, percentiles, and observed ranges. Whole-machine health also appears in the header as always-visible CPU and memory icons. Green means below 80%, orange means 80% or more, red means 90% or more, and gray means a sampling error or disconnected updates. The icons open **Monitoring > System**.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-stats.webp" alt="Task statistics showing token usage, reported cost, and tool timing" width="1280" height="800" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-stats.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/task-stats.webp" alt="Task statistics showing token usage, reported cost, and tool timing" width="1280" height="800" loading="lazy" decoding="async"></a>
   <figcaption>Compare token composition and time spent in tools.</figcaption>
 </figure>
 
 <figure class="docs-figure">
-  <picture>
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-resources.webp" target="_blank" rel="noopener"><picture>
     <source media="(max-width: 600px)" srcset="/screenshots/frontend/mobile/task-resources.webp" width="390" height="844">
     <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-resources.webp" alt="Task resource history with CPU, memory, network throughput, and writable disk usage charts" width="1280" height="800" loading="lazy" decoding="async">
-  </picture>
-  <figcaption>Inspect sampled container resources. Network charts show receive and send rates. <a href="/screenshots/frontend/desktop/task-resources.webp">Open the desktop charts at full size.</a></figcaption>
+  </picture></a>
+  <figcaption>Inspect sampled container resources. Network charts show receive and send rates.</figcaption>
 </figure>
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/usage.webp" alt="Cross-task usage dashboard with daily token and cost trends" width="1280" height="800" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/usage.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/usage.webp" alt="Cross-task usage dashboard with daily token and cost trends" width="1280" height="800" loading="lazy" decoding="async"></a>
   <figcaption>Compare usage across tasks and days.</figcaption>
 </figure>
 
@@ -87,7 +87,7 @@ Provider cards show available quota information. Support and freshness vary by p
 The web app adapts to mobile browsers. Open a task to read results, send a message, or review changes. Connect the separate [Go Mode app](./android) for native capabilities.
 
 <figure class="docs-figure docs-figure--phone">
-  <img class="docs-screenshot" src="/screenshots/frontend/mobile/task-detail.webp" alt="Mobile caic task conversation and follow-up controls" width="390" height="844" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/mobile/task-detail.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/mobile/task-detail.webp" alt="Mobile caic task conversation and follow-up controls" width="390" height="844" loading="lazy" decoding="async"></a>
   <figcaption>The same task conversation in a mobile browser.</figcaption>
 </figure>
 

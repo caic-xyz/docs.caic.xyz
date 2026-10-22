@@ -7,7 +7,7 @@ caic runs coding agents in parallel on your own machine. Each task gets an [md](
 [Install caic](./installation), set your repository root in [Configuration](./configuration), then open the dashboard. Choose repositories, a harness, a model, and a prompt. caic prepares the workspace and streams the agent's output as it works.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/overview.webp" alt="caic task dashboard showing parallel tasks grouped by repository and their agent states" width="1280" height="800" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/overview.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/overview.webp" alt="caic task dashboard showing parallel tasks grouped by repository and their agent states" width="1280" height="800" loading="lazy" decoding="async"></a>
   <figcaption>Follow your tasks and see which ones need attention.</figcaption>
 </figure>
 

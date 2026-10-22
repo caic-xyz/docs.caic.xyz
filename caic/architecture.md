@@ -59,7 +59,7 @@ The agent receives a copy of each selected repository inside its container. It d
 The task card summarizes each repository's Git operation, conflicts, uncommitted changes, and ahead or behind state. The diff view lists task commits and changed files first. Open a file to load its patch on demand, and retry inline if a patch fails to load. Binary files show their byte-size transition instead of line counts.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-repository-changes.webp" alt="caic repository changes view showing a task branch ahead of upstream, committed and uncommitted files, and an expanded line-by-line patch" width="800" height="720" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-repository-changes.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/task-repository-changes.webp" alt="caic repository changes view showing a task branch ahead of upstream, committed and uncommitted files, and an expanded line-by-line patch" width="800" height="720" loading="lazy" decoding="async"></a>
   <figcaption>Open a task's repository summary to review commits and uncommitted changes file by file.</figcaption>
 </figure>
 
@@ -97,7 +97,7 @@ The header shows always-visible whole-machine CPU and memory levels from the tas
 Tasks also show native subagent activity reported by the harness. This is work the agent delegated to its own subagents, shown inside the task that spawned it rather than as separate tasks. Each card lists the observed status, a duration when the harness reports both start and end, and the prompt and result when the harness exposes them. Cards render inline in the transcript, below the item that last changed their status, so their position matches when the work happened. Claude Code, Codex, OpenCode, and Pi report native subagents, and some harnesses also report orchestration batches. caic shows only what the harness reports and never invents an outcome, so activity whose last observation is still running is shown as last observed running with an unknown outcome. A task stays Running after its trailing result only while a background delegation is running. A foreground card that the harness never settles falls back to Waiting instead of pinning the task, and the task returns to Waiting, Asking, or HasPlan when the last background card settles.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/task-native-subagents.webp" alt="caic task transcript with native subagent and batch cards rendered inline, showing identity, group, prompt, result, and status" width="1280" height="800" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-native-subagents.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/task-native-subagents.webp" alt="caic task transcript with native subagent and batch cards rendered inline, showing identity, group, prompt, result, and status" width="1280" height="800" loading="lazy" decoding="async"></a>
   <figcaption>Native subagent and batch cards appear inline in the transcript as the harness reports them.</figcaption>
 </figure>
 

@@ -29,7 +29,7 @@ features:
 
 <div class="home-showcase">
 <figure>
-  <picture><source media="(max-width: 600px)" width="390" height="844" srcset="/screenshots/frontend/mobile/overview.webp"><img class="docs-screenshot" src="/screenshots/frontend/desktop/overview.webp" alt="caic task dashboard with concurrent tasks grouped by repository and their agent states" width="1280" height="800" fetchpriority="high"></picture>
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/overview.webp" target="_blank" rel="noopener"><picture><source media="(max-width: 600px)" width="390" height="844" srcset="/screenshots/frontend/mobile/overview.webp"><img class="docs-screenshot" src="/screenshots/frontend/desktop/overview.webp" alt="caic task dashboard with concurrent tasks grouped by repository and their agent states" width="1280" height="800" fetchpriority="high"></picture></a>
   <figcaption>One view of your coding tasks, from the first prompt to the final review.</figcaption>
 </figure>
 <div class="home-links">

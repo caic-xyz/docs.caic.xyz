@@ -42,6 +42,18 @@
   border: 1px solid var(--vp-c-divider);
   border-radius: 8px;
 }
+.docs-screenshot-link {
+  display: block;
+  border-radius: 8px;
+  cursor: zoom-in;
+}
+.docs-screenshot-link:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 3px;
+}
+.docs-screenshot-link:hover .docs-screenshot {
+  opacity: 0.92;
+}
 .docs-figure--phone,
 .docs-screenshot--phone {
   width: min(100%, 24rem);

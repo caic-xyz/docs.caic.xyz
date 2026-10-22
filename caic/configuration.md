@@ -33,7 +33,7 @@ The cache directory defaults to `~/.cache/caic/`. It contains task logs, CI resu
 Relative paths in the config file (e.g. `geo_db`, `app_private_key_pem`) are resolved against the config directory.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/settings-general.webp" alt="caic General Settings with container defaults and task automation controls" width="1600" height="900" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/settings-general.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/settings-general.webp" alt="caic General Settings with container defaults and task automation controls" width="1600" height="900" loading="lazy" decoding="async"></a>
   <figcaption>Set container defaults and task automation preferences.</figcaption>
 </figure>
 
@@ -96,7 +96,7 @@ Image pruning uses the same cron syntax. It removes md-built images that no cont
 The purge delay is the recovery window for an active or crashed task after you choose Purge. The default is 15 seconds and the allowed range is 10 seconds to 24 hours. Reviving the task during this window cancels deletion. Purging a task that is already stopped deletes it immediately.
 
 <figure class="docs-figure">
-  <img class="docs-screenshot" src="/screenshots/frontend/desktop/settings-mounts.webp" alt="caic Settings page with opt-in build caches and enabled custom host mounts" width="1600" height="900" loading="lazy" decoding="async">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/settings-mounts.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/settings-mounts.webp" alt="caic Settings page with opt-in build caches and enabled custom host mounts" width="1600" height="900" loading="lazy" decoding="async"></a>
   <figcaption>Configure reusable caches and host mounts for new tasks.</figcaption>
 </figure>
 
