@@ -138,6 +138,10 @@ The sidebar is defined in `.vitepress/config.ts`. When adding a page, add an ent
 { text: 'Page Title', link: '/md/page-name' }
 ```
 
+## Theme
+
+Keep the palette in `.vitepress/theme/style.css` equal to the Brand table in caic.xyz’s README.
+
 ## Formatting
 
 Run `pnpm run fix`, then `pnpm run verify`. `pnpm run fix` applies Prettier, ruff, shfmt, and refreshes the
