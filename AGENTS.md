@@ -142,6 +142,10 @@ The sidebar is defined in `.vitepress/config.ts`. When adding a page, add an ent
 
 Keep the palette in `.vitepress/theme/style.css` equal to the Brand table in caic.xyz’s README.
 
+## VitePress patch
+
+`patches/vitepress@1.6.4.patch`, applied through `patchedDependencies` in `pnpm-workspace.yaml`, makes local search return focus to the Search button when Escape closes it. Without it, focus falls to the page body and keyboard users lose their place. No browser test covers it yet; check it by hand after a VitePress upgrade. VitePress 1.6.4 and 2.0.0-alpha.21 still lack the fix. When VitePress changes version, keep the patch only if the new `VPLocalSearchBox.vue` still omits `setReturnFocus`, and regenerate it with `pnpm patch vitepress`.
+
 ## Formatting
 
 Run `pnpm run fix`, then `pnpm run verify`. `pnpm run fix` applies Prettier, ruff, shfmt, and refreshes the
