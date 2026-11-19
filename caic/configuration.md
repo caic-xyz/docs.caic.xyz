@@ -64,9 +64,9 @@ shell_env = false
 
 **`[core.env]`**
 
-Feature and provider credentials that caic looks up by name. Depending on the feature, an omitted key can fall back to a harness environment table or the caic server process environment. Common values include `TAILSCALE_API_KEY` for ephemeral container nodes, `GEMINI_API_KEY` for embedded voice, and provider keys used for generated titles and commit descriptions. This table does not add arbitrary variables to the server process or task containers. Put service-wide variables such as `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, or `PATH` in the process environment. A systemd installation can set them in `~/.config/caic/caic.env`.
+Feature and provider credentials that caic looks up by name. Depending on the feature, an omitted key can fall back to a harness environment table or the caic server process environment. Common values include `TAILSCALE_API_KEY` for ephemeral container nodes and provider keys used for generated titles, CI failure summaries, and commit messages. Embedded voice reads provider keys from the process environment instead. This table does not add arbitrary variables to the server process or task containers. Put service-wide variables such as `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, or `PATH` in the process environment. A systemd installation can set them in `~/.config/caic/caic.env`.
 
-For supported provider usage cards, caic looks for the recognized API key first in `[core.env]`, then in any `[harness.<name>.env]` table, and finally in the server process environment. API-key usage cards are available for DeepSeek, OpenRouter, and Xiaomi. Claude Code and Codex usage cards use their authenticated sessions instead. Experimental Antigravity quota reporting uses the authenticated `agy` CLI. Title and commit-description generation reads provider keys from `[core.env]` and then the server process environment.
+For supported provider usage cards, caic looks for the recognized API key first in `[core.env]`, then in any `[harness.<name>.env]` table, and finally in the server process environment. API-key usage cards are available for DeepSeek, OpenRouter, and Xiaomi. Claude Code and Codex usage cards use their authenticated sessions instead. Experimental Antigravity quota reporting uses the authenticated `agy` CLI. Title, summary, and commit-message generation reads provider keys from `[core.env]` and then the server process environment.
 
 ```toml
 [core]
@@ -91,7 +91,7 @@ Image pruning uses the same cron syntax. It removes md-built images that no cont
 
 ### Preferences
 
-`~/.config/caic/preferences.json` stores per-user settings independent of `config.toml`. Edit it directly or through the Settings UI, which exposes the container image, CPU architecture and platform, CPU cores, the preferred runtime when both Docker and Podman are available, well-known caches, custom cache mappings, custom host mounts, purge delay, auto-fix CI and PR toggles, per-model thinking effort, per-harness model refresh, and version information with manual update checks.
+`~/.config/caic/preferences.json` stores per-user settings independent of `config.toml`. Edit it directly or through the Settings UI, which exposes the container image, CPU architecture and platform, CPU cores, the preferred runtime when both Docker and Podman are available, well-known caches, custom cache mappings, custom host mounts, purge delay, auto-fix CI and PR toggles, per-model thinking effort, per-harness context compaction settings, per-harness model refresh, and version information with manual update checks.
 
 The purge delay is the recovery window for an active or crashed task after you choose Purge. The default is 15 seconds and the allowed range is 10 seconds to 24 hours. Reviving the task during this window cancels deletion. Purging a task that is already stopped deletes it immediately.
 
@@ -142,41 +142,38 @@ allow_origins = ["local", "tailscale", "github", "CA"]
 
 ### `[voice-gateway]`
 
-caic embeds the [Go Mode voice gateway](https://docs.gomode.dev/guide/voice) when `GEMINI_API_KEY` is available and `url` is empty. Set `url` to use a separate gateway, or leave both unset to disable voice.
+`mode` selects how caic serves [Go Mode voice](https://docs.gomode.dev/guide/voice). Voice is disabled until you set it.
 
-| Key                       | Default    | Description                                                          |
-| ------------------------- | ---------- | -------------------------------------------------------------------- |
-| `url`                     | Not set    | HTTPS URL of a standalone gateway                                    |
-| `token_mode`              | `"scoped"` | Standalone session credential mode: `"scoped"` or `"oauth"`          |
-| `instance_id`             | Not set    | Required unique identifier for this caic instance in standalone mode |
-| `signing_private_key_pem` | Not set    | PKCS#8 Ed25519 private key file for standalone `"scoped"` tokens     |
+| Key                       | Default                            | Description                                                             |
+| ------------------------- | ---------------------------------- | ----------------------------------------------------------------------- |
+| `mode`                    | `"disabled"`                       | `"disabled"`, `"embedded"` to host the gateway in caic, or `"external"` |
+| `webrtc_udp_port`         | `0`                                | Embedded: UDP port for WebRTC audio. `0` selects an ephemeral port      |
+| `stun_servers`            | `["stun:stun.l.google.com:19302"]` | Embedded: STUN servers clients use to learn their public address        |
+| `url`                     | Not set                            | External: HTTPS URL of the standalone gateway                           |
+| `instance_id`             | Not set                            | External: unique identifier for this caic instance                      |
+| `token_mode`              | `"scoped"`                         | External: session credential mode, `"scoped"` or `"oauth"`              |
+| `signing_private_key_pem` | Not set                            | External: PKCS#8 Ed25519 private key file for `"scoped"` tokens         |
 
-Standalone mode requires an explicit HTTPS `[server] external_url`, except for loopback development. Scoped tokens require a signing key; OAuth tokens use caic's authorization-server key instead and require a configured dashboard login provider. The gateway must trust the same service, issuer, and token mode. See [Voice](./voice#standalone-gateway) for a complete example.
+Embedded mode reads its voice choices from `voice-choices.toml` beside `config.toml`, or uses the defaults built into the release. caic owns the HTTP listener, so configure HTTP through `[server] http`. Open `webrtc_udp_port` in your firewall for remote WebRTC clients. `stun_servers = []` keeps clients from contacting any STUN server; that works when clients reach the UDP port directly or through its UPnP mapping.
 
-**`[voice-gateway.config]`** configures the embedded gateway. Its settings follow the [gateway configuration template](https://github.com/caic-xyz/caic/blob/main/contrib/voice-gateway-config.toml). `backend = "gemini-live"` uses Gemini Live; `backend = "local-stack"` uses managed or external local models. The embedded activation rule still requires `GEMINI_API_KEY` even with the local stack, although that backend does not use the key.
-
-Set `webrtc_udp_port` under `[voice-gateway.config.server]` to use a fixed UDP port. Its default `0` selects an ephemeral port. Open the selected port in your firewall for remote WebRTC clients. Configure HTTP through `[server] http`; embedded gateway HTTP cannot be configured separately.
+External mode requires an explicit HTTPS `[server] external_url`, except for loopback development. Scoped tokens require a signing key; OAuth tokens use caic's authorization-server key instead and require a configured dashboard login provider. The gateway must trust the same service, issuer, and token mode. See [Voice](./voice#standalone-gateway) for a complete example.
 
 ```toml
-[voice-gateway.config]
-backend = "gemini-live"
-
-[voice-gateway.config.server]
+[voice-gateway]
+mode = "embedded"
 webrtc_udp_port = 3479
 ```
 
-See the [Go Mode voice guide](https://docs.gomode.dev/guide/voice) for gateway backends, speech modes, and standalone operation.
-
 ### `[ai]`
 
-LLM provider for title generation and commit descriptions.
+LLM provider for task titles, CI failure summaries, and commit messages.
 
-| Key        | Default     | Description                                                                                                           |
-| ---------- | ----------- | --------------------------------------------------------------------------------------------------------------------- |
-| `provider` | auto-detect | Provider name. When unset, probes in this order: `codex`, `opencode`, `claudecode`, then any other available provider |
-| `model`    | cheapest    | Model name or alias. Uses the provider's cheapest model when unset                                                    |
+| Key        | Default     | Description                                                                                                       |
+| ---------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
+| `provider` | auto-detect | Provider name. When unset, probes `codex`, `claudecode`, `opencode`, `pi`, `antigravity`, then the others by name |
+| `model`    | cheapest    | Model name or alias. Uses the provider's cheapest model when unset                                                |
 
-Available providers: see the [genai providers](https://pkg.go.dev/github.com/maruel/genai/providers) package.
+Command-line agents (`codex`, `claudecode`, `dsh`, `antigravity`, `opencode`, `pi`) use their own login and run without their coding-agent prompt, tools, or user configuration. API providers include `anthropic`, `gemini`, `openai`, and `openrouter`; see the [genai providers](https://pkg.go.dev/github.com/maruel/genai/providers) package for the full list.
 
 ```toml
 [ai]
@@ -196,6 +193,9 @@ ANTHROPIC_API_KEY = "sk-..."
 # Codex configuration is primarily via its own config file:
 # https://developers.openai.com/codex/config-reference
 
+[harness.dsh.env]
+DEEPSEEK_API_KEY = "sk-..."
+
 [harness.opencode.env]
 # OpenCode configuration: https://opencode.ai/docs/config/
 
@@ -205,7 +205,7 @@ GEMINI_API_KEY = "AIza..."
 OPENROUTER_API_KEY = "sk-or-..."
 ```
 
-Available harness names: `antigravity` (experimental), `claude`, `codex`, `opencode`, `pi`.
+Available harness names: `antigravity` (experimental), `claude`, `codex`, `dsh` (DeepSeek Harness), `opencode`, `pi`.
 
 Setting `ANTHROPIC_API_KEY` can make Claude Code use API billing instead of your subscription. When caic detects a Claude Code OAuth session, it avoids forwarding this key so the subscription remains in use.
 
@@ -286,7 +286,7 @@ Use `https://<your-domain>/auth/google/callback` as the authorized redirect URI 
 
 ## Environment variables
 
-`GEMINI_API_KEY` and `TAILSCALE_API_KEY` fall back to the server process environment when absent from `[core.env]`. That environment includes values imported from your login shell, unless `shell_env` is false. Provider usage lookup also checks harness environment tables before the process environment, as described above. `XDG_CONFIG_HOME` and `XDG_CACHE_HOME` change the base directories described above. Set proxy variables and other service-wide values in the process environment rather than `[core.env]`.
+`TAILSCALE_API_KEY` and title provider keys fall back to the server process environment when absent from `[core.env]`. Embedded voice reads provider keys only from the process environment. That environment includes values imported from your login shell, unless `shell_env` is false. Provider usage lookup also checks harness environment tables before the process environment, as described above. `XDG_CONFIG_HOME` and `XDG_CACHE_HOME` change the base directories described above. Set proxy variables and other service-wide values in the process environment rather than `[core.env]`.
 
 ## HTTPS exposure
 

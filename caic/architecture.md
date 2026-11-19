@@ -123,7 +123,7 @@ A configured GitHub App can react to a labeled issue, a pull request targeting t
 
 ## Voice
 
-The web UI and Android app can stream WebRTC audio to embedded Gemini Live, a standalone gateway, or a local model stack. See [Voice](./voice) for usage and [Configuration](./configuration) for gateway options.
+The web UI and Android app can stream WebRTC audio to a gateway embedded in caic or to a standalone gateway, each offering cloud and local voice choices. See [Voice](./voice) for usage and [Configuration](./configuration) for gateway options.
 
 ## Updates and image maintenance
 

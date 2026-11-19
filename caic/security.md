@@ -52,19 +52,19 @@ GitHub and GitLab webhooks require a configured secret and are verified before t
 
 ### Server-side storage
 
-| Credential                                                                                    | Storage                                                          | Notes                                                                                                          |
-| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Forge personal access tokens                                                                  | `config.toml` in plaintext                                       | Restrict file permissions                                                                                      |
-| OAuth client secrets                                                                          | `config.toml` in plaintext                                       | Restrict file permissions                                                                                      |
-| GitHub App private key                                                                        | PEM file in the config directory                                 | The config stores its path                                                                                     |
-| Gemini API key                                                                                | `config.toml` or server environment                              | Used for title generation and embedded voice                                                                   |
-| Tailscale API key                                                                             | `config.toml` or server environment                              | Used for ephemeral task nodes                                                                                  |
-| Provider API keys                                                                             | `[core.env]`, a harness environment table, or server environment | Used for supported usage cards; `[core.env]` and server values can also support titles and commit descriptions |
-| Harness environment credentials                                                               | `[harness.<name>.env]` in `config.toml`                          | Written into matching task containers and used for that harness's model refresh                                |
-| Webhook secrets                                                                               | `config.toml` in plaintext                                       | Used to verify webhooks                                                                                        |
-| Dashboard session secret and MCP issuer signing key                                           | `settings.json` in plaintext                                     | Generated on first launch                                                                                      |
-| User profiles and forge OAuth tokens                                                          | `users.json`                                                     | Used for login and per-user forge access                                                                       |
-| MCP clients, grants, hashed refresh-token family state, and private access-token signing keys | `oauth_refresh_tokens.json`                                      | Persists MCP authorization and revocation across restarts                                                      |
+| Credential                                                                                    | Storage                                                          | Notes                                                                                                      |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Forge personal access tokens                                                                  | `config.toml` in plaintext                                       | Restrict file permissions                                                                                  |
+| OAuth client secrets                                                                          | `config.toml` in plaintext                                       | Restrict file permissions                                                                                  |
+| GitHub App private key                                                                        | PEM file in the config directory                                 | The config stores its path                                                                                 |
+| Gemini API key                                                                                | `config.toml` or server environment                              | Used for title generation; embedded voice reads it from the server environment only                        |
+| Tailscale API key                                                                             | `config.toml` or server environment                              | Used for ephemeral task nodes                                                                              |
+| Provider API keys                                                                             | `[core.env]`, a harness environment table, or server environment | Used for supported usage cards; `[core.env]` and server values can also support titles and commit messages |
+| Harness environment credentials                                                               | `[harness.<name>.env]` in `config.toml`                          | Written into matching task containers and used for that harness's model refresh                            |
+| Webhook secrets                                                                               | `config.toml` in plaintext                                       | Used to verify webhooks                                                                                    |
+| Dashboard session secret and MCP issuer signing key                                           | `settings.json` in plaintext                                     | Generated on first launch                                                                                  |
+| User profiles and forge OAuth tokens                                                          | `users.json`                                                     | Used for login and per-user forge access                                                                   |
+| MCP clients, grants, hashed refresh-token family state, and private access-token signing keys | `oauth_refresh_tokens.json`                                      | Persists MCP authorization and revocation across restarts                                                  |
 
 These files live under `~/.config/caic/`. Restrict that directory to your user, for example with `chmod 700 ~/.config/caic`.
 
@@ -126,7 +126,7 @@ Tools and resources outside the approved scopes are not exposed to the client. A
 
 ## Voice security
 
-Voice can run through embedded Gemini Live, a standalone gateway, or a local model stack. WebRTC audio is processed in memory rather than saved by caic. Short-lived service-issued credentials authorize each voice session. A standalone gateway receives the public verification material but not caic's private signing key.
+Voice is disabled until you configure an embedded or standalone gateway. Either one can use cloud or local models. WebRTC audio is processed in memory rather than saved by caic. Short-lived service-issued credentials authorize each voice session. A standalone gateway receives the public verification material but not caic's private signing key.
 
 ## What caic does not protect
 

@@ -2,7 +2,8 @@
 
 ## Prerequisites
 
-- **Docker or Podman** installed and running
+- Linux or macOS on amd64 or arm64
+- **Docker or Podman** installed and usable by your user
 
 caic uses Docker when both runtime commands are installed, and Podman when only Podman is installed. [Configuration](./configuration) covers choosing the runtime for new tasks.
 
@@ -12,83 +13,35 @@ caic uses Docker when both runtime commands are installed, and Podman when only 
 curl -fsSL https://caic.xyz/install.sh | bash
 ```
 
-The install script:
+The install script takes no arguments. It:
 
-1. Downloads the latest `caic` and `md` binaries to `~/.local/bin/`
-2. Copies a default `config.toml` to `~/.config/caic/` (if not already present)
-3. Installs and starts a system service (systemd on Linux, launchd on macOS)
+1. Downloads the latest stable `caic` and `md` releases, verifies their SHA-256 checksums, and installs both binaries in `~/.local/bin/`
+2. Copies a default `config.toml` to `~/.config/caic/`, or `$XDG_CONFIG_HOME/caic/` when set, if none exists
+3. Installs and starts a user service
 
-After installation, caic is running on `http://localhost:2242`. The default `root = "."` is resolved from the service working directory, not from the directory where you invoked the installer. The systemd unit uses your home directory. Set an explicit `[core] root` in `~/.config/caic/config.toml` before adding repositories.
+Run the same command to update. It keeps your configuration and settings. If a step fails after others completed, the script lists what it installed; correct the error and run it again.
 
-Set `NO_SERVICE=1` to skip service installation:
+After installation, caic is running on `http://localhost:2242`. The default `root = "."` resolves from the service working directory, not from the directory where you ran the installer. Set an explicit `[core] root` in `~/.config/caic/config.toml` before adding repositories.
 
-```bash
-curl -fsSL https://caic.xyz/install.sh | NO_SERVICE=1 bash
-```
+| Platform | User service                | Logs                                                                  |
+| -------- | --------------------------- | --------------------------------------------------------------------- |
+| Linux    | systemd `caic.service`      | `journalctl --user -o cat -f -u caic`                                 |
+| macOS    | launchd `com.fghbuild.caic` | `~/Library/Logs/caic/stdout.log` and `~/Library/Logs/caic/stderr.log` |
 
-If the GitHub release API is rate-limited, set `GITHUB_TOKEN` for authentication:
+caic watches its own executable and `config.toml` and restarts when either changes.
 
-```bash
-export GITHUB_TOKEN="ghp_..."
-curl -fsSL https://caic.xyz/install.sh | bash
-```
+caic imports `PATH`, `SSH_AUTH_SOCK`, and other exported values from your interactive login shell at startup. To use only the service environment instead, set `[core] shell_env = false` in `config.toml`. On Linux, the unit then reads service-only overrides, such as adding a directory to `PATH`, from the optional `~/.config/systemd/user/caic.env`.
 
-## systemd user service (Linux)
+On macOS, the launchd agent sets no working directory, so do not rely on the relative default `root = "."`. Set `[core] root` to an absolute repository parent directory.
 
-The install script sets up the systemd service automatically. To install manually:
+### Upgrade from an earlier macOS agent
 
-```bash
-mkdir -p ~/.config/systemd/user ~/.config/caic
-cp contrib/caic.service ~/.config/systemd/user/
-cp contrib/config.toml ~/.config/caic/config.toml
-# Edit ~/.config/caic/config.toml
-
-systemctl --user daemon-reload
-systemctl --user enable --now caic
-```
-
-View logs:
+Earlier releases installed the launchd agent as `com.caic.caic`. The installer does not remove it, and both agents would run caic. Remove the old agent:
 
 ```bash
-journalctl --user -o cat -f -u caic
+launchctl bootout "gui/$(id -u)/com.caic.caic"
+rm ~/Library/LaunchAgents/com.caic.caic.plist
 ```
-
-caic watches its own executable and `config.toml` for changes and restarts automatically when either is modified.
-
-caic imports `PATH`, `SSH_AUTH_SOCK`, and other exported values from your interactive login shell at startup. The unit starts without requiring a keyring socket. To use only the service environment instead, set `[core] shell_env = false` in `config.toml`.
-
-The unit optionally reads `~/.config/caic/caic.env`. With `shell_env = false`, use this file for service-only environment overrides, such as adding `~/.local/bin` to `PATH`. The service starts normally when the file is absent.
-
-## launchd user agent (macOS)
-
-The install script sets up the launchd agent automatically. To install manually, publish the plist with your own absolute paths:
-
-```bash
-mkdir -p ~/.config/caic "$HOME/Library/LaunchAgents"
-cp contrib/config.toml ~/.config/caic/config.toml
-# Edit ~/.config/caic/config.toml
-
-plist="$HOME/Library/LaunchAgents/com.caic.caic.plist"
-logs="$HOME/Library/Logs/caic"
-mkdir -p "$logs"
-cp contrib/com.caic.caic.plist "$plist"
-plutil -replace ProgramArguments.0 -string "$HOME/.local/bin/caic" -- "$plist"
-plutil -replace StandardOutPath -string "$logs/stdout.log" -- "$plist"
-plutil -replace StandardErrorPath -string "$logs/stderr.log" -- "$plist"
-plutil -lint -- "$plist"
-
-launchctl bootstrap gui/$(id -u) "$plist"
-```
-
-View logs:
-
-```bash
-tail -f "$HOME/Library/Logs/caic/stdout.log" "$HOME/Library/Logs/caic/stderr.log"
-```
-
-launchd starts caic directly, without a shell wrapper. To update an existing agent, replace its plist and run `launchctl bootout` then `launchctl bootstrap`. Log rotation needs separate configuration.
-
-The launchd template does not set a working directory, so do not rely on the relative default `root = "."`. Set `[core] root` to an absolute repository parent directory.
 
 ## Install from source
 

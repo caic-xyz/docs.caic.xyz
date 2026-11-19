@@ -22,7 +22,7 @@ The transcript streams agent text and tool calls. Expand a tool call to inspect 
   <figcaption>Send a follow-up when the agent finishes a turn.</figcaption>
 </figure>
 
-Follow the agent while it runs. When a task waits for another message or asks a structured question, respond to continue. Agents can also render interactive widgets in the conversation.
+Follow the agent while it runs. When a task waits for another message or asks a structured question, respond to continue. A message you send while the agent works is queued and delivered after the current turn; later messages append to the same queued prompt. Choose **Edit**, or press `Arrow Up` in an empty composer, to move the queued prompt back into the composer. Agents can also render interactive widgets in the conversation.
 
 <figure class="docs-figure">
   <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-running.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/task-running.webp" alt="Running agent task with streamed output and tool activity" width="1280" height="800" loading="lazy" decoding="async"></a>
@@ -41,6 +41,13 @@ When an agent presents a plan, review it before continuing.
   <figcaption>Delegated work stays inside the task that owns it.</figcaption>
 </figure>
 
+Task cards show running background commands, subagents, and watches as icons beside the model, and a failed turn's error while the task waits.
+
+<figure class="docs-figure">
+  <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/task-background.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/task-background.webp" alt="A running task with a background command, a watch, and a background subagent, counted by icons on its task card" width="1280" height="800" loading="lazy" decoding="async"></a>
+  <figcaption>Background work keeps a task running and stays visible on its card and below the conversation.</figcaption>
+</figure>
+
 Agent links to generated images and files open in a document pane beside the conversation. Prompt images appear as thumbnails and open in the same pane. caic serves them from the task log, so they survive reloads. The conversation stays mounted while you read, and app-viewport full screen hides the surrounding chrome. caic previews Markdown with relative links and images, PDFs, audio, video, bounded text, and CAD models: STL, STEP or STP, compressed STEP, and 3MF with filament colors and printing plates where the file provides them. Mermaid diagrams render inline in Markdown. Other files offer a raw download. On mobile, the task and document use separate views. These files depend on the task's retained runtime, so save artifacts you need before purging it.
 
 ## Review and push
@@ -52,7 +59,7 @@ Open a repository's changes from the task card or task view. Check commit histor
   <figcaption>Review the work in each repository before pushing.</figcaption>
 </figure>
 
-Choose the appropriate push action to send a task branch to its remote, or squash-push the changes to the default branch. caic scans for common secrets before pushing; treat this as a safety net, not a guarantee. A multi-repository push can succeed for some repositories and fail for others. Inspect the result before retrying.
+Choose the appropriate push action to send a task branch to its remote, or squash-push the changes to the default branch. caic scans for common secrets before pushing; treat this as a safety net, not a guarantee. When the repository has a pre-push hook, caic runs it inside the task container against the commit being pushed, and a rejection stops the push. The task timeline shows each push as one entry with the hook's output; cancel a running push from that entry. A multi-repository push can succeed for some repositories and fail for others. Inspect the result before retrying.
 
 [GitHub](./github) and [GitLab](./gitlab) integration provide pull request or merge request creation and CI monitoring. Check your forge setup before enabling automatic CI repair or PR creation in **Settings**.
 
@@ -79,6 +86,8 @@ The account menu's **Monitoring** page groups three sections. **Usage** shows cr
   <a class="docs-screenshot-link" href="/screenshots/frontend/desktop/usage.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/desktop/usage.webp" alt="Cross-task usage dashboard with daily token and cost trends" width="1280" height="800" loading="lazy" decoding="async"></a>
   <figcaption>Compare usage across tasks and days.</figcaption>
 </figure>
+
+When host CPU or memory is under pressure, the task list colors the tasks that contribute most to it.
 
 Provider cards show available quota information. Support and freshness vary by provider; an unknown balance does not mean unlimited capacity.
 
