@@ -13,7 +13,7 @@ export default defineConfig({
     ["link", { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
     ["link", { rel: "llms-index", type: "text/plain", href: "/llms.txt" }],
     ["meta", { property: "og:type", content: "website" }],
-    ["meta", { property: "og:image", content: `${origin}/screenshots/frontend/desktop/overview.webp` }],
+    ["meta", { property: "og:image", content: `${origin}/screenshots/frontend/desktop/overview-light.webp` }],
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
   ],
   transformHead({ pageData }) {

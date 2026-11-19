@@ -28,6 +28,8 @@ The caic binary contains the web app and the components needed to connect to tas
 
 The web UI handles dense task management on desktop and mobile browsers. The separate [Go Mode Android shell](./android) hosts the same web UI and adds native capabilities. Go Mode also owns the shared browser voice components and voice gateway. caic supplies task-specific controls and semantics.
 
+The caic interface follows the browser’s light or dark preference. In the Go Mode Android shell, it follows the Android appearance.
+
 ## Authentication choices
 
 No-auth mode is convenient on localhost or a fully trusted private network. Configuring GitHub, GitLab, or Google login adds user identity and signed sessions. Forge authority remains separate: Google can authenticate a dashboard user, but only a linked GitHub or GitLab identity can perform forge actions.

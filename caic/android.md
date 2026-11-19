@@ -13,7 +13,7 @@ Native MCP-backed features depend on compatible service discovery and authentica
 ## Use the hosted task UI
 
 <figure class="docs-figure docs-figure--phone">
-  <a class="docs-screenshot-link" href="/screenshots/frontend/mobile/overview.webp" target="_blank" rel="noopener"><img class="docs-screenshot" src="/screenshots/frontend/mobile/overview.webp" alt="Mobile caic task list with concurrent agents and repository groups" width="390" height="844" loading="lazy" decoding="async"></a>
+  <ThemedScreenshot light="/screenshots/frontend/mobile/overview-light.webp" dark="/screenshots/frontend/mobile/overview-dark.webp" alt="Mobile caic task list with concurrent agents and repository groups" :width="390" :height="844" />
   <figcaption>caic provides the task UI in mobile browsers and the Go Mode shell.</figcaption>
 </figure>
 

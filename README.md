@@ -18,6 +18,8 @@ neither a sibling checkout nor an Android emulator.
 
 ## Refresh screenshots
 
+Screenshots follow the documentation appearance setting. The owning capture pipeline produces both WebP variants together.
+
 In a sibling caic checkout, run its screenshot update and check targets first:
 
 ```bash
