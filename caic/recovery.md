@@ -34,6 +34,10 @@ Purging an active or crashed task first stops it and offers a recovery window. T
 
 Save generated files and push the changes you need before purging. Archived history does not replace the deleted container filesystem.
 
+## Recover super administration
+
+If you lose access to the super administrator account, set [`super_admin`](./configuration#server) to another account and restart caic. Sign in with that account, then use `account_set_enabled` to re-enable the old account if needed. caic refuses to start when the newly selected account was already disabled. Select a different account in that case.
+
 ## Diagnose a failed task
 
 Read the task's error first. It can distinguish setup failure, missing harness credentials, a failed agent session, out-of-memory termination, or runtime loss. Use task statistics and the process view when memory or CPU pressure is involved. Check [Configuration](./configuration) for runtime limits, caches, and model refresh controls.

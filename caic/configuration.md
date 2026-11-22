@@ -111,6 +111,7 @@ caic detects every available container runtime at startup. When more than one is
 | `trusted_proxies` | `[]`                               | CIDR ranges for direct reverse-proxy peers whose forwarded protocol, host, and client address caic may trust. Never include client networks                                                                                     |
 | `geo_db`          | Not set                            | Path to a [MaxMind GeoLite2](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data) MMDB file for country-code resolution. If unset and `GeoLite2-Country.mmdb` exists in the config directory, it is used automatically |
 | `allow_origins`   | `["local", "tailscale", "github"]` | Allowlist for incoming HTTP requests. Unmatched IPs get HTTP 403                                                                                                                                                                |
+| `super_admin`     | Not set                            | The one [super administrator](./security#account-roles), as `provider:id`, for example `"github:123456"`. Read at startup only                                                                                                  |
 
 **`external_url` rules**
 
@@ -133,6 +134,20 @@ When a reverse proxy terminates HTTPS, list only the proxy addresses that connec
 | Country code  | ISO 3166-1 alpha-2 (e.g. `"CA"`, `"US"`); requires `geo_db`                                          |
 
 Named origins (`local`, `tailscale`, `github`, `anthropic`, `openai`) resolve before country lookups.
+
+**`super_admin` value**
+
+Use `github`, `gitlab`, or `google` and the provider's stable account ID. A username, email address, or caic account ID does not work. Get the ID from the provider while signed in to that account:
+
+| Provider | Request                                              | Field |
+| -------- | ---------------------------------------------------- | ----- |
+| GitHub   | `https://api.github.com/user`                        | `id`  |
+| GitLab   | `/api/v4/user` on the GitLab instance that caic uses | `id`  |
+| Google   | `https://openidconnect.googleapis.com/v1/userinfo`   | `sub` |
+
+On an existing installation, the `provider` and `providerID` fields of the matching entry in `users.json` also give the ID. Do not edit `users.json`.
+
+The selected account does not need to have signed in yet. It must still pass the provider's `allowed_users` list. Restart caic after you change the value.
 
 ```toml
 [server]

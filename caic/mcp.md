@@ -24,6 +24,11 @@ caic exposes a Model Context Protocol (MCP) endpoint at `/api/caic/v1/mcp`. Clie
 | `task_push_branch_to_remote` | `caic:repos.write`  | Push a task branch, or squash-push its changes to the default branch |
 | `task_fix_pr`                | `caic:repos.write`  | Repair CI for an existing task's pull request                        |
 | `bot_fix_ci`                 | `caic:repos.write`  | Create a task to repair CI on a repository's default branch          |
+| `accounts_list`              | `caic:server.admin` | List accounts with their provider ID, role, and enabled state        |
+| `account_set_role`           | `caic:server.admin` | Make an account `admin` or `member`                                  |
+| `account_set_enabled`        | `caic:server.admin` | Disable or re-enable an account                                      |
+
+The account tools also need your current [account role](./security#account-roles). Admins can list, disable, and re-enable accounts. Only the super administrator can change roles. These tools are absent in no-auth mode.
 
 Repository and task list tools are paginated. The MCP `resources/list` response is paginated too. A response can contain fewer results than requested to stay within response-size limits. Continue with `nextCursor` until it is absent.
 
@@ -66,7 +71,7 @@ The consent screen lists the requested permissions. Read-only permissions are se
 | `caic:tasks.write`  | Send and answer messages, fork tasks, and stop or revive existing tasks                                                                               |
 | `caic:tasks.admin`  | Purge tasks                                                                                                                                           |
 | `caic:repos.write`  | Clone repositories, push task branches or squash-push directly to default branches, repair pull request CI, and create default-branch CI repair tasks |
-| `caic:server.admin` | Read whole-machine CPU, memory, network, and filesystem statistics, and server health                                                                 |
+| `caic:server.admin` | Read whole-machine CPU, memory, network, and filesystem statistics, and server health, and administer accounts                                        |
 
 Task-scoped agents do not receive `caic:server.admin` through their task scope. A client must request the scope explicitly during consent.
 

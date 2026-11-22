@@ -16,6 +16,32 @@ caic supports login with GitHub, GitLab, and Google. Google authenticates dashbo
 
 Without an OAuth login provider, ordinary enabled dashboard and API routes require no login. MCP is still disabled when the server listens on a non-loopback address, and webhook endpoints still require their configured secret verification. Use no-auth mode only on localhost or a network where every peer is trusted, such as a private tailnet.
 
+### Account roles
+
+Each account that signs in has an instance role: `member`, `admin`, or `super_admin`. New accounts are members, and signing in first gives no extra authority. A role never gives access to the tasks or credentials of another user.
+
+| Role          | Can                                                                 |
+| ------------- | ------------------------------------------------------------------- |
+| `member`      | Use caic with their own tasks and credentials                       |
+| `admin`       | List accounts, and disable or re-enable them                        |
+| `super_admin` | Do everything an admin can, and make other accounts admin or member |
+
+You select the one super administrator with [`super_admin`](./configuration#server) in `config.toml`. caic reads it from configuration and never stores it, so nobody can demote or disable that account from inside caic. When you select another account, the previous one gets back its stored role. caic does not let you remove the last enabled administrator. No-auth mode has no accounts and ignores `super_admin`.
+
+Administrators use the [account MCP tools](./mcp#tools-and-resources). A remote MCP client also needs the `caic:server.admin` scope. Task agents never get account administration authority.
+
+### Disabled accounts
+
+When an administrator disables an account, caic:
+
+- Ends its login sessions, MCP grants, and pending authorizations.
+- Stops its running tasks, including the tasks those tasks delegated, and its CI automation.
+- Keeps its tasks, history, and queued prompts. Other users who can see those tasks can still read them, but they cannot control them.
+
+The response reports `"suspended":true` only after the tasks stopped and the grants were revoked. If a step fails, the account stays disabled. Fix the cause and send the same request again. After a restart, caic keeps disabled accounts blocked before it reconnects to their tasks.
+
+Re-enabling an account confirms the suspension again first. The user then signs in again and reauthorizes their MCP clients. Their tasks stay stopped, with prompts queued, until someone revives them.
+
 ## Network security
 
 ### Listener and origin allowlist
@@ -120,7 +146,7 @@ Consent grants only selected scopes:
 | `caic:tasks.write`  | Send and answer messages, fork tasks, and stop or revive existing tasks                                                                               |
 | `caic:tasks.admin`  | Purge tasks                                                                                                                                           |
 | `caic:repos.write`  | Clone repositories, push task branches or squash-push directly to default branches, repair pull request CI, and create default-branch CI repair tasks |
-| `caic:server.admin` | Read whole-machine CPU, memory, network, and filesystem statistics, and server health                                                                 |
+| `caic:server.admin` | Read whole-machine CPU, memory, network, and filesystem statistics, and server health, and administer accounts                                        |
 
 Tools and resources outside the approved scopes are not exposed to the client. Authorization Code consent lets you approve a subset of requested scopes. In the device flow, the client starts at `/oauth/device_authorization`, you approve its code at `/oauth/device`, and it polls `/oauth/token`; approval grants every requested scope. Review those scopes before approving. Revoke a grant from **Settings** at any time. Add `anthropic` or `openai` to `allow_origins` only when the corresponding hosted client must reach caic. See [MCP Server](./mcp) for connection steps.
 
