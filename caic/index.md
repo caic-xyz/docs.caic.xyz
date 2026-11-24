@@ -13,7 +13,7 @@ caic runs coding agents in parallel on your own machine. Each task gets an [md](
 
 ## What you can do
 
-- Run **Claude Code, Codex, DeepSeek Harness, OpenCode, or Pi**. Experimental **Antigravity** support uses the `agy` CLI.
+- Run **Claude Code, Codex, DeepSeek Harness, OpenCode, Pi, or Antigravity**. Antigravity uses the `agy` CLI.
 - Choose **Docker or Podman** for new tasks and work across multiple repositories.
 - Follow streamed output, tool calls, native subagents, structured questions, and plans.
 - Review commits and file diffs, including submodules, preview documents, media, and CAD models, and inspect per-turn performance, task usage, machine health, and server metrics.

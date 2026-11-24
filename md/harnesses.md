@@ -20,7 +20,7 @@ The container includes [`/home/user/src/AGENTS.md`](https://github.com/caic-xyz/
 | [goose](https://block.github.io/goose/docs/)                                         | `~/.config/goose/AGENTS.md`    | Yes                               |
 | [kimi](https://github.com/MoonshotAI/kimi-cli)                                       | `~/.kimi/KIMI.md`              | Yes                               |
 
-Antigravity is also available in specialized images through `agy`. md shares its host Gemini state at `~/.gemini`, which can contain credentials. This state is writable and shared with other applicable tasks. Antigravity integration in caic is experimental.
+Antigravity is also available in specialized images through `agy`. md shares its host Gemini state at `~/.gemini`, which can contain credentials. This state is writable and shared with other applicable tasks.
 
 DeepSeek Harness is also available in specialized images through `dsh`. md shares its host data directory at `~/.dsh` and the shared `~/.agents` directory, so settings, credentials, plugins, and sessions persist across containers. This state is writable and shared with other applicable tasks. Run `dsh web` inside the container to launch its Web UI.
 

@@ -66,7 +66,7 @@ shell_env = false
 
 Feature and provider credentials that caic looks up by name. Depending on the feature, an omitted key can fall back to a harness environment table or the caic server process environment. Common values include `TAILSCALE_API_KEY` for ephemeral container nodes and provider keys used for generated titles, CI failure summaries, and commit messages. Embedded voice reads provider keys from the process environment instead. This table does not add arbitrary variables to the server process or task containers. Put service-wide variables such as `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, or `PATH` in the process environment. A systemd installation can set them in `~/.config/caic/caic.env`.
 
-For supported provider usage cards, caic looks for the recognized API key first in `[core.env]`, then in any `[harness.<name>.env]` table, and finally in the server process environment. API-key usage cards are available for DeepSeek, OpenRouter, and Xiaomi. Claude Code and Codex usage cards use their authenticated sessions instead. Experimental Antigravity quota reporting uses the authenticated `agy` CLI. Title, summary, and commit-message generation reads provider keys from `[core.env]` and then the server process environment.
+For supported provider usage cards, caic looks for the recognized API key first in `[core.env]`, then in any `[harness.<name>.env]` table, and finally in the server process environment. API-key usage cards are available for DeepSeek, OpenRouter, and Xiaomi. Claude Code and Codex usage cards use their authenticated sessions instead. Antigravity quota reporting uses the authenticated `agy` CLI. Title, summary, and commit-message generation reads provider keys from `[core.env]` and then the server process environment.
 
 ```toml
 [core]
@@ -220,7 +220,7 @@ GEMINI_API_KEY = "AIza..."
 OPENROUTER_API_KEY = "sk-or-..."
 ```
 
-Available harness names: `antigravity` (experimental), `claude`, `codex`, `dsh` (DeepSeek Harness), `opencode`, `pi`.
+Available harness names: `antigravity`, `claude`, `codex`, `dsh` (DeepSeek Harness), `opencode`, `pi`.
 
 Antigravity tasks use the `agy` CLI's personal Google sign-in, so their models and quota match `agy models` and your subscription. Business and API-key sign-in are not supported, and a `GEMINI_API_KEY` does not replace the sign-in. md shares the sign-in token file in `~/.gemini` between the host and every container. Without that file, model discovery reports `Please sign in`. When `agy` 1.5.14 on the host saves its token in the OS keyring, it deletes the shared file and signs out every container. caic's own host calls to `agy` keep the shared file.
 
