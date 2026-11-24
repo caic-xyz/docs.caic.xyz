@@ -62,7 +62,7 @@ The docs were last reconciled against these upstream commits. When updating, rev
 
 | Repo | Tag | Commit | Date |
 |---|---|---|---|
-| caic | checkout | `fa7b3bf017e8ce206f11f542a4b1ef4f8e72ae21` | 2026-11-23 |
+| caic | checkout | `ba0426c2dcb48c0aa10f3d3c7db337122f594cba` | 2026-11-24 |
 | md | v0.20.0 | `16487e57f5466a02acb1925176ccfd915f1d254d` | 2026-11-23 |
 
 Screenshots in `public/screenshots/frontend` are captured from the caic commit in the table. When you update that commit, refresh the screenshots with `pnpm run screenshots:import` before committing.
