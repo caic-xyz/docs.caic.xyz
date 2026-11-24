@@ -77,6 +77,11 @@ A **Turn durations** strip leads to each turn's view, and the duration at the en
 - CPU and memory lanes from the retained resource samples.
 - Exact tables for the spans, calls, and turn details.
 
+<figure class="docs-figure">
+  <ThemedScreenshot light="/screenshots/frontend/desktop/task-turn-light.webp" dark="/screenshots/frontend/desktop/task-turn-dark.webp" alt="Turn view with a timeline of model, tool, subagent, and background spans above CPU and memory lanes and tokens per API call" :width="1280" :height="800" mobile-light="/screenshots/frontend/mobile/task-turn-light.webp" mobile-dark="/screenshots/frontend/mobile/task-turn-dark.webp" :mobile-width="390" :mobile-height="844" />
+  <figcaption>See where a turn spent its time and how its context grew.</figcaption>
+</figure>
+
 A running turn grows live. Use the previous and next buttons, or `←` and `→`, to step between turns. A past context's duration opens its context view with why it ended, its context size at the end of each turn, and its turn totals. When the harness reports no cost, caic estimates it from built-in token prices, and the turn details name the cost source.
 
 The account menu's **Monitoring** page groups three sections. **Usage** shows cross-task daily trends with range and subject filters. **System** shows live whole-machine CPU, memory, network, and filesystem history, including per-CPU meters and any sampling error. **Metrics** lists server operation measurements with counts, percentiles, and observed ranges. Whole-machine health also appears in the header as always-visible CPU and memory icons. Green means below 80%, orange means 80% or more, red means 90% or more, and gray means a sampling error or disconnected updates. The icons open **Monitoring > System**.
