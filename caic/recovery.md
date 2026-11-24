@@ -40,6 +40,6 @@ If you lose access to the super administrator account, set [`super_admin`](./con
 
 ## Diagnose a failed task
 
-Read the task's error first. It can distinguish setup failure, missing harness credentials, a failed agent session, out-of-memory termination, or runtime loss. Use task statistics and the process view when memory or CPU pressure is involved. Check [Configuration](./configuration) for runtime limits, caches, and model refresh controls.
+Read the task's error first. It can distinguish setup failure, missing harness credentials, a failed agent session, out-of-memory termination, or runtime loss. Use the task's [Performance view](./tasks#inspect-usage-and-resources) and the process view when memory or CPU pressure is involved. Check [Configuration](./configuration) for runtime limits, caches, and model refresh controls.
 
 For a recurring problem, include the error and `caic -version` when [reporting an issue](https://github.com/caic-xyz/caic/issues). Remove credentials from any logs you share.

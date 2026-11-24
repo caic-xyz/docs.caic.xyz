@@ -40,18 +40,19 @@ build-essential, cmake, ninja-build, ccache, make, gcc, g++, arm-linux-gnueabi-g
 
 ## AI coding agents
 
-| Agent         | Binary          |
-| ------------- | --------------- |
-| Antigravity   | `agy`           |
-| Claude Code   | `claude`        |
-| Codex         | `codex`         |
-| Kilo Code     | `kilo`          |
-| OpenCode      | `opencode`      |
-| Amp CLI       | `amp`           |
-| Pi            | `pi`            |
-| Qwen Code     | `qwen`          |
-| Kimi          | `kimi`          |
-| Agent Browser | `agent-browser` |
+| Agent            | Binary          |
+| ---------------- | --------------- |
+| Antigravity      | `agy`           |
+| Claude Code      | `claude`        |
+| Codex            | `codex`         |
+| DeepSeek Harness | `dsh`           |
+| Kilo Code        | `kilo`          |
+| OpenCode         | `opencode`      |
+| Amp CLI          | `amp`           |
+| Pi               | `pi`            |
+| Qwen Code        | `qwen`          |
+| Kimi             | `kimi`          |
+| Agent Browser    | `agent-browser` |
 
 ## Containers
 

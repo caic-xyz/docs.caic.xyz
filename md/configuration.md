@@ -61,6 +61,7 @@ These host directories are automatically bind-mounted into each container. The X
 | Antigravity                          | `~/.gemini`                                                                | Read-write |
 | Claude Code                          | `~/.claude`                                                                | Read-write |
 | Codex                                | `~/.codex`                                                                 | Read-write |
+| DeepSeek Harness                     | `~/.dsh`                                                                   | Read-write |
 | Goose                                | `~/.config/goose`, `~/.local/share/goose`                                  | Read-write |
 | Kilo Code                            | `~/.kilocode`                                                              | Read-write |
 | Kimi                                 | `~/.kimi`                                                                  | Read-write |

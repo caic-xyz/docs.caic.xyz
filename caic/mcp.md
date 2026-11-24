@@ -18,10 +18,11 @@ caic exposes a Model Context Protocol (MCP) endpoint at `/api/caic/v1/mcp`. Clie
 | `task_answer_question`       | `caic:tasks.write`  | Answer a task's structured question                                  |
 | `task_fork`                  | `caic:tasks.write`  | Fork a task                                                          |
 | `task_stop`                  | `caic:tasks.write`  | Stop a task                                                          |
-| `task_revive`                | `caic:tasks.write`  | Revive a stopped task                                                |
+| `task_revive`                | `caic:tasks.write`  | Revive a stopped or crashed task                                     |
 | `task_purge`                 | `caic:tasks.admin`  | Purge a task                                                         |
 | `clone_repo`                 | `caic:repos.write`  | Clone a repository                                                   |
 | `task_push_branch_to_remote` | `caic:repos.write`  | Push a task branch, or squash-push its changes to the default branch |
+| `task_cancel_push`           | `caic:repos.write`  | Cancel a task's running push                                         |
 | `task_fix_pr`                | `caic:repos.write`  | Repair CI for an existing task's pull request                        |
 | `bot_fix_ci`                 | `caic:repos.write`  | Create a task to repair CI on a repository's default branch          |
 | `accounts_list`              | `caic:server.admin` | List accounts with their provider ID, role, and enabled state        |
@@ -42,10 +43,11 @@ The current read-only resources are:
 - `caic://tasks/{id}` for one task
 - `caic://system/health` for the last observed machine CPU and memory usage, pressure warnings, and sampling errors
 - `caic://usage` for local and provider usage
-- `gomode://items` for native-client task summaries
+- `caic://catalog` for native-client task summaries
+- `caic://conversation/context` for the authorized conversation state that native clients read as model context
 - `gomode://notifications` for native-client notifications
 
-The `caic:mcp.read` scope exposes repository and usage resources. The `caic:tasks.read` scope exposes task resources plus the two `gomode://` resources. The `caic:server.admin` scope exposes machine health. Resource instances outside the approved scopes are omitted from `resources/list`.
+The `caic:mcp.read` scope exposes repository and usage resources. The `caic:tasks.read` scope exposes task resources plus `caic://catalog`, `caic://conversation/context`, and `gomode://notifications`. The `caic:server.admin` scope exposes machine health. Resource instances outside the approved scopes are omitted from `resources/list`.
 
 Clients that support subscriptions can listen for task or repository changes. When a client subscribes, caic delivers the current state of each subscribed resource. A later notification invalidates the resource, so read it again to get the latest state.
 

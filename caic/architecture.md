@@ -34,8 +34,6 @@ A task combines a prompt, one or more repositories, a branch choice, and an agen
 | **Waiting**      | The turn finished and the agent can receive another message                                                |
 | **Asking**       | The agent needs an answer                                                                                  |
 | **HasPlan**      | The agent produced a plan for review                                                                       |
-| **Pulling**      | Changes are being read from the task workspace                                                             |
-| **Pushing**      | Changes are being pushed to the remote                                                                     |
 | **Stopping**     | Graceful shutdown is in progress                                                                           |
 | **Stopped**      | The container is stopped and can be revived                                                                |
 | **Crashed**      | An active agent session failed or its container ran out of memory; the retained container can be revived   |
@@ -49,14 +47,14 @@ An ordinary container exit records the task as Stopped. An out-of-memory event w
 
 ## Repository and branch model
 
-caic discovers Git repositories under the configured root. When you create a task, you can select one or more repositories and choose what to do with each branch:
+caic discovers Git repositories under the configured root. Submodules and other checkouts nested inside a repository are not listed as separate repositories. When you create a task, you can select one or more repositories and choose what to do with each branch:
 
 - **Adopt** keeps working on a selected local branch when it has an upstream and no other non-final task is associated with it. Stopped and crashed tasks still retain their branch association.
 - **Branch off** creates a new branch such as `caic-0`. This is used for remote branches, untracked or busy local branches, and normal work from a default or selected base.
 
 The agent receives a copy of each selected repository inside its container. It does not edit the host checkout. Changes remain local to the task until you push them. A multi-repository task pushes its repository changes together.
 
-The task card summarizes each repository's Git operation, conflicts, uncommitted changes, and ahead or behind state. The diff view lists task commits and changed files first. Open a file to load its patch on demand, and retry inline if a patch fails to load. Binary files show their byte-size transition instead of line counts.
+The task card summarizes each repository's Git operation, conflicts, uncommitted changes, and ahead or behind state. The diff view lists task commits and changed files first. Initialized submodules, including nested ones, appear under their repository with their own status and changed files. Open a file to load its patch on demand, and retry inline if a patch fails to load. Binary files show their byte-size transition instead of line counts.
 
 <figure class="docs-figure">
   <ThemedScreenshot light="/screenshots/frontend/desktop/task-repository-changes-light.webp" dark="/screenshots/frontend/desktop/task-repository-changes-dark.webp" alt="caic repository changes view showing a task branch ahead of upstream, committed and uncommitted files, and an expanded line-by-line patch" :width="800" :height="720" />
@@ -84,6 +82,7 @@ If a task container exits normally, caic records it as Stopped. Its filesystem r
 caic streams agent output, state changes, repository changes, and runtime metrics to connected clients. The task view provides:
 
 - token usage, provider quota, cost, and resource charts
+- a Performance view for each turn and context, with span timelines and per-call tokens
 - CPU, memory, network, storage I/O, and disk usage
 - committed changes associated with each completed turn
 - a process tree with resource details and actions to send TERM or KILL
@@ -94,7 +93,7 @@ A document pane opens task files beside the conversation. It previews Markdown, 
 
 The header shows always-visible whole-machine CPU and memory levels from the task-list stream. Green means below 80%, orange means 80% or more, red means 90% or more, and gray means a sampling error or disconnected updates. The account menu's **Monitoring** page adds cross-task usage, live machine history, and server operation metrics. See [Task workflow](./tasks#inspect-usage-and-resources).
 
-Tasks also show native subagent activity reported by the harness. This is work the agent delegated to its own subagents, shown inside the task that spawned it rather than as separate tasks. Each card lists the observed status, a duration when the harness reports both start and end, and the prompt and result when the harness exposes them. Cards render inline in the transcript, below the item that last changed their status, so their position matches when the work happened. Claude Code, Codex, OpenCode, and Pi report native subagents, and some harnesses also report orchestration batches. caic shows only what the harness reports and never invents an outcome, so activity whose last observation is still running is shown as last observed running with an unknown outcome. A task stays Running after its trailing result only while a background delegation is running. A foreground card that the harness never settles falls back to Waiting instead of pinning the task, and the task returns to Waiting, Asking, or HasPlan when the last background card settles.
+Tasks also show native subagent activity reported by the harness. This is work the agent delegated to its own subagents, shown inside the task that spawned it rather than as separate tasks. Each card lists the observed status, a duration when the harness reports both start and end, and the prompt and result when the harness exposes them. Cards render inline in the transcript, below the item that last changed their status, so their position matches when the work happened. Claude Code, Codex, DeepSeek Harness, OpenCode, Pi, and Antigravity report native subagents, and some harnesses also report orchestration batches. caic shows only what the harness reports and never invents an outcome, so activity whose last observation is still running is shown as last observed running with an unknown outcome. A task stays Running after its trailing result only while a background delegation is running. A foreground card that the harness never settles falls back to Waiting instead of pinning the task, and the task returns to Waiting, Asking, or HasPlan when the last background card settles.
 
 <figure class="docs-figure">
   <ThemedScreenshot light="/screenshots/frontend/desktop/task-native-subagents-light.webp" dark="/screenshots/frontend/desktop/task-native-subagents-dark.webp" alt="caic task transcript with native subagent and batch cards rendered inline, showing identity, group, prompt, result, and status" :width="1280" :height="800" />

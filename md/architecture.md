@@ -118,7 +118,7 @@ SSH uses key-based authentication only. md generates two key pairs on first use:
 
 ## Submodule handling
 
-Git submodules are transferred from your host to the container without network access. The container configures local URLs so `git submodule update` works without fetching from the internet. This works for nested submodules at any depth. The `--tags` expression used for the parent repository also filters tags in initialized submodules.
+Git submodules are transferred from your host to the container without network access. The container configures local URLs so `git submodule update` works without fetching from the internet. This works for nested submodules at any depth, and submodule names need not match their paths. For each available submodule, provisioning transfers its local branches, cached remote-tracking refs, selected tags, remotes, and branch upstream and push configuration. The checkout uses the commit recorded by the superproject, so it needs no remote network access. A submodule checkout failure aborts provisioning. The `--tags` expression used for the parent repository also filters tags in initialized submodules. See [Submodules](./commands#submodules) to diff, pull, or push one submodule.
 
 ## Shell environment
 
@@ -139,7 +139,7 @@ Environment variables are loaded through modular scripts in `~/.config/bash.d/`,
 
 ### Container cleanup
 
-`md purge` removes the container, its SSH configuration, git remotes on the host, and (for non-ephemeral Tailscale nodes) the device from your tailnet. The container's filesystem is permanently deleted.
+`md purge` removes the container immediately, without waiting for a stop timeout. It also removes its SSH configuration, git remotes on the host, and (for non-ephemeral Tailscale nodes) the device from your tailnet. The container's filesystem is permanently deleted.
 
 `md stop` preserves the container on disk. A subsequent `md start` revives it with a fresh SSH port and configuration.
 
@@ -149,7 +149,7 @@ Environment variables are loaded through modular scripts in `~/.config/bash.d/`,
 
 This preserves installed packages, build artifacts, agent history, commits, and uncommitted changes while letting you explore a different approach. md creates the new primary branches on the host and treats inherited committed work as already integrated. Inherited uncommitted work remains visible in `md diff`. The source container is unchanged, and deleting it has no effect on the fork.
 
-Display, Tailscale, USB, and sudo settings are inherited from the source. Override any of them with `--display`, `--tailscale`, `--usb`, or `--sudo`. Add `=false` to disable an inherited setting, for example `md fork --usb=false`.
+Display, Tailscale, USB, and sudo settings and the memory limit are inherited from the source. Override any of them with `--display`, `--tailscale`, `--usb`, or `--sudo`. Add `=false` to disable an inherited setting, for example `md fork --usb=false`. Pass `--memory` to replace the inherited memory limit, or `--memory=0` to remove it.
 
 ## Shallow repositories and submodules
 

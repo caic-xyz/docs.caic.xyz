@@ -16,7 +16,7 @@ caic runs coding agents in parallel on your own machine. Each task gets an [md](
 - Run **Claude Code, Codex, DeepSeek Harness, OpenCode, or Pi**. Experimental **Antigravity** support uses the `agy` CLI.
 - Choose **Docker or Podman** for new tasks and work across multiple repositories.
 - Follow streamed output, tool calls, native subagents, structured questions, and plans.
-- Review commits and file diffs, preview documents, media, and CAD models, and inspect task usage, machine health, and server metrics.
+- Review commits and file diffs, including submodules, preview documents, media, and CAD models, and inspect per-turn performance, task usage, machine health, and server metrics.
 - Push changes with [GitHub](./github) or [GitLab](./gitlab) integration and follow CI.
 - [Revive or fork](./recovery) retained work, including after a quota limit or failed session.
 - Use a desktop or mobile browser, [voice](./voice), [MCP access](./mcp), or the separate [Go Mode Android shell](./android).

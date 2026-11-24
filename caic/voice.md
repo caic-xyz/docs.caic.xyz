@@ -6,6 +6,8 @@ Use voice to ask about tasks, answer an agent's question, and steer work away fr
 
 Press `F4` in the web app to start or stop voice mode, including while the composer has focus. Say “hang up”, “end call”, or “stop voice mode” to end the session.
 
+On a phone, the voice panel stays at the bottom of the screen, and the task prompt stays above it while you scroll.
+
 caic announces every task transition to waiting, asking, failed, or crashed immediately, before answering anything else, even when no one asked for a status update. For a failure, it reads the recorded error instead of an unknown cause.
 
 Voice numbers active tasks before settled tasks. Check the visible list when a number could be ambiguous. The voice interface's supported speech modes and language settings depend on the client platform; see the [Go Mode voice guide](https://docs.gomode.dev/guide/voice).

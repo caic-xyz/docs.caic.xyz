@@ -15,14 +15,14 @@ The agent edits repository copies inside the container. Your host checkout stays
 
 ## Follow and steer the work
 
-The transcript streams agent text and tool calls. Expand a tool call to inspect its arguments and result. Native subagent and background-command cards show the activity the harness reports, including outcomes when available. The task header lists **Loaded skills** for the current context. The list resets after context compaction or a clear, while earlier loads stay linked in the transcript. Expand a past session to review its previous skills. Its info dialog reports the session's context compaction.
+The transcript streams agent text and tool calls. Expand a tool call to inspect its arguments and result. Native subagent and background-command cards show the activity the harness reports, including outcomes when available. The task header lists **Loaded skills** for the current context. The list resets after context compaction or a clear, while earlier loads stay linked in the transcript. Expand a past context to review its previous skills. Its duration opens the context's [Performance view](#inspect-usage-and-resources), which reports why the context ended and the context sizes that compaction reported.
 
 <figure class="docs-figure">
   <ThemedScreenshot light="/screenshots/frontend/desktop/task-detail-light.webp" dark="/screenshots/frontend/desktop/task-detail-dark.webp" alt="Task transcript with streamed agent output, tool calls, repository state, and a message composer" :width="1280" :height="800" />
   <figcaption>Send a follow-up when the agent finishes a turn.</figcaption>
 </figure>
 
-Follow the agent while it runs. When a task waits for another message or asks a structured question, respond to continue. A message you send while the agent works is queued and delivered after the current turn; later messages append to the same queued prompt. Choose **Edit**, or press `Arrow Up` in an empty composer, to move the queued prompt back into the composer. Agents can also render interactive widgets in the conversation.
+Follow the agent while it runs. When a task waits for another message or asks a structured question, respond to continue. A message you send while the agent works is queued and delivered after the current turn; later messages append to the same queued prompt. Choose **Edit**, or press `Arrow Up` in an empty composer, to move the queued prompt back into the composer. When the harness retries a dropped model request, for example a Codex stream reconnect, the transcript shows the retry notice. Agents can also render interactive widgets in the conversation.
 
 <figure class="docs-figure">
   <ThemedScreenshot light="/screenshots/frontend/desktop/task-running-light.webp" dark="/screenshots/frontend/desktop/task-running-dark.webp" alt="Running agent task with streamed output and tool activity" :width="1280" :height="800" />
@@ -41,14 +41,14 @@ When an agent presents a plan, review it before continuing.
   <figcaption>Delegated work stays inside the task that owns it.</figcaption>
 </figure>
 
-Task cards show running background commands, subagents, and watches as icons beside the model, and a failed turn's error while the task waits.
+Task cards show running background commands, subagents, and watches as icons beside the model, and a failed turn's error while the task waits. Hover over or tap the icons to list each running item by name. An Antigravity command that is still running when its turn ends becomes a background command. The task stays running until agy reports the command's end and finishes the turn that it wakes, and the late output attaches to the command's original row.
 
 <figure class="docs-figure">
   <ThemedScreenshot light="/screenshots/frontend/desktop/task-background-light.webp" dark="/screenshots/frontend/desktop/task-background-dark.webp" alt="A running task with a background command, a watch, and a background subagent, counted by icons on its task card" :width="1280" :height="800" />
   <figcaption>Background work keeps a task running and stays visible on its card and below the conversation.</figcaption>
 </figure>
 
-Agent links to generated images and files open in a document pane beside the conversation. Prompt images appear as thumbnails and open in the same pane. caic serves them from the task log, so they survive reloads. The conversation stays mounted while you read, and app-viewport full screen hides the surrounding chrome. caic previews Markdown with relative links and images, PDFs, audio, video, bounded text, and CAD models: STL, STEP or STP, compressed STEP, and 3MF with filament colors and printing plates where the file provides them. Mermaid diagrams render inline in Markdown. Other files offer a raw download. On mobile, the task and document use separate views. These files depend on the task's retained runtime, so save artifacts you need before purging it.
+Agent links to generated images and files open in a document pane beside the conversation. Prompt images appear as thumbnails and open in the same pane. caic serves them from the task log, so they survive reloads. The conversation stays mounted while you read, and app-viewport full screen hides the surrounding chrome. caic previews Markdown with relative links and images, PDFs, audio, video, bounded text, and CAD models: STL, STEP or STP, compressed STEP, and 3MF with filament colors and printing plates where the file provides them. Mermaid diagrams render inline in Markdown. Other files offer a raw download. A file link with a line suffix, such as `#L10`, `:10`, or `&line=10`, opens the file with that line highlighted. A `conversation://` link opens the caic task that holds that conversation. Otherwise, inside an active Antigravity task, it opens that agy conversation's transcript in the document pane. On mobile, the task and document use separate views. These files depend on the task's retained runtime, so save artifacts you need before purging it.
 
 ## Review and push
 
@@ -59,13 +59,25 @@ Open a repository's changes from the task card or task view. Check commit histor
   <figcaption>Review the work in each repository before pushing.</figcaption>
 </figure>
 
-Choose the appropriate push action to send a task branch to its remote, or squash-push the changes to the default branch. caic scans for common secrets before pushing; treat this as a safety net, not a guarantee. When the repository has a pre-push hook, caic runs it inside the task container against the commit being pushed, and a rejection stops the push. The task timeline shows each push as one entry with the hook's output; cancel a running push from that entry. A multi-repository push can succeed for some repositories and fail for others. Inspect the result before retrying.
+Choose the appropriate push action to send a task branch to its remote, or squash-push the changes to the default branch. caic scans for common secrets before pushing; treat this as a safety net, not a guarantee. When the repository has a pre-push hook, caic runs it inside the task container against the commit being pushed, and a rejection stops the push. The task timeline shows each push as one entry with the hook's output; cancel a running push from that entry. A multi-repository push can succeed for some repositories and fail for others. When a push stops after Git updated some branches, the result lists each confirmed repository, branch, and commit. Inspect the result before retrying.
+
+The changes view lists initialized submodules, including nested ones, under their repository with their own status and file diffs. A push first publishes each changed submodule commit that the pushed commits pin. It goes to the submodule's remote under the task branch name, even when you squash-push the repository to its default branch. caic refuses a push that changes a submodule's source URL.
 
 [GitHub](./github) and [GitLab](./gitlab) integration provide pull request or merge request creation and CI monitoring. Check your forge setup before enabling automatic CI repair or PR creation in **Settings**.
 
 ## Inspect usage and resources
 
-Open task statistics to see token usage, cost, tool timing, sampled container resources, and the task's configured CPU ceiling when the runtime reports it. Task CPU usage stays aggregate because the runtime stream has no per-CPU breakdown, and an explicit ceiling excludes inherited cgroup limits and process affinity. The process view shows running processes in a continuous tree.
+Open a task's **Performance** view from the stats icon in the task header or the resource indicator on its task card. It shows token usage, cost, tool timing, sampled container resources, and the task's configured CPU ceiling when the runtime reports it. Task CPU usage stays aggregate because the runtime stream has no per-CPU breakdown, and an explicit ceiling excludes inherited cgroup limits and process affinity. The process view shows running processes in a continuous tree.
+
+A **Turn durations** strip leads to each turn's view, and the duration at the end of each transcript turn opens it directly. The turn view shows:
+
+- A timeline of model, tool, subagent, subagent tool, and background spans. Activate a span to reveal and open its transcript item.
+- Tokens for each model call, with context size against the context window.
+- Time spent in each tool.
+- CPU and memory lanes from the retained resource samples.
+- Exact tables for the spans, calls, and turn details.
+
+A running turn grows live. Use the previous and next buttons, or `←` and `→`, to step between turns. A past context's duration opens its context view with why it ended, its context size at the end of each turn, and its turn totals. When the harness reports no cost, caic estimates it from built-in token prices, and the turn details name the cost source.
 
 The account menu's **Monitoring** page groups three sections. **Usage** shows cross-task daily trends with range and subject filters. **System** shows live whole-machine CPU, memory, network, and filesystem history, including per-CPU meters and any sampling error. **Metrics** lists server operation measurements with counts, percentiles, and observed ranges. Whole-machine health also appears in the header as always-visible CPU and memory icons. Green means below 80%, orange means 80% or more, red means 90% or more, and gray means a sampling error or disconnected updates. The icons open **Monitoring > System**.
 

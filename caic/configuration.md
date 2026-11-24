@@ -222,6 +222,8 @@ OPENROUTER_API_KEY = "sk-or-..."
 
 Available harness names: `antigravity` (experimental), `claude`, `codex`, `dsh` (DeepSeek Harness), `opencode`, `pi`.
 
+Antigravity tasks use the `agy` CLI's personal Google sign-in, so their models and quota match `agy models` and your subscription. Business and API-key sign-in are not supported, and a `GEMINI_API_KEY` does not replace the sign-in. md shares the sign-in token file in `~/.gemini` between the host and every container. Without that file, model discovery reports `Please sign in`. When `agy` 1.5.14 on the host saves its token in the OS keyring, it deletes the shared file and signs out every container. caic's own host calls to `agy` keep the shared file.
+
 Setting `ANTHROPIC_API_KEY` can make Claude Code use API billing instead of your subscription. When caic detects a Claude Code OAuth session, it avoids forwarding this key so the subscription remains in use.
 
 ### `[github.*]`
